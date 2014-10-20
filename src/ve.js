@@ -114,7 +114,9 @@ var domOn = function (node, eventName, ieEventName, handler){
         forEach : function(it, callback){
             if(it){
                 for(var i = 0; i < it.length;){
-                    callback(it[i++]);
+                    if(callback(it[i++]) === false){
+                        break;
+                    }
                 }
             }
         },
@@ -515,8 +517,101 @@ ve.browser.opera = typeof window.opera !== "undefined";
         ve.__lang.mix(this, cfg);
     };
 
+    v.__lang.mix(Module.prototype, {
+
+    });
+
+
+    /**
+     *
+     * @param name
+     * @param refMod
+     * @param packs
+     * @param mods
+     * @param aliases
+     * @returns {*}
+     */
+    function getModInfo(name, refMod, packs, mods, aliases){
+        var isRelative = /^\./.test(name), match, pid, pack, rs, url, midInPackage;
+        if(/(^\/)|(\:)|(\.js$)/.test(name) || (isRelative && !refMod)){
+            //not a module but just a URL of some sort
+            return  new Module({
+                pid : 0,
+                mid : name,
+                pack : 0,
+                url : name
+            });
+        }else{
+            //relative to reference module
+            //get rid of any dots
+            name = this.redress(isRelative ? (refMod.mid + "/../" + name) : name);
+            //make sure is that a relatvei path
+            if(/^\./.test(name)){
+                throw new Error("irrationalPath", name);
+            }
+            //map the name
+            //a1/a2 --> $0:a1/a2, $1:a1, $2:/a2, $3:a2
+            match = name.match(/^([^\/]+)(\/(.+))?$/);
+            pid = match ? match[1] : "";
+            pack = v.__AMD.packs[pid];
+            if(pack){
+                name = pid + "/" + (midInPackage = match[3] || pack.m);
+            }else{
+                pid = "";
+            }
+            //search aliases
+            //TODO:
+            var hit = false;
+            v.__lang.forEach(v.__AMD.aliases, function(aliasMap){
+                match = name.match(aliasMap[0]);
+                if(match && match.length > 0){
+                    hit = v.__lang.isFunction(aliasMap[1]) ? name.replace(aliasMap[0], aliasMap[1]) : aliasMap[1];
+                    return false;
+                }
+            });
+            if(hit){
+                return getModInfo(hit, 0, packs, mods, aliases);
+            }
+            rs = v.__AMD.mods[name];
+            if(rs){
+                return v.__AMD.mods[name];
+            }
+        }
+        if(pid){
+            url = pack.path + "/" + midInPackage;
+        }else{
+            url = name;
+        }
+        // if result is not absolute, add baseUrl
+        if(!(/(^\/)|(\:)/.test(url))){
+            if(pid){
+                url = pack.baseUrl + url;
+            }else{
+                url = v.__AMD.baseUrl + url;
+            }
+        }
+        url += ".js";
+
+        return new Module({
+            pid : pid,
+            mid : name,
+            pack : pack,
+            url : v.__AMD.pkg.redress(url)
+        });
+    }
+
     /**
      * A loader engine
+     *
+     * example:
+     *          {
+     *              pkgs : [{
+     *                  name : "myapp",
+        *               path : "/js/myapp",
+        *               baseUrl : ""  //baseUrl to repleace the top parent baseUrl
+     *              }]
+     *          }
+     *
      * @type {{}}
      */
     v.__AMD = {
@@ -591,13 +686,24 @@ ve.browser.opera = typeof window.opera !== "undefined";
                 return prefix + path;
             },
 
+
             /**
              *
              * @param name
              * @param refMod
              */
             getModule : function(name, refMod){
+                if(!name) return null;
+                var match = name.match(/^(.+?)\>(.*)$/), mod, pid, pack;
+                if(match){
+                    //match[1] plugin module
+                    //match[2] plulgin
+                    //TODO: won't handle plugin here
+                    //TODO: move to phase 2
+                }else{
+                    var rs = getModInfo(name, refMod, v.__AMD.packs, v.__AMD.aliases);
 
+                }
             },
             /**
              * agument package info
@@ -649,7 +755,7 @@ ve.browser.opera = typeof window.opera !== "undefined";
 
         defalutDeps : ["want", "exports", "module"],
 
-        req : function(){
+        use : function(){
 
         },
         /**
@@ -660,7 +766,7 @@ ve.browser.opera = typeof window.opera !== "undefined";
          *
          * eg: def("lang");
          */
-        def : function(name, deps, factory){
+        add : function(name, deps, factory){
 
             logger.debug("call def");
 
