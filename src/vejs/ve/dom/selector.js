@@ -1,7 +1,6 @@
 ﻿/*
      选择器
      引用: jquery 1.2.6 部分代码
-
 */
 
 (function () {
@@ -752,18 +751,6 @@
             // and the modified expression string (t)
             return { r: r, t: t };
         },
-
-        dir: function (elem, dir) {
-            var matched = [],
-                cur = elem[dir];
-            while (cur && cur != document) {
-                if (cur.nodeType == 1)
-                    matched.push(cur);
-                cur = cur[dir];
-            }
-            return matched;
-        },
-
         nth: function (cur, result, dir, elem) {
             result = result || 1;
             var num = 0;
