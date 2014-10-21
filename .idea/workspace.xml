@@ -26,11 +26,11 @@
       <file leaf-file-name="ve.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ve.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.70689654" vertical-offset="17232" max-vertical-offset="19397">
-              <caret line="1045" column="40" selection-start-line="1045" selection-start-column="40" selection-end-line="1045" selection-end-column="40" />
+            <state vertical-scroll-proportion="0.40162823" vertical-offset="16840" max-vertical-offset="20332">
+              <caret line="1008" column="29" selection-start-line="1008" selection-start-column="29" selection-end-line="1008" selection-end-column="29" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
-                <element signature="e#44396#45221#0" expanded="false" />
+                <element signature="e#47019#47844#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -39,8 +39,18 @@
       <file leaf-file-name="demo.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/tests/ve/demo.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.5384617" vertical-offset="0" max-vertical-offset="272">
-              <caret line="10" column="7" selection-start-line="10" selection-start-column="7" selection-end-line="10" selection-end-column="7" />
+            <state vertical-scroll-proportion="-7.1923075" vertical-offset="0" max-vertical-offset="374">
+              <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/tests/test.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="221">
+              <caret line="6" column="6" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
               <folding />
             </state>
           </provider>
@@ -63,19 +73,21 @@
         <option value="$PROJECT_DIR$/src/moduleCfg.json" />
         <option value="$PROJECT_DIR$/src/tests/ve/project.json" />
         <option value="$PROJECT_DIR$/src/moduleCfg.js" />
-        <option value="$PROJECT_DIR$/src/tests/ve/demo.html" />
         <option value="D:/xampp/htdocs/statics/ve_2_1/js/src/veCore/veLazyLoad.js" />
         <option value="D:/xampp/htdocs/xampp/ve/statics/ve_2_1/js/src/veCore/veLazyLoad.js" />
         <option value="$USER_HOME$/Desktop/veLazyLoad.js" />
         <option value="$USER_HOME$/Desktop/ve/veLazyLoad.js" />
+        <option value="$PROJECT_DIR$/src/tests/test.js" />
+        <option value="$PROJECT_DIR$/src/tests/ve/demo.html" />
         <option value="$PROJECT_DIR$/src/ve.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="253" />
+    <option name="x" value="364" />
+    <option name="y" value="17" />
     <option name="width" value="1237" />
-    <option name="height" value="962" />
+    <option name="height" value="945" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -181,80 +193,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ve" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="doV" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="vejs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ve" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ve" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="doV" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="vejs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ve" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="dom" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ve" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="doV" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ve" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -568,16 +506,16 @@
       <workItem from="1413774145570" duration="1490000" />
       <workItem from="1413777780213" duration="2424000" />
       <workItem from="1413785262740" duration="7796000" />
-      <workItem from="1413799835558" duration="31867000" />
+      <workItem from="1413799835558" duration="36455000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="152700000" />
+    <option name="totallyTimeSpent" value="157288000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="253" y="0" width="1237" height="962" extended-state="0" />
-    <editor active="false" />
+    <frame x="364" y="17" width="1237" height="945" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -597,7 +535,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19181585" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19181585" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39927623" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24978687" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -636,7 +574,7 @@
           <caret line="635" column="48" selection-start-line="635" selection-start-column="48" selection-end-line="635" selection-end-column="48" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#44396#45221#0" expanded="false" />
+            <element signature="e#47019#47844#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -647,7 +585,7 @@
           <caret line="608" column="48" selection-start-line="608" selection-start-column="48" selection-end-line="608" selection-end-column="48" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#44396#45221#0" expanded="false" />
+            <element signature="e#47019#47844#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -682,7 +620,7 @@
           <caret line="695" column="0" selection-start-line="695" selection-start-column="0" selection-end-line="695" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#44396#45221#0" expanded="false" />
+            <element signature="e#47019#47844#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -717,7 +655,7 @@
           <caret line="695" column="0" selection-start-line="695" selection-start-column="0" selection-end-line="695" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#44396#45221#0" expanded="false" />
+            <element signature="e#47019#47844#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -759,7 +697,7 @@
           <caret line="695" column="0" selection-start-line="695" selection-start-column="0" selection-end-line="695" selection-end-column="0" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#44396#45221#0" expanded="false" />
+            <element signature="e#47019#47844#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -882,21 +820,29 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests/test.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="221">
+          <caret line="6" column="6" selection-start-line="6" selection-start-column="6" selection-end-line="6" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/tests/ve/demo.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.5384617" vertical-offset="0" max-vertical-offset="272">
-          <caret line="10" column="7" selection-start-line="10" selection-start-column="7" selection-end-line="10" selection-end-column="7" />
+        <state vertical-scroll-proportion="-7.1923075" vertical-offset="0" max-vertical-offset="374">
+          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ve.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.70689654" vertical-offset="17232" max-vertical-offset="19397">
-          <caret line="1045" column="40" selection-start-line="1045" selection-start-column="40" selection-end-line="1045" selection-end-column="40" />
+        <state vertical-scroll-proportion="0.40162823" vertical-offset="16840" max-vertical-offset="20332">
+          <caret line="1008" column="29" selection-start-line="1008" selection-start-column="29" selection-end-line="1008" selection-end-column="29" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <element signature="e#44396#45221#0" expanded="false" />
+            <element signature="e#47019#47844#0" expanded="false" />
           </folding>
         </state>
       </provider>
