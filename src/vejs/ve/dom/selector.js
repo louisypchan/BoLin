@@ -1,6 +1,6 @@
 ﻿/*
      选择器
-     引用: jquery 1.2.6 部分代码
+     引用: 基于jquery 1.2.6 部分代码 及一些修正
 */
 
 (function () {
@@ -20,7 +20,7 @@
  
     ve.selector.fn = ve.selector.prototype = {
         init: function (selector, context) {
-                selector = selector || document;
+            selector = selector || document;
             if (selector.nodeType) { //是Dom元素就应该有一个nodeType
                 this[0] = selector;
                 this.length = 1;
@@ -51,17 +51,21 @@
                         selector = [];
                     }
                 } else {
+                    //如果是不正确乱七八糟的则直接调用find
                     return ve.selector(context).find(selector);
                 }
-            } else if (ve.selector.isFunction(selector))
-                return ve.selector(document)[ve.selector.ready ? "ready" :
-                    "load"](selector);
+            }
+            //else if (ve.selector.isFunction(selector)) {
+            //    return ve.selector(document)[ve.selector.ready ? "ready" : "load"](selector);
+            //}
+
             return this.setArray(ve.selector.makeArray(selector));
         },
         //匹配元素集合长度,初始设置为0
         length: 0,
-        setArray: function(elems) {
+        setArray: function (elems) {
             this.length = 0;
+            //追加到当前的对象
             Array.prototype.push.apply(this, elems);
             return this;
         },
@@ -150,7 +154,7 @@
     };
 
     //------------------静态核心函数----------------//
-    //这些静态函数为ve.selector对象实例方法或者其他需要的函数所调用.ve.selector很多的
+    //这些静态函数为ve.selector对象实例方法或者其他需要的函数所调用.ve.selector
     ve.selector.extend({
         //用一个Array克隆另外一个内容一致的数组
         makeArray: function (array) {
@@ -271,12 +275,25 @@
         trim: function (text) {
             return (text || '').replace(/^\s+|\s+$/g, "");
         },
+        /**
+          * 使用过滤函数过滤数组元素。
+          * 此函数至少传递两个参数：
+          * elems - 待过滤数组
+          * callback - 过滤函数. 过滤函数必须返回true 以保留元素或false 以删除元素。
+          * inv - 第三个参数是invert的意思,即过滤的逻辑跟第二个参数指定的函数的逻辑相反.
+          * 
+            如,第二个参数的逻辑如果为选择大于0的元素,那么如果三个参数为true,则将小
+            于0的元素选择出来
+          * 
+          * @param{Object} elems
+          * @param{Object} callback
+          * @param{Object} inv
+          */
         grep: function (elems, callback, inv) {
             var ret = [];
             for (var i = 0, length = elems.length; i < length; i++)
                 if (!inv != !callback(elems[i], i))
                     ret.push(elems[i]);
-
             return ret;
         },
         map: function (elems, callback) {
@@ -289,18 +306,61 @@
             }
             return ret.concat.apply([], ret);
         },
-        unique: function (array) {
-            var ret = [], done = {};
-            try {
-                for (var i = 0, length = array.length; i < length; i++) {
-                    var id = jQuery.data(array[i]);
+        data: function (key, value) {
+            var parts = key.split(".");
+            parts[1] = parts[1] ? "." + parts[1] : "";
 
-                    if (!done[id]) {
-                        done[id] = true;
-                        ret.push(array[i]);
+            if (value === undefined) {
+                var data = this.triggerHandler("getData" + parts[1] + "!", [parts[0]]);
+
+                if (data === undefined && this.length)
+                    data = ve.selector.data(this[0], key);
+
+                return data === undefined && parts[1] ?
+                    this.data(parts[0]) :
+                    data;
+            } else
+                return this.trigger("setData" + parts[1] + "!", [parts[0], value]).each(function () {
+                    ve.selector.data(this, key, value);
+                });
+        },
+        /**
+         * Array unique,该函数会同时过滤掉null与undefined
+         * @param {Array} ary 需要进行unique的数组.
+         * @return {Array} 返回没有重复元素的新的数组，
+         */
+        unique: function (array) {
+            var i = 0, l = array.length,
+               type, p, ret = [],
+               guid = (Math.random() * 1E18).toString(32) + (+new Date).toString(32),
+               objects = [],
+               reg = { //Primitive类型值Register
+                   'string': {},
+                   'boolean': {},
+                   'number': {}
+               };
+            try {
+                for (; i < l; i++) {
+                    p = array[i];
+                    if (p == null) continue;
+                    type = typeof p;
+                    if (reg[type]) { //PrimitiveType
+                        if (!reg[type].hasOwnProperty(p)) {
+                            reg[type][p] = 1;
+                            ret.push(p);
+                        }
+                    } else { //RefType
+                        if (p[guid]) continue;
+                        p[guid] = 1;
+                        objects.push(p);
+                        ret.push(p);
                     }
                 }
-
+                i = objects.length;
+                while (i--) {//再将对象上的guid清理掉
+                    p = objects[i];
+                    delete p[guid];
+                }
             } catch (e) {
                 ret = array;
             }
@@ -314,8 +374,9 @@
                 elem.tagName && elem.ownerDocument && !elem.ownerDocument.body;
         },
         //检测一个对象是不是Function
+        //修正
         isFunction: function (fn) {
-            return !!fn && typeof fn != "string" && !fn.nodeName && fn.constructor != Array && /^[\s[]?function/.test(fn + "");
+            return typeof fn === 'function';
         },
         each: function(object, callback, args) {
             var name, i = 0, length = object.length;
@@ -399,14 +460,6 @@
                 button: function (a) { return "button" == a.type || ve.selector.nodeName(a, "button"); },
                 input: function (a) { return /input|select|textarea|button/i.test(a.nodeName); },
 
-                // :has()
-                has: function (a, i, m) { return ve.selector.find(m[3], a).length; },
-
-                // :header
-                header: function (a) { return /h\d/i.test(a.nodeName); },
-
-                // :animated
-                animated: function (a) { return ve.selector.grep(ve.selector.timers, function (fn) { return a == fn.elem; }).length; }
             }
         },
 
