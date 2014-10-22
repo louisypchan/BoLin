@@ -6,8 +6,8 @@
     <script type="text/javascript" src="../../ve.js"></script>
 
     <script type="text/javascript">
-        $.use(["tests/test"], function(test){
-            console.log(test);
+        $.use(["tests/amd/amdDeps", "tests/amd/amdObj"], function(a1, a2){
+            a1.test(a2);
         });
     </script>
 </head>
