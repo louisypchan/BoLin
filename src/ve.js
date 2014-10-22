@@ -73,9 +73,9 @@
                 node.detachEvent(ieEventName, handler);
             }
         }else{
-            node.addEventListener(eventName, handler);
+            node.addEventListener(eventName, handler, false);
             return function(){
-                node.detachEvent(ieEventName, handler);
+                node.removeEventListener(eventName, handler, false);
             }
         }
     };
@@ -717,15 +717,16 @@
              *A hash:(mid) --> (module-object) the module namespace
              *The module-object can refer to Module class
              */
-            mods : {},
+            mods : {
+                "lang" : new Module({mid:"lang", executed : 4}),
+                "json" : new Module({mid : "lang", executed : 4}),
+                "public" : new Module({mid:"public", executed : 4}),
+                "module"  :  new Module({mid:"module", executed : 4})
+            },
             /**
              * Stores the modules which will be initialized at the end of laoder initialization
              */
             deferMods : [],
-
-            requireModule : new Module({mid:"require", executed : 4}),
-            exportsModule : new Module({mid:"exports", executed : 4}),
-            moduleModule : new Module({mid:"module", executed : 4}),
 
             guard : {
                 checkComplete : function(/*Function*/process){
@@ -839,6 +840,9 @@
 
                 /**
                  *
+                 * Spring 1: we won't handle any cache mechanism here
+                 * Spring 2: Add a configure attribute to handle a set of resources which forced to refresh by version
+                 * Spring 3: TODO:
                  * @param cfg
                  * @param boot
                  * @param refMod
@@ -889,10 +893,13 @@
                             });
                             if(!mod.executed){
                                 // some deps weren't on board or circular dependency detected and strict; therefore, push into the execQ
-                                v.__AMD.push(mod);
+                                v.__AMD.execQ.push(mod);
                             }
                             v.__AMD.guard.monitor();
                         }
+                    },
+                    exposeLang : function(){
+                        return v.__lang;
                     }
                 },
                 /**
@@ -915,7 +922,7 @@
                     node.type = "text/javascript";
                     node.charset = "utf-8";
                     node.src = url;
-                    this.context.insertPointSibling.parentNode.insertBefore(node, this.context.insertPointSibling);
+                    v.__AMD.insertPointSibling.parentNode.insertBefore(node, v.__AMD.insertPointSibling);
                     return node;
                 },
                 /**
@@ -943,15 +950,25 @@
                  * @param factory
                  */
                 defineModule : function(module, deps, factory){
-                    var module = module.mid;
                     if(module.attached == v.__AMD.state.ARRIVED){
+                        //TODO:
                         throw new Error("module multiple define ");
                         return module;
                     }
                     //mix
                     v.__lang.mix(module,{
                         deps : deps,
-                        factory : factory
+                        factory : factory,
+                        //common js module identifier
+                        cjs : {
+                            "id" : module.mid,
+                            "uri" : module.url,
+                            "public" : (module.result = {}),
+                            //
+                            "config" : function(){
+                                return module.config;
+                            }
+                        }
                     });
                     //resolve deps with respect to this module
                     for(var i = 0; deps[i]; i++){
@@ -999,16 +1016,22 @@
              *Attach the dependencies of the module
              */
             attachDeps : function(){
-                logger.debug(arguments.callee);
+                //logger.debug(arguments.callee);
+                logger.debug("call attachDeps");
+                var that = this;
                 this.context.guard.checkComplete(v.__lang.ride(this, function(){
-                    v.__lang.forEach(this.deps, v.__lang.ride(this, this.attach));
+                    logger.debug("guard -- >checkComplete");
+                    v.__lang.forEach(that.deps, function(dep){
+                        logger.debug("inner loop to attch module");
+                        dep.attach();
+                    });
                 }));
             },
             /**
              * Attach the module
-             * TODO: BUG here
              */
             attach : function(){
+                logger.debug("attach module");
                 var mid = this.mid, url = this.url;
                 if(this.executed || this.attached || this.context.hangQ[mid]||
                     (this.url && (this.pack && this.context.hangQ[this.url] === this.pack) ||
@@ -1046,7 +1069,7 @@
                     return this.context.abortExec;
                 }
                 if(!this.executed){
-                    if(!this.factory){
+                    if(this.factory === noop){
                         return this.context.abortExec;
                     }
                     var mid = this.mid,
@@ -1054,8 +1077,17 @@
                         arg, argRS, args = [], i = 0;
                     this.executed = this.context.state.EXECUTING;
                     while((arg = deps[i++])){
-                        //TODO:
-                        argRS = arg.execute(strict);
+                        // for circular dependencies, assume the first module encountered was executed OK
+                        // modules that circularly depend on a module that has not run its factory will get
+                        // an empty object(module.result = {}). They can take a reference to this object and/or
+                        // add properties to it. When the module finally runs its factory, the factory can
+                        // read/write/replace this object. Notice that so long as the object isn't replaced, any
+                        // reference taken earlier while walking the deps list is still valid.
+                        argRS = (arg === this.context.mods["lang"]) ? this.context.pkg.context.exposeLang() :
+                                (arg === this.context.mods["public"]) ? (this.cjs && this.cjs.public) :
+                                (arg === this.context.mods["module"]) ? this.cjs : arg.execute(strict);
+
+                        //
                         if(argRS === this.context.abortExec){
                             this.executed = this.context.state.INIT;
                             return this.context.abortExec;
@@ -1074,7 +1106,7 @@
              */
             runFactory : function(args){
                 var result = v.__lang.isFunction(this.factory) ? this.factory.apply(null, args) : this.factory;
-                this.result = result ? result : {};
+                this.result = result ? result : (this.cjs ? this.cjs["public"] : {});
             },
 
             done : function(){
@@ -1096,13 +1128,14 @@
             }
         });
 
+        //var logger = v.logger("Bolin/AMD");
         /**
          *
          * @type {{defalutDeps: string[], use: use, add: add}}
          */
         v.__AMD.BoLin = {
 
-            defalutDeps : ["require", "exports", "module"],
+            defalutDeps : ["lang", "public", "json", "module"],
 
             /**
              * Summary:
@@ -1143,9 +1176,9 @@
 
                 if(args[1] === this.defalutDeps){
                     //Remove comments from the callback string,
-                    //look for require calls, and pull them into the dependencies,
+                    //look for use calls, and pull them into the dependencies,
                     //but only if there are function args.
-                    args[2].toString().replace(/(\/\*([\s\S]*?)\*\/|\/\/(.*)$)/mg, "").replace(/[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g, function(match, dep){
+                    args[2].toString().replace(/(\/\*([\s\S]*?)\*\/|\/\/(.*)$)/mg, "").replace(/[^.]\s*use\s*\(\s*["']([^'"\s]+)["']\s*\)/g, function(match, dep){
                         //
                         args[1].push(dep);
                     });
@@ -1204,8 +1237,7 @@
     //init default config for loader
     ve.__AMD.pkg.configure(ve.__AMD.defaultCfg);
     ve.__AMD.pkg.configure(ve.__AMD.sniffCfg);
-    if(typeof window.$ === "undefined"){
-        //filter private methods
-        win.$ = ve.__lang.safeMix(win.$||{}, ve);
-    }
+
+    //expose to public
+    win.$ = win.veeb = ve.__lang.safeMix(win.$||{}, ve);
 })(window);
