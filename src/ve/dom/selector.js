@@ -1,6 +1,7 @@
 ﻿/*
      选择器
-     引用: 基于jquery 1.2.6 部分代码 及一些修正
+     引用: 基于jquery 1.2.6 部分代码 
+     及一些修正整理
 */
 
 (function () {
@@ -8,7 +9,7 @@
     if (typeof window.ve === "undefined") {
         window.ve = {};
     }
-    ve.selector = function(selector, context) {
+    ve.selector = function (selector, context) {
         return new ve.selector.fn.init(selector, context);
     };
     //一个检测HTML字符串和ID字符串的简单方法.
@@ -21,7 +22,8 @@
     ve.selector.fn = ve.selector.prototype = {
         init: function (selector, context) {
             selector = selector || document;
-            if (selector.nodeType) { //是Dom元素就应该有一个nodeType
+            //是Dom元素就应该有一个nodeType
+            if (selector.nodeType) { 
                 this[0] = selector;
                 this.length = 1;
                 return this;
@@ -58,14 +60,13 @@
             //else if (ve.selector.isFunction(selector)) {
             //    return ve.selector(document)[ve.selector.ready ? "ready" : "load"](selector);
             //}
-
             return this.setArray(ve.selector.makeArray(selector));
         },
         //匹配元素集合长度,初始设置为0
         length: 0,
         setArray: function (elems) {
             this.length = 0;
-            //追加到当前的对象
+            //追加到当前对象
             Array.prototype.push.apply(this, elems);
             return this;
         },
@@ -106,6 +107,7 @@
         mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
     };
 
+    //重复 等整合删除
     ve.selector.extend = ve.selector.fn.extend = function () {
         // copy reference to target object
         var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
@@ -462,7 +464,6 @@
 
             }
         },
-
         // The regular expressions that power the parsing engine
         parse: [
             // Match: [@value='test'], [@foo]
@@ -474,19 +475,6 @@
             // Match: :efnn, :last-child, #id, .class
             new RegExp("^([:.#]*)(" + chars + "+)")
         ],
-
-        multiFilter: function (expr, elems, not) {
-            var old, cur = [];
-
-            while (expr && expr != old) {
-                old = expr;
-                var f = ve.selector.filter(expr, elems, not);
-                expr = f.t.replace(/^\s*,\s*/, "");
-                cur = not ? elems = f.r : ve.selector.merge(cur, f.r);
-            }
-
-            return cur;
-        },
         find: function (t, context) {
             // Quickly handle non-string expressions
             if (typeof t != "string")
@@ -822,4 +810,5 @@
             return r;
         }
     });
+    
 })();
