@@ -1096,7 +1096,7 @@
                     }
                 }
                 //delete references to sythentic modules
-                if(/^require\*/.test(this.mid)){
+                if(/^use\*/.test(this.mid)){
                     delete this.context.mods[this.mid];
                 }
             }
