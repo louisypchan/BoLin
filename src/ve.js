@@ -36,8 +36,10 @@
     //TODO: replace the version in build phase
     ve.version = "${version}";
 
-    //configurations for VE
-    ve.Cfg = {};
+    //user configurations for VE
+    ve.Cfg = {
+        debug : false //by default, turn off the debug mode
+    };
 
     //Currently now it is browser-base framework
     ve.isNative = false;
@@ -52,6 +54,10 @@
     ve.uid = function() {
         return "_" + ve.__uidSeed++;
     };
+    //The locale to assume for loading localized resources in this page,
+    //specified according to [RFC 3066](http://www.ietf.org/rfc/rfc3066.txt).
+    //Must be specified entirely in lowercase,e.g. `en-us` and `zh-cn`.
+    ve.locale = "zh-cn";
 
     (function(){
         //populate into types
@@ -82,11 +88,11 @@
 
     //+++++++++++++++++++++++++define a minimal library to help build the loader+++++++++++++++++++++++++++
     (function(v){
-        //internal, can be reused in lang.js
+        //internal, can be reused in kernel.js
         v.__lang = {
 
             type : function(it){
-                return it == null ? it + "" : (typeof it === "object" || typeof it === "function" ) ? ve._types[toString.call(it)]||"object" : typeof it;
+                return it == null ? it + "" : (typeof it === "object" || typeof it === "function" ) ? v.__types[toString.call(it)]||"object" : typeof it;
             },
 
             isEmpty : function(it){
@@ -98,7 +104,7 @@
             },
 
             isFunction : function(it){
-                return toString.call(it) == "[object Function]";
+                return this.type(it) === "function";
             },
 
             isString : function(it){
@@ -106,7 +112,7 @@
             },
 
             isArray : function(it) {
-                return toString.call(it) == "[object Array]";
+                return this.type(it) === "array";
             },
 
             isPlainObject : function(it){
@@ -229,6 +235,21 @@
                 }
 
                 return target;
+            },
+            getProp : function(parts, create, context){
+                var p, i = 0, rs = context;
+                if(!rs){
+                    if(!parts.length){
+                        return window;
+                    }else{
+                        p = parts[i++];
+                        rs = window[p] || (create ? window[p] = {} : undefined);
+                    }
+                }
+                while(rs && (p = parts[i++])){
+                    rs = (p in rs ? rs[p] : (create ? rs[p] = {} : undefined));
+                }
+                return rs;
             }
         };
     })(ve);
@@ -248,50 +269,6 @@
         return v > 4 ? v : !v;
     })();
     ve.browser.opera = typeof window.opera !== "undefined";
-
-    //+++++++++++++++++++++++++something about logger start+++++++++++++++++++++++++++
-    (function(v){
-        var loggerLevelEnum = {
-                'debug' : 1,
-                'info'  : 2,
-                'warn'  : 3,
-                'error' : 4
-            },
-            logger = function(logFrom){
-                var obj = {};
-                for(var E in loggerLevelEnum){
-                    (function (obj, E) {
-                        obj[E] = function (msg) {
-                            return v.log(msg, E, logFrom);
-                        };
-                    })(obj, E);
-                }
-                return obj;
-            };
-        /**
-         * log function
-         * Currently we log all of the debug messages, won't handle exclusive cases
-         * @param msg
-         * @param category
-         * @param logFrom
-         */
-        v.log = function (msg, category, logFrom){
-            var hit = true;
-            //set debug to be a defualt category
-            category = category||'debug';
-            if(logFrom && hit){
-                msg = '[' + logFrom + '] : ' + msg;
-            }
-            //
-            if(typeof console !== 'undefined' && console.log && hit){
-                console[category && console[category] ? category : 'log'](msg);
-            }
-        };
-        v.logger = function(logFrom){
-            return logger(logFrom);
-        };
-    })(ve);
-    //+++++++++++++++++++++++++something about logger end+++++++++++++++++++++++++++
 
     //+++++++++++++++++++++++++something about JSON start+++++++++++++++++++++++++++
     (function(v){
@@ -516,9 +493,11 @@
     //+++++++++++++++++++++++++something about loader & micro events API & timer end+++++++++++++++++++++++++++
     //+++++++++++++++++++++++++something about AMD start+++++++++++++++++++++++++++
     (function(v){
-
-        var logger = v.logger("Bolin/Module");
-
+        /**
+         *
+         * @type {{state: {ERROR: number, ABANDON: number, INIT: number, REQUESTED: number, ARRIVED: number, EXECUTING: number, EXECUTED: number}}}
+         * @private
+         */
         v.__AMD = {
             //the states of module
             state : {
@@ -545,7 +524,6 @@
          * @constructor
          */
         var Module = function(cfg){
-            logger.debug("constructor");
             this.context = v.__AMD;
             this.pid = "";
             this.mid = "";
@@ -572,11 +550,12 @@
             var isRelative = /^\./.test(name), match, pid, pack, rs, url, midInPackage;
             if(/(^\/)|(\:)|(\.js$)/.test(name) || (isRelative && !refMod)){
                 //not a module but just a URL of some sort
+                //
                 return  new Module({
                     pid : 0,
                     mid : name,
                     pack : 0,
-                    url : name
+                    url : /\.js$/.test(name) ? name : name + ".js"
                 });
             }else{
                 //relative to reference module
@@ -622,6 +601,7 @@
             // if result is not absolute, add baseUrl
             if(!(/(^\/)|(\:)/.test(url))){
                 if(pid){
+                    //TODO:
                     url = pack.baseUrl + url;
                 }else{
                     url = v.__AMD.baseUrl + url;
@@ -697,10 +677,7 @@
 
                 cache : false, //dev mode : false
 
-                pkgs : [{
-                    "name" : "ve",
-                    "path" : "."
-                }],
+                pkgs : [],
                 async : true,  //do we need it????
 
                 timeout : 7000  //by default is 7 seconds
@@ -719,7 +696,6 @@
              */
             mods : {
                 "lang" : new Module({mid:"lang", executed : 4}),
-                "json" : new Module({mid : "lang", executed : 4}),
                 "public" : new Module({mid:"public", executed : 4}),
                 "module"  :  new Module({mid:"module", executed : 4})
             },
@@ -848,6 +824,7 @@
                  * @param refMod
                  */
                 configure : function(cfg, boot, refMod){
+                    if(!cfg || cfg.length == 0) return;
                     //timeout timer
                     v.__AMD.timeout = cfg['timeout']|| v.__AMD.defaultCfg.timeout;
                     //if true, will generate a random number along with module to flush the cache
@@ -865,6 +842,8 @@
                         }
                         v.__lang.aliases.push([new RegExp("^" + aliase[0] + "$"), aliase[1]]);
                     });
+
+                    v.__lang.getProp(["__debug"], true, v).state = cfg['debug'] || 0;
                 },
 
                 context : {
@@ -1016,13 +995,9 @@
              *Attach the dependencies of the module
              */
             attachDeps : function(){
-                //logger.debug(arguments.callee);
-                logger.debug("call attachDeps");
                 var that = this;
                 this.context.guard.checkComplete(v.__lang.ride(this, function(){
-                    logger.debug("guard -- >checkComplete");
                     v.__lang.forEach(that.deps, function(dep){
-                        logger.debug("inner loop to attch module");
                         dep.attach();
                     });
                 }));
@@ -1031,7 +1006,6 @@
              * Attach the module
              */
             attach : function(){
-                logger.debug("attach module");
                 var mid = this.mid, url = this.url;
                 if(this.executed || this.attached || this.context.hangQ[mid]||
                     (this.url && (this.pack && this.context.hangQ[this.url] === this.pack) ||
@@ -1135,7 +1109,7 @@
          */
         v.__AMD.BoLin = {
 
-            defalutDeps : ["lang", "public", "json", "module"],
+            defalutDeps : ["lang", "public", "module"],
 
             /**
              * Summary:
@@ -1149,7 +1123,6 @@
              * @param factory
              */
             use : function(name, deps, factory){
-                logger.debug("call use");
                 v.__AMD.pkg.context.init(name, deps, factory);
             },
             /**
@@ -1161,9 +1134,6 @@
              * eg: def("lang");
              */
             add : function(name, deps, factory){
-
-                logger.debug("call add");
-
                 var l = arguments.length,
                     args = [0, name, deps];
                 if(l == 1){
@@ -1226,18 +1196,75 @@
     /**
      * An engine to boot the framework
      */
-
     ve.boot = {
-
-        config : function(config){
-
+        start : function(config){
+            ve.__AMD.pkg.configure(ve.__AMD.defaultCfg);
+            ve.__AMD.pkg.configure(config);
+            ve.__AMD.pkg.configure(ve.__AMD.sniffCfg);
         }
     };
 
-    //init default config for loader
-    ve.__AMD.pkg.configure(ve.__AMD.defaultCfg);
-    ve.__AMD.pkg.configure(ve.__AMD.sniffCfg);
+    ve.boot.start(ve.Cfg);
+    //+++++++++++++++++++++++++something about logger start+++++++++++++++++++++++++++
+    (function(v){
+        typeof console !== "undefined" || (win.console = {});
+        var mds = [
+            "assert", "count", "debug", "dir", "dirxml", "error", "group",
+            "groupEnd", "info", "profile", "profileEnd", "time", "timeEnd",
+            "trace", "warn", "log"
+        ];
+        var tn, i = 0, origins = {};
+        while((tn = mds[i++])){
+            if(!console[tn]){
+                (function(method){
+                    console[method] = ("log" in console) && v.__debug.state ? function(){
+                        var a = Array.prototype.slice.call(arguments);
+                        a.unshift(method + ":");
+                        console["log"](a.join(" "));
+                    } : noop;
+
+                })(tn);
+            }else{
+               if(!v.__debug.state){
+                   console[tn] = noop;
+               }
+            }
+        }
+    })(ve);
+    //+++++++++++++++++++++++++something about logger end+++++++++++++++++++++++++++
+
+    //+++++++++++++++++++++++++something about common methods start+++++++++++++++++++++++++++
+    /**
+     * Log a debug message to indicate that a behavior has been deprecated.
+     *
+     * @param behaviour : The API or behavior being deprecated.
+     * @param extra     : Text to append to the message. Often provides advice on a
+     *                    new function or facility to achieve the same goal during
+     *                    the deprecation period.
+     * @param removal   : Text to indicate when in the future the behavior will be removed. Usually a version number.
+     */
+    ve.deprecated = function(/*String*/ behaviour, /*String?*/ extra, /*String?*/ removal){
+        var message = "DEPRECATED : " + behaviour;
+        if(extra){ message += " " + extra; }
+        if(removal){ message += " -- will be removed in version: " + removal; }
+        console.warn(message);
+    };
+    /**
+     * This can be used to mark a function, file, or module as
+     * experimental.	 Experimental code is not ready to be used, and the
+     * APIs are subject to change without notice.	Experimental code may be
+     * completed deleted without going through the normal deprecation process.
+     * @param moduleName : The name of a module, or the name of a module file or a specific function
+     * @param extra      : some additional message for the user
+     */
+    ve.experimental = function(/* String */ moduleName, /* String? */ extra){
+        var message = "EXPERIMENTAL: " + moduleName + " -- APIs subject to change without notice.";
+        if(extra){ message += " " + extra;}
+        console.warn(message);
+    };
+    //+++++++++++++++++++++++++something about common methods end+++++++++++++++++++++++++++
 
     //expose to public
     win.$ = win.veeb = ve.__lang.safeMix(win.$||{}, ve);
+
 })(window);
