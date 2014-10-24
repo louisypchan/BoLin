@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="../../ve.js" vecfg="debug:1"></script>
+    <script type="text/javascript">
+        //array
+        $.use(["ve/dom/attribute"], function (attribute) {
+            var $div1 = document.getElementById('div1');
+            var s = attribute.get($div1, 'asdf');
+            // alert(s);
+            alert( attribute.get($div1, 'asdf'))
+
+        });
+    </script>
+</head>
+<body>
+    <div id="div1" asdf="1234">asdf</div>
+    <div id="div1">asdf</div>
+
+</body>
+</html>

@@ -1,19 +1,32 @@
-﻿/*
-     DOM属性方法
-     引用: 基于jquery 1.2.6 部分代码 
-     及一些修正整理
-*/
+﻿/****************************************************************************
+ Copyright (c) 2014 chenchangwen
+ http://www.ve.cn
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+/**
+ * Created by chenchangwen on 2014/10/24
+ */
 
-(function () {
-
-    if (typeof window.ve === "undefined") {
-        window.ve = {};
-    }
+$.add(["ve/core/kernel"], function(kernel) {
 
     var userAgent = navigator.userAgent.toLowerCase();
 
     var util = {
-        browser: {
+        browser: { 
             fnrsion: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
             safari: /webkit/.test(userAgent),
             opera: /opera/.test(userAgent),
@@ -22,8 +35,9 @@
         }
     }
     var styleFloat = util.browser.msie ? "styleFloat" : "cssFloat";
- 
-    util.props= {
+    var defaultView = document.defaultView || {};
+
+    util.props = {
         "for": "htmlFor",
         "class": "className",
         "float": styleFloat,
@@ -33,32 +47,7 @@
         maxlength: "maxLength",
         cellspacing: "cellSpacing"
     }
-   
-    var exclude = /z-?index|font-?weight|opacity|zoom|line-?height/i;
 
-    function isXMLDoc(elem) {
-        return elem.documentElement && !elem.body ||
-               elem.tagName && elem.ownerDocument && !elem.ownerDocument.body;
-    }
-    //检测一个对象是不是Function
-    //修正
-    function isFunction(fn) {
-        return typeof fn === 'function';
-
-    }
-
-    function nodeName(elem, name) {
-        return elem.nodeName && elem.nodeName.toUpperCase() == name.toUpperCase();
-    }
-
-    //通用属性
-    function prop(elem, value, type, i, name) {
-        if (isFunction(value))
-            value = value.call(elem, i);
-        return value && value.constructor == Number && type == "curCSS" && !exclude.test(name) ?
-            value + "px" :
-            value;
-    }
     //循环
     function each(object, callback, args) {
         var name, i = 0, length = object.length;
@@ -91,7 +80,7 @@
         if (!elem || elem.nodeType == 3 || elem.nodeType == 8)
             return undefined;
 
-        var notxml = !isXMLDoc(elem),
+        var notxml = !kernel.isXMLDoc(elem),
             // Whether we are setting (or getting)
             set = value !== undefined,
             msie = util.browser.msie;
@@ -114,20 +103,20 @@
             if (name in elem && notxml && !special) {
                 if (set) {
                     // We can't allow the type property to be changed (since it causes problems in IE)
-                    if (name == "type" && nodeName(elem, "input") && elem.parentNode)
+                    if (name == "type" && kernel.nodeName(elem, "input") && elem.parentNode)
                         throw "type property can't be changed";
 
                     elem[name] = value;
                 }
-                 // browsers index elements by id/name on forms, give priority to attributes.
-                if (nodeName(elem, "form") && elem.getAttributeNode(name))
+                // browsers index elements by id/name on forms, give priority to attributes.
+                if (kernel.nodeName(elem, "form") && elem.getAttributeNode(name))
                     return elem.getAttributeNode(name).nodeValue;
 
                 return elem[name];
             }
 
             if (msie && notxml && name == "style")
-                return ve.attribute.attr(elem.style, "cssText", value);
+                return attribute.attr(elem.style, "cssText", value);
 
             if (set) {
                 // convert the value to a string (all browsers do this but IE) see #1070
@@ -160,25 +149,135 @@
                 "";
         }
 
-        name = name.replace(/-([a-z])/ig, function(all, letter) {
+        name = name.replace(/-([a-z])/ig, function (all, letter) {
             return letter.toUpperCase();
         });
         if (set)
             elem[name] = value;
         return elem[name];
     };
-    
+
+    function curCSS(elem, name, force) {
+        var ret, style = elem.style;
+
+        // A helper method for determining if an element's values are broken
+        function color(elem) {
+            if (!util.browser.safari)
+                return false;
+
+            // defaultView is cached
+            var ret = defaultView.getComputedStyle(elem, null);
+            return !ret || ret.getPropertyValue("color") == "";
+        }
+
+        // We need to handle opacity special in IE
+        if (name == "opacity" && util.browser.msie) {
+            ret = attr(style, "opacity");
+
+            return ret == "" ?
+                "1" :
+                ret;
+        }
+        // Opera sometimes will give the wrong display answer, this fixes it, see #2037
+        if (util.browser.opera && name == "display") {
+            var save = style.outline;
+            style.outline = "0 solid black";
+            style.outline = save;
+        }
+
+        // Make sure we're using the right name for getting the float value
+        if (name.match(/float/i))
+            name = styleFloat;
+
+        if (!force && style && style[name])
+            ret = style[name];
+
+        else if (defaultView.getComputedStyle) {
+
+            // Only "float" is needed here
+            if (name.match(/float/i))
+                name = "float";
+
+            name = name.replace(/([A-Z])/g, "-$1").toLowerCase();
+
+            var computedStyle = defaultView.getComputedStyle(elem, null);
+
+            if (computedStyle && !color(elem))
+                ret = computedStyle.getPropertyValue(name);
+// If the element isn't reporting its values properly in Safari
+            // then some display: none elements are involved
+            else {
+                var swap = [], stack = [], a = elem, i = 0;
+
+                // Locate all of the parent display: none elements
+                for (; a && color(a); a = a.parentNode)
+                    stack.unshift(a);
+
+                // Go through and make them visible, but in reverse
+                // (It would be better if we knew the exact display type that they had)
+                for (; i < stack.length; i++)
+                    if (color(stack[i])) {
+                        swap[i] = stack[i].style.display;
+                        stack[i].style.display = "block";
+                    }
+
+                // Since we flip the display style, we have to handle that
+                // one special, otherwise get the value
+                ret = name == "display" && swap[stack.length - 1] != null ?
+                    "none" :
+                    (computedStyle && computedStyle.getPropertyValue(name)) || "";
+
+                // Finally, revert the display styles back
+                for (i = 0; i < swap.length; i++)
+                    if (swap[i] != null)
+                        stack[i].style.display = swap[i];
+            }
+
+            // We should always get a number back from opacity
+            if (name == "opacity" && ret == "")
+                ret = "1";
+
+        } else if (elem.currentStyle) {
+            var camelCase = name.replace(/\-(\w)/g, function(all, letter) {
+                return letter.toUpperCase();
+            });
+
+            ret = elem.currentStyle[name] || elem.currentStyle[camelCase];
+
+            // From the awesome hack by Dean Edwards
+            // http://erik.eae.net/archives/2007/07/27/18.54.15/#comment-102291
+
+            // If we're not dealing with a regular pixel number
+            // but a number that has a weird ending, we need to convert it to pixels
+            if (!/^\d+(px)?$/i.test(ret) && /^\d/.test(ret)) {
+                // Remember the original values
+                var left = style.left, rsLeft = elem.runtimeStyle.left;
+
+                // Put in the new values to get a computed value out
+                elem.runtimeStyle.left = elem.currentStyle.left;
+                style.left = ret || 0;
+                ret = style.pixelLeft + "px";
+
+                // Revert the changed values
+                style.left = left;
+                elem.runtimeStyle.left = rsLeft;
+            }
+        }
+        return ret;
+    }
+
     //内部方法
-    var tempFnObj= {
+    var tempFnObj = {
         attr: attr,
-        each: each
+        each: each,
+        curCSS: curCSS
     }
 
     var privateObj = {
         each: function (callback, args) {
             return each(this, callback, args);
         },
-        attr: function (obj,name, value, type) {
+        attr: function (obj, name, value, type) {
             obj = obj || document;
             if (obj.nodeType) {
                 this[0] = obj;
@@ -203,25 +302,18 @@
                         type ?
                             this.style :
                             this,
-                        name, prop(this, options[name], type, i, name)
+                        name, kernel.prop(this, options[name], type, i, name)
                     );
             });
         }
     };
-
-    ve.attribute = {
-        attr: {
-            get: function (obj, name, value, type) {
-                return privateObj.attr(obj, name, value, type);
-            },
-            set: function (obj, name, value, type) {
-                privateObj.attr(obj, name, value, type);
-            }
+    var attribute = {
+        get: function (obj, name, value, type) {
+            return privateObj.attr(obj, name, value, type);
+        },
+        set: function (obj, name, value, type) {
+            privateObj.attr(obj, name, value, type);
         }
     }
-})();
-
-
- 
-
-
+    return attribute;
+});

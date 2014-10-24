@@ -1,16 +1,30 @@
-﻿/*
-     选择器
-     引用: 基于jquery 1.2.6 部分代码 
-     及一些修正整理
-*/
+﻿/****************************************************************************
+ Copyright (c) 2014 chenchangwen
+ http://www.ve.cn
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+/**
+ * Created by chenchangwen on 2014/10/24
+ */
 
-(function () {
- 
-    if (typeof window.ve === "undefined") {
-        window.ve = {};
-    }
-    ve.selector = function (selector, context) {
-        return new ve.selector.fn.init(selector, context);
+$.add(["ve/core/kernel"], function (kernel) {
+
+    var queryEngine = function (selector, context) {
+        return new queryEngine.fn.init(selector, context);
     };
     //一个检测HTML字符串和ID字符串的简单方法.
     var quickExpr = /^[^<]*(<(.|\s)+>)[^>]*$|^#(\w+)$/,
@@ -18,12 +32,12 @@
         isSimple = /^.[^:#\[\.]*$/,
 
         undefined;
- 
-    ve.selector.fn = ve.selector.prototype = {
+
+    queryEngine.fn = queryEngine.prototype = {
         init: function (selector, context) {
             selector = selector || document;
             //是Dom元素就应该有一个nodeType
-            if (selector.nodeType) { 
+            if (selector.nodeType) {
                 this[0] = selector;
                 this.length = 1;
                 return this;
@@ -39,28 +53,28 @@
                 if (match && (match[1] || !context)) {
                     //clean将字符串转化成真正的DOM元素然后装在一个数组里面,最后返回给selector
                     if (match[1]) {
-                        selector = ve.selector.clean([match[1]], context);
+                        selector = queryEngine.clean([match[1]], context);
                     } else {
                         // 如果是#id, 那就调用JavaScript原生的getElementById
                         var elem = document.getElementById(match[3]);
                         if (elem) {
                             if (elem.id != match[3]) {
-                                return ve.selector.find(selector);
+                                return queryEngine.find(selector);
                             }
-                            return ve.selector(elem);
+                            return queryEngine(elem);
                         }
                         //没获得元素,返回空
                         selector = [];
                     }
                 } else {
                     //如果是不正确乱七八糟的则直接调用find
-                    return ve.selector(context).find(selector);
+                    return queryEngine(context).find(selector);
                 }
             }
-            //else if (ve.selector.isFunction(selector)) {
-            //    return ve.selector(document)[ve.selector.ready ? "ready" : "load"](selector);
+            //else if (queryEngine.isFunction(selector)) {
+            //    return queryEngine(document)[queryEngine.ready ? "ready" : "load"](selector);
             //}
-            return this.setArray(ve.selector.makeArray(selector));
+            return this.setArray(queryEngine.makeArray(selector));
         },
         //匹配元素集合长度,初始设置为0
         length: 0,
@@ -70,36 +84,36 @@
             Array.prototype.push.apply(this, elems);
             return this;
         },
-        each: function(callback, args) {
-            return ve.selector.each(this, callback, args);
+        each: function (callback, args) {
+            return queryEngine.each(this, callback, args);
         },
         pushStack: function (elems) {
-            var ret = ve.selector(elems);
+            var ret = queryEngine(elems);
             ret.prevObject = this;
             return ret;
         },
         find: function (selector) {
-            var elems = ve.selector.map(this, function (elem) {
-                return ve.selector.find(selector, elem);
+            var elems = queryEngine.map(this, function (elem) {
+                return queryEngine.find(selector, elem);
             });
 
             return this.pushStack(/[^+>] [^+>]/.test(selector) || selector.indexOf("..") > -1 ?
-                ve.selector.unique(elems) :
+                queryEngine.unique(elems) :
                 elems);
         },
         map: function (callback) {
-            return this.pushStack(ve.selector.map(this, function (elem, i) {
+            return this.pushStack(queryEngine.map(this, function (elem, i) {
                 return callback.call(elem, i, elem);
             }));
         },
     }
 
-    ve.selector.fn.init.prototype = ve.selector.fn;
+    queryEngine.fn.init.prototype = queryEngine.fn;
 
     //用户代理
     var userAgent = navigator.userAgent.toLowerCase();
 
-    ve.selector.browser = {
+    queryEngine.browser = {
         fnrsion: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
         safari: /webkit/.test(userAgent),
         opera: /opera/.test(userAgent),
@@ -107,57 +121,11 @@
         mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent)
     };
 
-    //重复 等整合删除
-    ve.selector.extend = ve.selector.fn.extend = function () {
-        // copy reference to target object
-        var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
 
-        // Handle a deep copy situation
-        if (target.constructor == Boolean) {
-            deep = target;
-            target = arguments[1] || {};
-            // skip the boolean and the target
-            i = 2;
-        }
-
-        // Handle case when target is a string or something (possible in deep copy)
-        if (typeof target != "object" && typeof target != "function")
-            target = {};
-
-        // extend ve.selector itself if only one argument is passed
-        if (length == i) {
-            target = this;
-            --i;
-        }
-
-        for (; i < length; i++)
-        // Only deal with non-null/undefined values
-            if ((options = arguments[i]) != null)
-            // Extend the base object
-                for (var name in options) {
-                    var src = target[name], copy = options[name];
-
-                    // Prefnnt nefnr-ending loop
-                    if (target === copy)
-                        continue;
-
-                    // Recurse if we're merging object values
-                    if (deep && copy && typeof copy == "object" && !copy.nodeType)
-                        target[name] = ve.selector.extend(deep,
-                            // Nefnr mofn original objects, clone them
-                            src || (copy.length != null ? [] : {}), copy);
-// Don't bring in undefined values
-                    else if (copy !== undefined)
-                        target[name] = copy;
-                }
-
-        // Return the modified object
-        return target;
-    };
 
     //------------------静态核心函数----------------//
-    //这些静态函数为ve.selector对象实例方法或者其他需要的函数所调用.ve.selector
-    ve.selector.extend({
+    //这些静态函数为queryEngine对象实例方法或者其他需要的函数所调用.queryEngine
+    kernel.extend(queryEngine, {
         //用一个Array克隆另外一个内容一致的数组
         makeArray: function (array) {
             var ret = [];
@@ -173,12 +141,12 @@
             }
             return ret;
         },
-       /*
-       * 判断一个元素的nodeName是不是给定的name
-       * 
-       * elem - 要判定的元素
-       * name - 看看elem.nodeName是不是这个name
-       */
+        /*
+        * 判断一个元素的nodeName是不是给定的name
+        * 
+        * elem - 要判定的元素
+        * name - 看看elem.nodeName是不是这个name
+        */
         nodeName: function (elem, name) {
             return elem.nodeName && elem.nodeName.toUpperCase() == name.toUpperCase();
         },
@@ -187,7 +155,7 @@
          */
         merge: function (first, second) {
             var i = 0, elem, pos = first.length;
-            if (ve.selector.browser.msie) {
+            if (queryEngine.browser.msie) {
                 while (elem = second[i++]) {
                     if (elem.nodeType != 8) {
                         first[pos++] = elem;
@@ -204,7 +172,7 @@
           * 如果elems是XHTML字符串,则将这些字符变成真正的DOM Element 
             然后把这些元素存储在匹配元素集合里面.
           * 
-            在ve.selector对象的构造函数中,当传入的字符串是HTML字符串时,ve.selector将会调用本
+            在queryEngine对象的构造函数中,当传入的字符串是HTML字符串时,queryEngine将会调用本
             函数来将这些字符串转化成为DOM Element.
           * 
           * @param{string} elems - 它是一个字符串.
@@ -216,7 +184,7 @@
             context = context || document;
             if (typeof context.createElement == "undefined")
                 context = context.ownerDocument || context[0] && context[0].ownerDocument || document;
-            ve.selector.each(elems, function (i, elem) {
+            queryEngine.each(elems, function (i, elem) {
                 if (!elem)
                     return;
                 if (elem.constructor == Number)
@@ -227,7 +195,7 @@
                         return tag.match(
                             /^(abbr|br|col|img|input|link|meta|param|hr|area|embed)$/i) ? all : front + "></" + tag + ">";
                     });
-                    var tags = ve.selector.trim(elem).toLowerCase(),
+                    var tags = queryEngine.trim(elem).toLowerCase(),
                         div = context.createElement("div");
                     var wrap = !tags.indexOf("<opt") && [1, "<select multiple='multiple'>", "</select>"]
                         || !tags.indexOf("<leg") && [1, "<fieldset>", "</fieldset>"]
@@ -235,11 +203,11 @@
                         || !tags.indexOf("<tr") && [2, "<table><tbody>", "</tbody></table>"]
                         || (!tags.indexOf("<td") || !tags.indexOf("<th")) && [3, "<table><tbody><tr>", "</tr></tbody></table>"]
                         || !tags.indexOf("<col") && [2, "<table><tbody></tbody><colgroup>", "</colgroup></table>"]
-                        || ve.selector.browser.msie && [1, "div<div>", "</div>"] || [0, "", ""];
+                        || queryEngine.browser.msie && [1, "div<div>", "</div>"] || [0, "", ""];
                     div.innerHTML = wrap[1] + elem + wrap[2];
                     while (wrap[0]--)
                         div = div.lastChild;
-                    if (ve.selector.browser.msie) {
+                    if (queryEngine.browser.msie) {
                         var tbody = !tags.indexOf("<table") && tags.
                             indexOf("<tbody") < 0 ?
                             div.firstChild && div.firstChild.childNodes :
@@ -248,7 +216,7 @@
                             ) < 0 ? div.childNodes : [];
 
                         for (var j = tbody.length - 1; j >= 0; --j)
-                            if (ve.selector.nodeName(tbody[j], "tbody")
+                            if (queryEngine.nodeName(tbody[j], "tbody")
                                 && !tbody[j].childNodes.length)
                                 tbody[j].parentNode.remofnChild(tbody[
                                     j]); //叫自己的parent把自己删除掉
@@ -257,23 +225,23 @@
                             div.insertBefore(context.createTextNode(
                                 elem.match(/^\s*/)[0]), div.firstChild);
                     }
-                    elem = ve.selector.makeArray(div.childNodes);
+                    elem = queryEngine.makeArray(div.childNodes);
                 }
-                if (elem.length === 0 && (!ve.selector.nodeName(elem, "form"
-                ) && !ve.selector.nodeName(elem, "select")))
+                if (elem.length === 0 && (!queryEngine.nodeName(elem, "form"
+                ) && !queryEngine.nodeName(elem, "select")))
                     return;
-                if (elem[0] == undefined || ve.selector.nodeName(elem,
+                if (elem[0] == undefined || queryEngine.nodeName(elem,
                     "form") || elem.options)
                     ret.push(elem);
                 else
-                    ret = ve.selector.merge(ret, elem);
+                    ret = queryEngine.merge(ret, elem);
             });
             return ret;
         },
-       /**
-        *将字符串头尾的" "空字符去掉
-        *@param{string} text 需要整理的字符
-        */
+        /**
+         *将字符串头尾的" "空字符去掉
+         *@param{string} text 需要整理的字符
+         */
         trim: function (text) {
             return (text || '').replace(/^\s+|\s+$/g, "");
         },
@@ -316,14 +284,14 @@
                 var data = this.triggerHandler("getData" + parts[1] + "!", [parts[0]]);
 
                 if (data === undefined && this.length)
-                    data = ve.selector.data(this[0], key);
+                    data = queryEngine.data(this[0], key);
 
                 return data === undefined && parts[1] ?
                     this.data(parts[0]) :
                     data;
             } else
                 return this.trigger("setData" + parts[1] + "!", [parts[0], value]).each(function () {
-                    ve.selector.data(this, key, value);
+                    queryEngine.data(this, key, value);
                 });
         },
         /**
@@ -370,17 +338,8 @@
         }
     });
 
-    ve.selector.extend({
-        isXMLDoc: function (elem) {
-            return elem.documentElement && !elem.body ||
-                elem.tagName && elem.ownerDocument && !elem.ownerDocument.body;
-        },
-        //检测一个对象是不是Function
-        //修正
-        isFunction: function (fn) {
-            return typeof fn === 'function';
-        },
-        each: function(object, callback, args) {
+    kernel.extend(queryEngine, {
+        each: function (object, callback, args) {
             var name, i = 0, length = object.length;
             if (args) {
                 if (length == undefined) {
@@ -406,16 +365,16 @@
         },
     });
 
-    var chars = ve.selector.browser.safari && parseInt(ve.selector.browser.fnrsion) < 417 ?
+    var chars = queryEngine.browser.safari && parseInt(queryEngine.browser.fnrsion) < 417 ?
         "(?:[\\w*_-]|\\\\.)" :
         "(?:[\\w\u0128-\uFFFF*_-]|\\\\.)",
     quickChild = new RegExp("^>\\s*(" + chars + "+)"),
-	quickID = new RegExp("^(" + chars + "+)(#)(" + chars + "+)"),
-	quickClass = new RegExp("^([#.]?)(" + chars + "*)");
+    quickID = new RegExp("^(" + chars + "+)(#)(" + chars + "+)"),
+    quickClass = new RegExp("^([#.]?)(" + chars + "*)");
 
-    ve.selector.extend({
+    kernel.extend(queryEngine, {
         expr: {
-            "": function (a, i, m) { return m[2] == "*" || ve.selector.nodeName(a, m[2]); },
+            "": function (a, i, m) { return m[2] == "*" || queryEngine.nodeName(a, m[2]); },
             "#": function (a, i, m) { return a.getAttribute("id") == m[2]; },
             ":": {
                 // Position Checks
@@ -430,25 +389,25 @@
 
                 // Child Checks
                 "first-child": function (a) { return a.parentNode.getElementsByTagName("*")[0] == a; },
-                "last-child": function (a) { return ve.selector.nth(a.parentNode.lastChild, 1, "previousSibling") == a; },
-                "only-child": function (a) { return !ve.selector.nth(a.parentNode.lastChild, 2, "previousSibling"); },
+                "last-child": function (a) { return queryEngine.nth(a.parentNode.lastChild, 1, "previousSibling") == a; },
+                "only-child": function (a) { return !queryEngine.nth(a.parentNode.lastChild, 2, "previousSibling"); },
 
                 // Parent Checks
                 parent: function (a) { return a.firstChild; },
                 empty: function (a) { return !a.firstChild; },
 
                 // Text Check
-                contains: function (a, i, m) { return (a.textContent || a.innerText || ve.selector(a).text() || "").indexOf(m[3]) >= 0; },
+                contains: function (a, i, m) { return (a.textContent || a.innerText || queryEngine(a).text() || "").indexOf(m[3]) >= 0; },
 
                 // Visibility
-                visible: function (a) { return "hidden" != a.type && ve.selector.css(a, "display") != "none" && ve.selector.css(a, "visibility") != "hidden"; },
-                hidden: function (a) { return "hidden" == a.type || ve.selector.css(a, "display") == "none" || ve.selector.css(a, "visibility") == "hidden"; },
+                visible: function (a) { return "hidden" != a.type && queryEngine.css(a, "display") != "none" && queryEngine.css(a, "visibility") != "hidden"; },
+                hidden: function (a) { return "hidden" == a.type || queryEngine.css(a, "display") == "none" || queryEngine.css(a, "visibility") == "hidden"; },
 
                 // Form attributes
                 enabled: function (a) { return !a.disabled; },
                 disabled: function (a) { return a.disabled; },
                 checked: function (a) { return a.checked; },
-                selected: function (a) { return a.selected || ve.selector.attr(a, "selected"); },
+                selected: function (a) { return a.selected || queryEngine.attr(a, "selected"); },
 
                 // Form elements
                 text: function (a) { return "text" == a.type; },
@@ -459,7 +418,7 @@
                 submit: function (a) { return "submit" == a.type; },
                 image: function (a) { return "image" == a.type; },
                 reset: function (a) { return "reset" == a.type; },
-                button: function (a) { return "button" == a.type || ve.selector.nodeName(a, "button"); },
+                button: function (a) { return "button" == a.type || queryEngine.nodeName(a, "button"); },
                 input: function (a) { return /input|select|textarea|button/i.test(a.nodeName); },
 
             }
@@ -496,7 +455,7 @@
                 var r = [];
                 last = t;
 
-                t = ve.selector.trim(t);
+                t = queryEngine.trim(t);
 
                 var foundToken = false,
 
@@ -533,7 +492,7 @@
                             var n = m == "~" || m == "+" ? ret[j].nextSibling : ret[j].firstChild;
                             for (; n; n = n.nextSibling)
                                 if (n.nodeType == 1) {
-                                    var id = ve.selector.data(n);
+                                    var id = queryEngine.data(n);
 
                                     if (m == "~" && merge[id]) break;
 
@@ -549,7 +508,7 @@
                         ret = r;
 
                         // And remofn the token
-                        t = ve.selector.trim(t.replace(re, ""));
+                        t = queryEngine.trim(t.replace(re, ""));
                         foundToken = true;
                     }
                 }
@@ -563,7 +522,7 @@
                         if (context == ret[0]) ret.shift();
 
                         // Merge the result sets
-                        done = ve.selector.merge(done, ret);
+                        done = queryEngine.merge(done, ret);
 
                         // Reset the context
                         r = ret = [context];
@@ -592,19 +551,19 @@
                         var elem = ret[ret.length - 1];
 
                         // Try to do a global search by ID, where we can
-                        if (m[1] == "#" && elem && elem.getElementById && !ve.selector.isXMLDoc(elem)) {
+                        if (m[1] == "#" && elem && elem.getElementById && !kernel.isXMLDoc(elem)) {
                             // Optimization for HTML document case
                             var oid = elem.getElementById(m[2]);
 
                             // Do a quick check for the existence of the actual ID attribute
                             // to avoid selecting by the name attribute in IE
                             // also check to insure id is a string to avoid selecting an element with the name of 'id' inside a form
-                            if ((ve.selector.browser.msie || ve.selector.browser.opera) && oid && typeof oid.id == "string" && oid.id != m[2])
-                                oid = ve.selector('[@id="' + m[2] + '"]', elem)[0];
+                            if ((queryEngine.browser.msie || queryEngine.browser.opera) && oid && typeof oid.id == "string" && oid.id != m[2])
+                                oid = queryEngine('[@id="' + m[2] + '"]', elem)[0];
 
                             // Do a quick check for node name (where applicable) so
                             // that div#foo searches will be really fast
-                            ret = r = oid && (!m[3] || ve.selector.nodeName(oid, m[3])) ? [oid] : [];
+                            ret = r = oid && (!m[3] || queryEngine.nodeName(oid, m[3])) ? [oid] : [];
                         } else {
                             // We need to find all descendant elements
                             for (var i = 0; ret[i]; i++) {
@@ -615,12 +574,12 @@
                                 if (tag == "*" && ret[i].nodeName.toLowerCase() == "object")
                                     tag = "param";
 
-                                r = ve.selector.merge(r, ret[i].getElementsByTagName(tag));
+                                r = queryEngine.merge(r, ret[i].getElementsByTagName(tag));
                             }
 
                             // It's faster to filter by class and be done with it
                             if (m[1] == ".")
-                                r = ve.selector.classFilter(r, m[2]);
+                                r = queryEngine.classFilter(r, m[2]);
 
                             // Same with ID filtering
                             if (m[1] == "#") {
@@ -647,9 +606,9 @@
                 // If a selector string still exists
                 if (t) {
                     // Attempt to filter it
-                    var val = ve.selector.filter(t, r);
+                    var val = queryEngine.filter(t, r);
                     ret = r = val.r;
-                    t = ve.selector.trim(val.t);
+                    t = queryEngine.trim(val.t);
                 }
             }
 
@@ -663,7 +622,7 @@
                 ret.shift();
 
             // And combine the results
-            done = ve.selector.merge(done, ret);
+            done = queryEngine.merge(done, ret);
 
             return done;
         },
@@ -686,7 +645,7 @@
             while (t && t != last) {
                 last = t;
 
-                var p = ve.selector.parse, m;
+                var p = queryEngine.parse, m;
 
                 for (var i = 0; p[i]; i++) {
                     m = p[i].exec(t);
@@ -708,21 +667,21 @@
                 if (m[1] == ":" && m[2] == "not")
                     // optimize if only one selector found (most common case)
                     r = isSimple.test(m[3]) ?
-                        ve.selector.filter(m[3], r, true).r :
-                        ve.selector(r).not(m[3]);
+                        queryEngine.filter(m[3], r, true).r :
+                        queryEngine(r).not(m[3]);
 
                     // We can get a big speed boost by filtering by class here
                 else if (m[1] == ".")
-                    r = ve.selector.classFilter(r, m[2], not);
+                    r = queryEngine.classFilter(r, m[2], not);
 
                 else if (m[1] == "[") {
                     var tmp = [], type = m[3];
 
                     for (var i = 0, rl = r.length; i < rl; i++) {
-                        var a = r[i], z = a[ve.selector.props[m[2]] || m[2]];
+                        var a = r[i], z = a[queryEngine.props[m[2]] || m[2]];
 
                         if (z == null || /href|src|selected/.test(m[2]))
-                            z = ve.selector.attr(a, m[2]) || '';
+                            z = queryEngine.attr(a, m[2]) || '';
 
                         if ((type == "" && !!z ||
                              type == "=" && z == m[5] ||
@@ -745,9 +704,9 @@
                         // calculate the numbers (first)n+(last) including if they are negatifn
                         first = (test[1] + (test[2] || 1)) - 0, last = test[3] - 0;
 
-                    // loop through all the elements left in the ve.selector object
+                    // loop through all the elements left in the queryEngine object
                     for (var i = 0, rl = r.length; i < rl; i++) {
-                        var node = r[i], parentNode = node.parentNode, id = ve.selector.data(parentNode);
+                        var node = r[i], parentNode = node.parentNode, id = queryEngine.data(parentNode);
 
                         if (!merge[id]) {
                             var c = 1;
@@ -775,7 +734,7 @@
 
                     // Otherwise, find the expression to execute
                 } else {
-                    var fn = ve.selector.expr[m[1]];
+                    var fn = queryEngine.expr[m[1]];
                     if (typeof fn == "object")
                         fn = fn[m[2]];
 
@@ -783,7 +742,7 @@
                         fn = eval("false||function(a,i){return " + fn + ";}");
 
                     // Execute it against the current filter
-                    r = ve.selector.grep(r, function (elem, i) {
+                    r = queryEngine.grep(r, function (elem, i) {
                         return fn(elem, i, m, r);
                     }, not);
                 }
@@ -810,5 +769,6 @@
             return r;
         }
     });
-    
-})();
+    return queryEngine;
+
+});

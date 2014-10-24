@@ -24,6 +24,9 @@ $.add(["lang"], function(lang){
 
     var result = {};
     result = lang.mixin(result, lang);
+    //exclude the following css properties to add px 以下属性是否要加 px
+    var exclude = /z-?index|font-?weight|opacity|zoom|line-?height/i;
+
 
     /**
      * A internal plugin to fix the accuracy of float number calculation
@@ -149,8 +152,41 @@ $.add(["lang"], function(lang){
                 pre = (new Array(digits - string.length + 1)).join('0');
             }
             return (negative ?  "-" : "") + pre + string;
+        },
+       /**
+        * 检查一个元素是否是XML的document
+        * @param{Object} elem
+        */
+        isXMLDoc: function (elem) {
+            return elem.documentElement && !elem.body ||
+              elem.tagName && elem.ownerDocument && !elem.ownerDocument.body;
+        },
+       /**
+        * 判断一个元素的nodeName是不是给定的name
+        * 
+        * elem - 要判定的元素
+        * name - 看看elem.nodeName是不是这个name
+        */
+        nodeName: function(elem, name) {
+            return elem.nodeName && elem.nodeName.toUpperCase() == name.toUpperCase();
+
+        },
+        /*
+         * 对属性值进行处理.取得正确的属性值.如,这个属性值是否要加上单位"px", 等等.
+         *
+         * elem - dom元素对象
+         * value - 属性值
+         * type - 如果有值就代表是样式属性名
+         * i - dom元素在jQuery对象匹配元素集合中的索引
+         * name - 属性名
+         */
+        prop: function(elem, value, type, i, name) {
+            if (lang.isFunction(value))
+                value = value.call(elem, i);
+            return value && value.constructor == Number && type == "curCSS" && !exclude.test(name) ?
+                value + "px" :
+                value;
         }
     });
-
     return result;
 });

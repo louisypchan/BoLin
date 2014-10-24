@@ -21,17 +21,27 @@
  * Created by chenchangwen on 2014/10/24
  */
 
-$.add(["ve/dom/attribute"], function(attribute) {
+$.add(["ve/core/kernel", "ve/extensions/array"], function (kernel) {
+
+    var has = function(elem, className) {
+        var arr = (elem.className || elem).toString().split(/\s+/);
+        return arr.indexOf(className) > -1;
+    };
+
     return {
-        set: function (obj, key, value) {
-            if ((key == 'width' || key == 'height') && parseFloat(value) < 0)
-                value = undefined;
-            return attribute.set(obj, key, value, "curCSS");
+        add: function(elem, classNames) {
+            (classNames || "").split(/\s+/).forEach(function(className, i) {
+                if (elem.nodeType == 1 && !has(elem.className, className))
+                    elem.className += (elem.className ? " " : "") + className;
+            });
         },
-        get: function (obj, key, value) {
-            if ((key == 'width' || key == 'height') && parseFloat(value) < 0)
-                value = undefined;
-            return attribute.get(obj, key, value, "curCSS");
-        }
-    }
+        remove: function(elem, classNames) {
+            if (elem.nodeType == 1)
+                elem.className = classNames != undefined ?
+                    elem.className.split(/\s+/).filter(function(className) {
+                        return !has(classNames, className);
+                    }).join(" ") : "";
+        },
+       
+    };
 });

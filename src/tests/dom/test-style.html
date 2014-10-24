@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="../../ve.js" vecfg="debug:1"></script>
+ 
+</head>
+<body>
+    <div id="div1" class="hahah" style="width: 200px;color:red">asdf</div>
+    <script type="text/javascript">
+    //array
+    $.use(["ve/dom/style"], function (sss) {
+        var $div1 = document.getElementById('div1');
+        sss.set($div1, { color: 'blue' });
+        alert(sss.get($div1, 'color'));
+
+    });
+    </script>
+
+</body>
+</html>
