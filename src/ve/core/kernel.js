@@ -186,6 +186,14 @@ $.add(["lang"], function(lang){
             return value && value.constructor == Number && type == "curCSS" && !exclude.test(name) ?
                 value + "px" :
                 value;
+        },
+        /*
+        * 判断是否一个对象
+        *
+        * unknow
+        */
+        isObject: function (unknow) {
+            return typeof unknow === "function" || (typeof unknow === "object" && unknow != null);
         }
     });
     return result;
