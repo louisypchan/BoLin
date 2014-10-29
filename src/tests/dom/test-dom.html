@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="../../ve.js" vecfg="debug:1"></script>
+    <title>dom</title>
+    <style type="text/css">
+        div {
+            font-size: 50px;
+        }
+
+        #demo-text1 {
+            padding: 10px;
+            border: 1px dotted red;
+            background: #FFF1F1;
+            width: 300px;
+            height: 100px;
+            overflow: auto;
+        }
+
+        #demo-text1 div {
+            width: 1500px;
+            height: 20px;
+        }
+
+
+        #demo-text2 {
+            padding: 10px;
+            border: 1px dotted red;
+            background: #FFF1F1;
+            width: 300px;
+            height: 100px;
+            overflow: auto;
+        }
+
+            #demo-text2 div {
+                width: 200px;
+                height: 1500px;
+            }
+    
+    </style>
+</head>
+<body>
+    <div id="div1" style="color:red;border:10px deepskyblue solid; margin:20px; padding: 20px"> div1  </div>
+    <div id="div2" style="color:blue"> div2  </div>
+    <div id="div3" style="color:plum"> div3  </div>
+    <div id="div4" style="color:purple;">
+        div4
+        <div id="div44" style="color:seagreen;">
+            asdf1234
+        </div>
+    </div>
+    <div id="div5" style="color:aqua"> div5 </div>
+    <div id="div6" style="color:gold"> div6 </div>
+    <div id="div7" style="color:paleturquoise"> div7 </div>
+    <div id="div8"> div8 </div>
+    <div id="div9"> div9 </div>
+    <div id="div10"> div10 </div>
+ 
+    <div id="demo-text1">
+        <div id="demo-text-inner">
+            demotext1
+        </div>
+    </div>
+    
+    <div id="demo-text2">
+        <div id="demo-text-inner">
+            demotext2
+        </div>
+    </div>
+
+    <br/>
+    <input type="text" id="text1" value="asdf1234" />
+    <input type="button" id="btn" value="scrollLeft scrollTop 事件按钮" />
+
+    <script type="text/javascript">
+        $.use(["ve/dom/dom"], function (dom) {
+            try {
+                var div1 = document.getElementById('div1'),
+                    div2 = document.getElementById('div2'),
+                    div3 = document.getElementById('div3'),
+                    div4 = document.getElementById('div4'),
+                    div5 = document.getElementById('div5'),
+                    div6 = document.getElementById('div6'),
+                    div7 = document.getElementById('div7'),
+                    div8 = document.getElementById('div8'),
+                    div9 = document.getElementById('div9'),
+                    div10 = document.getElementById('div10'),
+                    div44 = document.getElementById('div44'),
+                    demotext1 = document.getElementById('demo-text1'),
+                    demotext2 = document.getElementById('demo-text2'),
+                    text1 = document.getElementById('text1'),
+                    btn = document.getElementById('btn');
+
+                dom.append(div1, 'div1appendTest');
+                dom.prepend(div1, 'div1prependTest');
+                dom.appendTo(div1, div3);
+                dom.prependTo(div2, div4);
+                dom.after(div2, 'div2afterTest');
+                dom.before(div2, 'div2beforeTest');
+                dom.insertAfter(div5, div6);
+                dom.insertBefore(div5, div6);
+                dom.empty(div7);
+                dom.detach(div7);
+                dom.remove(div8);
+                var html = '';
+//                var cloneDiv1 = dom.clone(btn, true, true);
+//                dom.append(document.body, cloneDiv1);
+                var gdoc = dom.getDocument(div1);
+                html += 'dom.getDocument(div1) : ' + gdoc + '\r\n';
+                var gwin = dom.getWindow(div1);
+                html += 'dom.getWindow(div1) : ' + gwin + '\r\n';
+                var val = dom.val(text1);
+                html += 'dom.val(text1) : ' + val + '\r\n';
+                var offset = dom.offset(div1);
+                html += 'dom.offset(div1) : ' + 'left:' + offset.left + ' top:' + offset.top + '\r\n';
+                var position = dom.position(div1);
+                html += 'dom.position(div1) : ' + 'left:' + position.left + ' top:' + position.top + '\r\n';
+                html += 'dom.width(div1) : ' + dom.width(div1) + '\r\n';
+                html += 'dom.height(div1) : ' + dom.height(div1) + '\r\n';
+                html += 'dom.innerHeight(div1) : ' + dom.innerHeight(div1) + '\r\n';
+                html += 'dom.innerWidth(div1) : ' + dom.innerWidth(div1) + '\r\n';
+                html += 'dom.outerHeight(div1) : ' + dom.outerHeight(div1) + '\r\n';
+                html += 'dom.outerWidth(div1) : ' + dom.outerWidth(div1) + '\r\n';
+                alert(html);
+
+
+                dom.html(div9, 'div9htmlTest');
+                dom.html(div10, 'div10textTest');
+                dom.insertHTML(div10, 'beforeBegin', 'div10beforeBegin');
+                dom.insertHTML(div10, 'afterBegin', 'div10afterBegin ');
+                dom.insertHTML(div10, 'beforeEnd', ' div10beforeEnd ');
+                dom.insertHTML(div10, 'afterEnd', ' div10afterEnd ');
+
+                function fn1() {
+                    html = '';
+                    html += 'dom.scrollLeft(demotext1) : ' + dom.scrollLeft(demotext1) + '\r\n';
+                    html += 'dom.scrollTop(demotext2) : ' + dom.scrollTop(demotext2) + '\r\n';
+                    alert(html);
+                }
+                if (document.all) {
+                    btn.attachEvent("onclick", fn1);
+                } else {
+                    btn.addEventListener('click', fn1, false);
+                }
+                dom.append(document.body, '<h1>打印此句: 全部执行完毕 执行正确.</h1>');
+            } catch (e) {
+                dom.append(document.body, '<h1>打印此句:' + '执行异常 ' + e + '</h1>');
+            } 
+        });
+    </script>
+</body>
+</html>
