@@ -308,11 +308,11 @@ $.add(["ve/core/kernel"], function(kernel) {
         }
     };
     var attribute = {
-        get: function (obj, name, value, type) {
+        attr: function (obj, name, value, type) {
             return privateObj.attr(obj, name, value, type);
         },
-        set: function (obj, name, value, type) {
-            privateObj.attr(obj, name, value, type);
+        removeAttr: function(obj,name) {
+            obj.removeAttribute(name);
         }
     }
     return attribute;
