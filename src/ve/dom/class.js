@@ -29,19 +29,21 @@ $.add(["ve/core/kernel", "ve/extensions/array"], function (kernel) {
     };
 
     return {
-        add: function(elem, classNames) {
+        addClass: function(elem, classNames) {
             (classNames || "").split(/\s+/).forEach(function(className, i) {
                 if (elem.nodeType == 1 && !has(elem.className, className))
                     elem.className += (elem.className ? " " : "") + className;
             });
         },
-        remove: function(elem, classNames) {
+        removeClass: function(elem, classNames) {
             if (elem.nodeType == 1)
                 elem.className = classNames != undefined ?
                     elem.className.split(/\s+/).filter(function(className) {
                         return !has(classNames, className);
                     }).join(" ") : "";
         },
-       
+        toggleClass: function (elem,className) {
+            this[has(elem, className) ? "removeClass" : "addClass"](elem, className);
+        }
     };
 });

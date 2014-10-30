@@ -3,18 +3,34 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <style type="text/css">
+        .demo {
+            color:red
+        }
+        .demo2 {
+            color: blue;
+        }
+    </style>
     <script type="text/javascript" src="../../ve.js" vecfg="debug:1"></script>
-    <script type="text/javascript">
-        //array
-        $.use(["ve/dom/class"], function(cc) {
-            var $div1 = document.getElementById('div1');
-            cc.remove($div1, 'hahah');
-
-        });
-    </script>
+     
 </head>
 <body>
-    <div id="div1" class="hahah">asdf</div>
- 
+    <div id="div1" class="demo">asdf</div>
+    <input type="button" value="testToggle" id="testToggle"/>
+    <script type="text/javascript">
+        $.use(["ve/dom/class"], function (style) {
+            var $div1 = document.getElementById('div1');
+            //style.addClass($div1, 'demo2');
+            var btn = document.getElementById('testToggle');
+            function fn1() {
+                style.toggleClass($div1,'demo2');
+            }
+            if (document.all) {
+                btn.attachEvent("onclick", fn1);
+            } else {
+                btn.addEventListener('click', fn1, false);
+            }
+        });
+    </script>
 </body>
 </html>
