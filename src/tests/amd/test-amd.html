@@ -5,8 +5,16 @@
     <title></title>
     <script type="text/javascript" src="../../ve.js" vecfg="debug:1"></script>
     <script type="text/javascript">
-        $.use(["tests/amd/amdDeps", "tests/amd/amdObj"], function(a1, a2){
-            a1.test(a2);
+        $.use(["ve/core/aspect", "ve/core/kernel"], function(aspect, kernel){
+            aspect.around(kernel, "isString", function(orginal){
+
+                return function(){
+                    console.log("3");
+                };
+            });
+
+
+            kernel.isString("dd");
         });
     </script>
 </head>
