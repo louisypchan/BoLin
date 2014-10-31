@@ -3,18 +3,10 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
-    <script type="text/javascript" src="../../ve.js" vecfg="debug:1"></script>
+    <script type="text/javascript" src="../../ve.js" vecfg="debug :1"></script>
     <script type="text/javascript">
-        $.use(["ve/core/aspect", "ve/core/kernel"], function(aspect, kernel){
-            aspect.around(kernel, "isString", function(orginal){
-
-                return function(){
-                    console.log("3");
-                };
-            });
-
-
-            kernel.isString("dd");
+        $.use(["tests/amd/amdDeps", "tests/amd/amdObj"], function(a1, a2){
+            a1.test(a2);
         });
     </script>
 </head>

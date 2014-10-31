@@ -18,31 +18,15 @@
  THE SOFTWARE.
  ****************************************************************************/
 /**
- * Created by Louis Y P Chen on 2014/10/23.
+ * Created by Louis Y P Chen on 2014/10/31.
  */
-$.add(["ve/core/kernel"], function(kernel){
+$.add("ve/extensions/string",[], function(){
 
-    var fn = Function.prototype,
-        slice = Array.prototype.slice;
-
-    kernel.extend(fn, {
-        /**
-         *  Creates a function that is associated with a specified object, and that can have specific initial parameters.
-         */
-        bind : fn.bind || function(o){
-            if (!kernel.isFunction(this)) { throw TypeError("Bind must be called on a function"); }
-            var slice = [].slice,
-                args = slice.call(arguments, 1),
-                self = this,
-                bound = function () {
-                    return self.apply(this instanceof nop ? this : (o || {}),
-                        args.concat(slice.call(arguments)));
-                };
-            /** @constructor */
-            function nop() {}
-            nop.prototype = self.prototype;
-            bound.prototype = new nop();
-            return bound;
-        }
-    });
+    // ES5 15.9.4.4 Date.now ( )
+    // From https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Date/now
+    if (!String.prototype.trim) {
+        String.prototype.trim = function () {
+            return String(this).replace(/^\s+/, '').replace(/\s+$/, '');
+        };
+    }
 });

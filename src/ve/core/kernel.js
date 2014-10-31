@@ -1,6 +1,5 @@
 /****************************************************************************
  Copyright (c) 2014 Louis Y P Chen.
-
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
@@ -21,13 +20,11 @@
  * Created by Louis Y P Chen on 2014/10/23.
  */
 $.add(["lang"], function(lang){
-
     var result = {};
-    result = lang.mixin(result, lang);
-    //exclude the following css properties to add px ÒÔÏÂÊôĞÔÊÇ·ñÒª¼Ó px
+    result = lang.mixin(result, lang),
+    op = Object.prototype;
+//exclude the following css properties to add px ä»¥ä¸‹å±æ€§æ˜¯å¦è¦åŠ  px
     var exclude = /z-?index|font-?weight|opacity|zoom|line-?height/i;
-
-
     /**
      * A internal plugin to fix the accuracy of float number calculation
      */
@@ -36,18 +33,16 @@ $.add(["lang"], function(lang){
         unit = Math.pow(10, unit);
         return Math.round(num * unit) / unit;
     }
-
     function addZeros(){
         var num = arguments[0], decimalSeparator = arguments[1], precision = arguments[2];
         num = num.split(decimalSeparator);
         void 0 == num[1] && precision > 0 && (num[1] == "0");
         return num[1].length < precision ? (num[1] += "0", addZeros(num[0] + decimalSeparator + num[1], decimalSeparator, precision)) : void 0 != num[1] ? num[0] + decimalSeparator + num[1] : num[0];
     }
-
     lang.mixin(result, {
         /**
          * similar to isArray() but more permissive
-         * Doesn't strongly test for "arrayness".  Instead, settles for "isn't
+         * Doesn't strongly test for "arrayness". Instead, settles for "isn't
          * a string or number and has a length property". Arguments objects
          * and DOM collections will return true when passed to
          * isArrayLike(), but will return false when passed to
@@ -56,7 +51,7 @@ $.add(["lang"], function(lang){
          */
         isArrayLike : function(it){
             return it && it !== undefined &&
-            // keep out built-in constructors (Number, String, ...) which have length
+// keep out built-in constructors (Number, String, ...) which have length
                 !lang.isString(it) && !lang.isFunction(it) &&
                 !(it.tagName && it.tagName.toLowerCase() == "form") &&
                 (lang.isArray(it) || isFinite(it.length));
@@ -77,9 +72,9 @@ $.add(["lang"], function(lang){
          * Acoording to the format passing in to adjust the accuracy of float number
          * @param number
          * @param format
-         *          precision           : the float precision, for this function, we will set 2 to precision
-         *          decimalSeparator    : in some country, the float indicates by ",", by defalut is "."
-         *          thousandsSeparator  :
+         * precision : the float precision, for this function, we will set 2 to precision
+         * decimalSeparator : in some country, the float indicates by ",", by defalut is "."
+         * thousandsSeparator :
          */
         sanitize : function(number, format){
             format = format || {precision : 2, decimalSeparator : ",", thousandsSeparator : "."};
@@ -117,11 +112,11 @@ $.add(["lang"], function(lang){
             }
             if(src instanceof Date){
                 // Date
-                return new Date(src.getTime());	// Date
+                return new Date(src.getTime()); // Date
             }
             if(src instanceof RegExp){
                 // RegExp
-                return new RegExp(src);   // RegExp
+                return new RegExp(src); // RegExp
             }
             var r, i, l;
             if(lang.isArray(src)){
@@ -132,7 +127,6 @@ $.add(["lang"], function(lang){
                         r.push(lang.clone(src[i]));
                     }
                 }
-
             }else{
                 // generic objects
                 r = src.constructor ? new src.constructor() : {};
@@ -151,34 +145,33 @@ $.add(["lang"], function(lang){
             if (string.length < digits) {
                 pre = (new Array(digits - string.length + 1)).join('0');
             }
-            return (negative ?  "-" : "") + pre + string;
+            return (negative ? "-" : "") + pre + string;
         },
-       /**
-        * ¼ì²éÒ»¸öÔªËØÊÇ·ñÊÇXMLµÄdocument
-        * @param{Object} elem
-        */
+        /**
+         * æ£€æŸ¥ä¸€ä¸ªå…ƒç´ æ˜¯å¦æ˜¯XMLçš„document
+         * @param{Object} elem
+         */
         isXMLDoc: function (elem) {
             return elem.documentElement && !elem.body ||
-              elem.tagName && elem.ownerDocument && !elem.ownerDocument.body;
+                elem.tagName && elem.ownerDocument && !elem.ownerDocument.body;
         },
-       /**
-        * ÅĞ¶ÏÒ»¸öÔªËØµÄnodeNameÊÇ²»ÊÇ¸ø¶¨µÄname
-        * 
-        * elem - ÒªÅĞ¶¨µÄÔªËØ
-        * name - ¿´¿´elem.nodeNameÊÇ²»ÊÇÕâ¸öname
-        */
+        /**
+         * åˆ¤æ–­ä¸€ä¸ªå…ƒç´ çš„nodeNameæ˜¯ä¸æ˜¯ç»™å®šçš„name
+         *
+         * elem - è¦åˆ¤å®šçš„å…ƒç´ 
+         * name - çœ‹çœ‹elem.nodeNameæ˜¯ä¸æ˜¯è¿™ä¸ªname
+         */
         nodeName: function(elem, name) {
             return elem.nodeName && elem.nodeName.toUpperCase() == name.toUpperCase();
-
         },
         /*
-         * ¶ÔÊôĞÔÖµ½øĞĞ´¦Àí.È¡µÃÕıÈ·µÄÊôĞÔÖµ.Èç,Õâ¸öÊôĞÔÖµÊÇ·ñÒª¼ÓÉÏµ¥Î»"px", µÈµÈ.
+         * å¯¹å±æ€§å€¼è¿›è¡Œå¤„ç†.å–å¾—æ­£ç¡®çš„å±æ€§å€¼.å¦‚,è¿™ä¸ªå±æ€§å€¼æ˜¯å¦è¦åŠ ä¸Šå•ä½"px", ç­‰ç­‰.
          *
-         * elem - domÔªËØ¶ÔÏó
-         * value - ÊôĞÔÖµ
-         * type - Èç¹ûÓĞÖµ¾Í´ú±íÊÇÑùÊ½ÊôĞÔÃû
-         * i - domÔªËØÔÚjQuery¶ÔÏóÆ¥ÅäÔªËØ¼¯ºÏÖĞµÄË÷Òı
-         * name - ÊôĞÔÃû
+         * elem - domå…ƒç´ å¯¹è±¡
+         * value - å±æ€§å€¼
+         * type - å¦‚æœæœ‰å€¼å°±ä»£è¡¨æ˜¯æ ·å¼å±æ€§å
+         * i - domå…ƒç´ åœ¨jQueryå¯¹è±¡åŒ¹é…å…ƒç´ é›†åˆä¸­çš„ç´¢å¼•
+         * name - å±æ€§å
          */
         prop: function(elem, value, type, i, name) {
             if (lang.isFunction(value))
@@ -188,12 +181,25 @@ $.add(["lang"], function(lang){
                 value;
         },
         /*
-        * ÅĞ¶ÏÊÇ·ñÒ»¸ö¶ÔÏó
-        *
-        * unknow
-        */
+         * åˆ¤æ–­æ˜¯å¦ä¸€ä¸ªå¯¹è±¡
+         *
+         * unknow
+         */
         isObject: function (unknow) {
             return typeof unknow === "function" || (typeof unknow === "object" && unknow != null);
+        },
+
+        /**
+         * To see if the method exists in the specific object or not
+         * @param object
+         * @param method
+         */
+        objectHasMethod : function(object, method){
+            return object != null && object[method] !== undefined && lang.isFunction(object[method]);
+        },
+
+        isNotObjectProperty : function(obj, name){
+            return (obj !== op[name] || !(name in op));
         }
     });
     return result;

@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2014 Louis Y P Chen.
+ Copyright (c) 2014.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,7 @@
  *          "around"            — runs instead of a joinpoint, may call the original joinpoint.
  *
  * aspect — an entity that encapsulates related pointcuts, and advices together, and can add some attributes to advised classes.
+ * refer to http://www.lazutkin.com/blog/2008/05/17/aop-aspect-javascript-dojo/
  */
 $.add(["public"], function(expose){
     "use strict";
@@ -48,6 +49,10 @@ $.add(["public"], function(expose){
             this.next_after = this.prev_after = this.next_around = this.prev_around = this;
         this.inst = inst;
         this.method = method;
+    }
+
+    function __around(f, a){
+        return f(a);
     }
 
     advise.prototype = {
@@ -64,9 +69,8 @@ $.add(["public"], function(expose){
             this._add("after", advice);
 
             if(around){
-                advice.target = (function(){ return advice.prev_around.target(around); })();
+                advice.target = __around(around, advice.prev_around.target);
             }
-
             return advice;
         },
 
@@ -78,12 +82,29 @@ $.add(["public"], function(expose){
             }
         },
 
-        remove : function(){
+        remove : function(advice){
+            this._remove("before", advice);
+            this._remove("around", advice);
+            this._remove("after" , advice);
+        },
 
+        _remove : function(type, advice){
+            var next = "next_" + type, prev = "prev_" + type;
+            advice[next][prev] = advice[prev];
+            advice[prev][next] = advice[next];
         },
 
         destory : function(){
-
+            var target = this.prev_around.target, advise = this.advise, na = this.next_around;
+            this.remove(this);
+            if(na !== this){
+                for(; na !== advise; target = na.target, na = na.next_around){
+                    if(advise.around){
+                        advise.target = __around(advise.around, target);
+                    }
+                }
+            }
+            this.inst = 0;
         }
     };
 
@@ -95,7 +116,11 @@ $.add(["public"], function(expose){
                 process.before.apply(this, arguments);
             }
             //running the around chain
-
+            try{
+                if(advised.prev_around !== advised){
+                    advised.prev_around.target.apply(this, arguments);
+                }
+            }catch (e){ throw e; }
             //running the after chain
             for(process = advised.prev_after; process !== advised; process = process.prev_after){
                 process.after.apply(this, arguments);

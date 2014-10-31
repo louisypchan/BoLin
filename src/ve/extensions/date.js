@@ -124,6 +124,23 @@ $.add(["ve/core/kernel"], function(kernel){
         isLeapYear : dp.isLeapYear || function(){
             var year = this.getFullYear();
             return !(year % 400) || (!(year%4) && !!(year%100));
+        },
+
+        // ES5 15.9.4.4 Date.now ( )
+        // From https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Date/now
+        now : dp.now || function(){
+            return +(new Date());
+        },
+        // ES5 15.9.4.43 Date.prototype.toISOString ( )
+        // Inspired by http://www.json.org/json2.js
+        toISOString : dp.toISOString || function(){
+            return this.getUTCFullYear() + '-' +
+                kernel.pad(this.getUTCMonth() + 1, 2) + '-' +
+                kernel.pad(this.getUTCDate(), 2) + 'T' +
+                kernel.pad(this.getUTCHours(), 2) + ':' +
+                kernel.pad(this.getUTCMinutes(), 2) + ':' +
+                kernel.pad(this.getUTCSeconds(), 2) + '.' +
+                kernel.pad(this.getUTCMilliseconds(), 3) + 'Z';
         }
     });
 });

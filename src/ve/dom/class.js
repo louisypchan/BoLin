@@ -21,7 +21,7 @@
  * Created by chenchangwen on 2014/10/24
  */
 
-$.add(["ve/core/kernel", "ve/extensions/array"], function (kernel) {
+$.add(["ve/extensions/array"], function () {
 
     var has = function(elem, className) {
         var arr = (elem.className || elem).toString().split(/\s+/);
