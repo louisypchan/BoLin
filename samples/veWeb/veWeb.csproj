@@ -59,8 +59,11 @@
   <ItemGroup>
     <Content Include="images\yzm.jpg" />
     <Content Include="login.html" />
-    <Content Include="spgl-edit.html" />
+    <Content Include="script\ace-v1.3\assets\js\date-time\daterangepicker.js" />
+    <Content Include="script\ace-v1.3\assets\js\date-time\moment-with-locales.js" />
     <Content Include="spgl.html" />
+    <Content Include="spgl-edit.html" />
+    <Content Include="scsz.html" />
     <Content Include="index.html" />
     <Content Include="script\ace-v1.3\assets\avatars\avatar.png" />
     <Content Include="script\ace-v1.3\assets\avatars\avatar1.png" />
