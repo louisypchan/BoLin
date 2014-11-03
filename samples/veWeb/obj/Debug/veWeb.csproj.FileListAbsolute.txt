@@ -1,6 +1,0 @@
-c:\users\no1\documents\visual studio 2013\Projects\veWeb\veWeb\bin\veWeb.dll.config
-c:\users\no1\documents\visual studio 2013\Projects\veWeb\veWeb\bin\veWeb.dll
-c:\users\no1\documents\visual studio 2013\Projects\veWeb\veWeb\bin\veWeb.pdb
-c:\users\no1\documents\visual studio 2013\Projects\veWeb\veWeb\obj\Debug\veWeb.csprojResolveAssemblyReference.cache
-c:\users\no1\documents\visual studio 2013\Projects\veWeb\veWeb\obj\Debug\veWeb.dll
-c:\users\no1\documents\visual studio 2013\Projects\veWeb\veWeb\obj\Debug\veWeb.pdb
