@@ -41,6 +41,8 @@
         debug : false //by default, turn off the debug mode
     };
 
+    ve.global = win;
+
     //Currently now it is browser-base framework
     ve.isNative = false;
 
@@ -50,6 +52,9 @@
     ve.__types = {};
 
     ve.__uidSeed = 1;
+
+    ve.majorEvent = !!document.addEventListener;
+
     //Returns a unique identifier
     ve.uid = function() {
         return "_" + ve.__uidSeed++;
@@ -67,6 +72,9 @@
         }
     })();
 
+    //check supportive
+    ve.support = {};
+    ve.support.advanceEvent = !!document.addEventListener;
 
     //This is a temporary function to  handler the diff event across the browsers
     //The event control will be moved to be an individual module
@@ -931,7 +939,7 @@
                 defineModule : function(module, deps, factory){
                     if(module.attached == v.__AMD.state.ARRIVED){
                         //TODO:
-                        throw new Error("module multiple define ");
+                        throw new Error("module multiple define");
                         return module;
                     }
                     //mix
@@ -1046,8 +1054,7 @@
                     if(this.factory === noop){
                         return this.context.abortExec;
                     }
-                    var mid = this.mid,
-                        deps = this.deps||[],
+                    var deps = this.deps||[],
                         arg, argRS, args = [], i = 0;
                     this.executed = this.context.state.EXECUTING;
                     while((arg = deps[i++])){
@@ -1153,13 +1160,30 @@
                         args[1].push(dep);
                     });
                 }
-                var targetModule = args[0] && v.__AMD.pkg.getModule(args[0]);
-                if(targetModule && v.__AMD.hangQ[targetModule.mid]){
-                    var mod = v.__AMD.pkg.defineModule(targetModule, args[1], args[2]);
+                var targetModule = args[0] && v.__AMD.pkg.getModule(args[0]), mod;
+                if(targetModule && !v.__AMD.hangQ[targetModule.mid]){
+                   mod = v.__AMD.pkg.defineModule(targetModule, args[1], args[2]);
                     mod.attachDeps();
-                }else{
-                    //TODO: IE support
+                }else if(!ie_event_behavior){
                     v.__AMD.defQ.push(args);
+                }else{
+                    //add IE support
+                    //TODO: re-build  in next version
+                    targetModule = targetModule || v.__AMD.injectingMod;
+                    if(!targetModule){
+                        for(name in v.__AMD.hangQ){
+                            var module = v.__AMD.mods[name];
+                            if(module && module.script && module.script.readyState === "interactive"){
+                                targetModule = module;
+                                break;
+                            }
+                        }
+                    }
+                    if(targetModule){
+                        mod = v.__AMD.pkg.defineModule(targetModule, args[1], args[2]);
+                        mod.attachDeps();
+                    }
+                    v.__AMD.guard.monitor();
                 }
             }
         };
