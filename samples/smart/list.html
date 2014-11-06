@@ -1,0 +1,449 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <title> 唯一特卖 </title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 基础样式 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/font-awesome.min.css">
+    <!-- SmartAdmin 样式 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/smartadmin-production.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/smartadmin-skins.css">
+    <!-- SmartAdmin RTL Support is under construction
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/smartadmin-rtl.css"> -->
+
+    <link rel="shortcut icon" href="../../themes/smart/assets/img/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../../themes/smart/assets/img/favicon/favicon.ico" type="image/x-icon">
+
+    <link href="../../themes/smart/assets/css/font-ve.css" rel="stylesheet" />
+</head>
+<body style="min-height: 1500px">
+    <!--导航条-->
+    <header>
+        <div id="shortcut">
+            <ul>
+                <li>
+                    <a class="jarvismetro-tile big-cubes selected bg-color-blue" href="#inbox.html"> <span class="iconbox"> <i class="fa fa-home fa-4x"></i> <span>首页</span> </span> </a>
+                </li>
+                <li>
+                    <a class="jarvismetro-tile big-cubes bg-color-orangeDark" href="#calendar.html"> <span class="iconbox"> <i class="fa fa-shopping-cart fa-4x"></i> <span>商品管理</span> </span> </a>
+                </li>
+                <li>
+                    <a class="jarvismetro-tile big-cubes bg-color-purple" href="#gmap-xml.html"> <span class="iconbox"> <i class="fa fa-indent fa-4x"></i> <span>订单管理</span> </span> </a>
+                </li>
+                <li>
+                    <a class="jarvismetro-tile big-cubes bg-color-blueDark" href="#invoice.html"> <span class="iconbox"> <i class="fa fa-user fa-4x"></i> <span>会员管理<span class="label pull-right bg-color-darken">99</span></span> </span> </a>
+                </li>
+                <li>
+                    <a class="jarvismetro-tile big-cubes bg-color-greenLight" href="#gallery.html"> <span class="iconbox"> <i class="fa fa-inbox fa-4x"></i> <span>短信邮件</span> </span> </a>
+                </li>
+                <li>
+                    <a class="jarvismetro-tile big-cubes bg-color-yellow" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-gear fa-4x"></i> <span>商城设置</span> </span> </a>
+                </li>
+                <li>
+                    <a class="jarvismetro-tile big-cubes bg-color-teal" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-gear fa-4x"></i> <span>系统设置</span> </span> </a>
+                </li>
+                <li>
+                    <a class="jarvismetro-tile big-cubes bg-color-redLight" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-calendar fa-4x"></i> <span>排期管理</span> </span> </a>
+                </li>
+                <li>
+                    <a class="jarvismetro-tile big-cubes bg-color-blue" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-columns fa-4x"></i> <span>添加栏目</span> </span> </a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <!--左侧菜单-->
+    <aside id="left-panel" style="min-height: 1500px">
+        <nav>
+            <ul>
+                <li class="active">
+                    <a href="index.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">首页</span></a>
+                </li>
+                <li class="">
+                    <a href="list.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-check"></i> <span class="menu-item-parent">列表</span></a>
+                </li>
+                <li class="">
+                    <a href="list-edit1.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-check"></i> <span class="menu-item-parent">列表-编辑01</span></a>
+                </li>
+                <li class="">
+                    <a href="list-edit2.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-check"></i> <span class="menu-item-parent">列表-编辑02</span></a>
+                </li>
+            </ul>
+        </nav>
+        <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
+    </aside>
+
+    <!--主要容器-->
+    <div id="main" role="main">
+        <!--内容-->
+        <div id="content">
+            <div class="row">
+                <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+                    <h1 class="page-title txt-color-blueDark">
+                        <i class="fa fa-edit fa-shopping-cart"></i>
+                        商品管理
+                        <span>
+                            &gt;
+                            商品列表
+                        </span>
+                    </h1>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>
+                        <a class="btn btn-primary" href="javascript:void(0);"><i class="fa fa-plus-circle"></i>新增</a>
+                        <a class="btn btn-primary" href="javascript:void(0);"><i class="fa fa-list"></i>详情</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <article class="col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
+                    <div class="jarviswidget jarviswidget-color-blueDark">
+                        <header role="heading">
+                            <span class="widget-icon"><i class="fa fa-search"></i></span>
+                            <h2>查询条件</h2>
+                            <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                        </header>
+                        <div>
+                            <div class="widget-body no-padding">
+                                <form class="smart-form">
+                                    <fieldset>
+                                        <div class="row">
+                                            <section class="col col-3">
+                                                <label class="label">商品ID</label>
+                                                <label class="input">
+                                                    <input type="text" placeholder="商品ID">
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">商品名称</label>
+                                                <label class="input">
+                                                    <input type="text" placeholder="商品名称">
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">商品分类</label>
+                                                <label class="select">
+                                                    <select>
+                                                        <option value="未选择分类">未选择分类</option>
+                                                        <option value="妈妈专区">妈妈专区</option>
+                                                        <option value="宝宝营养">宝宝营养</option>
+                                                        <option value="宝宝用品">宝宝用品</option>
+                                                    </select> <i></i>
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">品牌列表</label>
+                                                <label class="select">
+                                                    <select>
+                                                        <option value="未选择分类">未选择分类</option>
+                                                        <option value="001">001</option>
+                                                        <option value="002">002</option>
+                                                        <option value="003">003</option>
+                                                    </select> <i></i>
+                                                </label>
+                                            </section>
+                                        </div>
+                                        <div class="row">
+                                            <section class="col col-3">
+                                                <label class="label">物料码</label>
+                                                <label class="input">
+                                                    <input type="text" placeholder="物料码">
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">条码</label>
+                                                <label class="input">
+                                                    <input type="text" placeholder="条码">
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">商品分类</label>
+                                                <label class="input">
+                                                    <input type="text" placeholder="商品分类">
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">商品品牌</label>
+                                                <label class="input">
+                                                    <input type="text" placeholder="商品品牌">
+                                                </label>
+                                            </section>
+                                        </div>
+                                        <div class="row">
+                                            <section class="col col-3">
+                                                <label class="label">团购时间</label>
+                                                <label class="input">
+                                                    <input type="text" id="date" placeholder="团购时间">
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">仓库列表</label>
+                                                <label class="select">
+                                                    <select>
+                                                        <option value="未选择分类">未选择分类</option>
+                                                        <option value="001">001</option>
+                                                        <option value="002">002</option>
+                                                        <option value="003">003</option>
+                                                    </select> <i></i>
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">供应商</label>
+                                                <label class="select">
+                                                    <select>
+                                                        <option value="未选择分类">未选择分类</option>
+                                                        <option value="001">001</option>
+                                                        <option value="002">002</option>
+                                                        <option value="003">003</option>
+                                                    </select> <i></i>
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">部门</label>
+                                                <label class="select">
+                                                    <select>
+                                                        <option value="未选择分类">未选择分类</option>
+                                                        <option value="001">001</option>
+                                                        <option value="002">002</option>
+                                                        <option value="003">003</option>
+                                                    </select> <i></i>
+                                                </label>
+                                            </section>
+                                        </div>
+                                        <div class="row">
+                                            <section class="col col-3">
+                                                <label class="label">原价范围从</label>
+                                                <label class="input">
+                                                    <input type="text" placeholder="原价范围从">
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">原价范围到</label>
+                                                <label class="input">
+                                                    <input type="text" placeholder="原价范围到">
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">现价范围从</label>
+                                                <label class="input">
+                                                    <input type="text" placeholder="原价范围到">
+                                                </label>
+                                            </section>
+                                            <section class="col col-3">
+                                                <label class="label">原价范围到</label>
+                                                <label class="input">
+                                                    <input type="text" placeholder="原价范围到">
+                                                </label>
+                                            </section>
+                                        </div>
+                                    </fieldset>
+                                    <footer>
+                                        <button class="btn btn-primary" type="submit">
+                                            查询
+                                        </button>
+                                    </footer>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-widget-editbutton="false" id="wid-id-3" class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable" style="" role="widget">
+                        <header role="heading">
+                            <div class="widget-toolbar" role="menu"><ul class="dropdown-menu arrow-box-up-right color-select pull-right"><li><span data-original-title="Green Grass" data-placement="left" rel="tooltip" data-widget-setstyle="jarviswidget-color-green" class="bg-color-green"></span></li><li><span data-original-title="Dark Green" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-greenDark" class="bg-color-greenDark"></span></li><li><span data-original-title="Light Green" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-greenLight" class="bg-color-greenLight"></span></li><li><span data-original-title="Purple" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-purple" class="bg-color-purple"></span></li><li><span data-original-title="Magenta" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-magenta" class="bg-color-magenta"></span></li><li><span data-original-title="Pink" data-placement="right" rel="tooltip" data-widget-setstyle="jarviswidget-color-pink" class="bg-color-pink"></span></li><li><span data-original-title="Fade Pink" data-placement="left" rel="tooltip" data-widget-setstyle="jarviswidget-color-pinkDark" class="bg-color-pinkDark"></span></li><li><span data-original-title="Light Blue" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-blueLight" class="bg-color-blueLight"></span></li><li><span data-original-title="Teal" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-teal" class="bg-color-teal"></span></li><li><span data-original-title="Ocean Blue" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-blue" class="bg-color-blue"></span></li><li><span data-original-title="Night Sky" data-placement="top" rel="tooltip" data-widget-setstyle="jarviswidget-color-blueDark" class="bg-color-blueDark"></span></li><li><span data-original-title="Night" data-placement="right" rel="tooltip" data-widget-setstyle="jarviswidget-color-darken" class="bg-color-darken"></span></li><li><span data-original-title="Day Light" data-placement="left" rel="tooltip" data-widget-setstyle="jarviswidget-color-yellow" class="bg-color-yellow"></span></li><li><span data-original-title="Orange" data-placement="bottom" rel="tooltip" data-widget-setstyle="jarviswidget-color-orange" class="bg-color-orange"></span></li><li><span data-original-title="Dark Orange" data-placement="bottom" rel="tooltip" data-widget-setstyle="jarviswidget-color-orangeDark" class="bg-color-orangeDark"></span></li><li><span data-original-title="Red Rose" data-placement="bottom" rel="tooltip" data-widget-setstyle="jarviswidget-color-red" class="bg-color-red"></span></li><li><span data-original-title="Light Red" data-placement="bottom" rel="tooltip" data-widget-setstyle="jarviswidget-color-redLight" class="bg-color-redLight"></span></li><li><span data-original-title="Purity" data-placement="right" rel="tooltip" data-widget-setstyle="jarviswidget-color-white" class="bg-color-white"></span></li><li><a data-original-title="Reset widget color to default" data-placement="bottom" rel="tooltip" data-widget-setstyle="" class="jarviswidget-remove-colors" href="javascript:void(0);">Remove</a></li></ul></div>
+                            <span class="widget-icon"> <i class="fa fa-table"></i> </span>
+                            <h2>商品列表</h2>
+
+                            <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
+                        </header>
+
+                        <!-- widget div-->
+                        <div role="content">
+
+                            <!-- widget edit box -->
+                            <div class="jarviswidget-editbox">
+                                <!-- This area used as dropdown edit box -->
+
+                            </div>
+                            <!-- end widget edit box -->
+                            <!-- widget content -->
+                            <div class="widget-body no-padding">
+                                <div class="widget-body-toolbar">
+
+                                </div>
+                                <div role="grid" class="dataTables_wrapper form-inline" id="datatable_tabletools_wrapper">
+                                    <div class="dt-top-row">
+                                        <div class="DTTT btn-group" style="left:13px">
+                                            <a class="btn btn-default btn-sm " id="ToolTables_datatable_tabletools_1" title="View print view"><span>删除</span></a>
+                                        </div>
+                                    
+                                        <div id="datatable_tabletools_length" class="dataTables_length">
+                                            <span class="smart-form">
+                                                <label style="width:60px" class="select">
+                                                    <select name="datatable_tabletools_length" size="1" aria-controls="datatable_tabletools">
+                                                        <option value="10" selected="selected">10</option>
+                                                        <option value="25">25</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                    </select><i></i>
+                                                </label>
+                                            </span>
+                                        </div>
+                                        
+                                        
+                                        <div class="DTTT btn-group" style="left:190px;z-index: 9">
+
+                                            <a class="btn btn-default btn-sm" id="ToolTables_datatable_tabletools_0">
+                                                <span>导出</span>
+                                            </a>
+
+                                        </div>
+                                        
+                                        <div class="DTTT btn-group" style="left:65px;">
+
+                                            <span class="smart-form">
+                                                <label style="width:120px" class="select">
+                                                    <select>
+                                                        <option value="批量设置">批量设置</option>
+                                                        <option value="批量设置有效">批量设置有效</option>
+                                                        <option value="批量设置无效">批量设置无效</option>
+                                                        <option value="批量设置品牌">批量设置品牌</option>
+                                                    </select><i></i>
+                                                </label>
+                                            </span>
+
+                                        </div>
+                                  
+                                    </div>
+                                    <div class="dt-wrapper">
+                                        <table class="table table-striped table-hover dataTable" id="datatable_tabletools" aria-describedby="datatable_tabletools_info">
+                                            <thead>
+                                                <tr role="row">
+                                                    <th style="width: 25px;">
+                                                        <label class="checkbox">
+                                                            <input type="checkbox" name="checkbox-inline">
+                                                        </label>
+                                                    </th>
+                                                    <th class="sorting_asc" role="columnheader" tabindex="0" aria-controls="datatable_tabletools" rowspan="1" colspan="1" style="width: 55px;" aria-sort="ascending" aria-label="ID: activate to sort column descending">ID</th>
+                                                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="datatable_tabletools" rowspan="1" colspan="1" style="width: 155px;" aria-label="Name: activate to sort column ascending">Name</th>
+                                                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="datatable_tabletools" rowspan="1" colspan="1" style="width: 196px;" aria-label="Phone: activate to sort column ascending">Phone</th>
+                                                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="datatable_tabletools" rowspan="1" colspan="1" style="width: 494px;" aria-label="Company: activate to sort column ascending">Company</th>
+                                                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="datatable_tabletools" rowspan="1" colspan="1" style="width: 134px;" aria-label="Zip: activate to sort column ascending">Zip</th>
+                                                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="datatable_tabletools" rowspan="1" colspan="1" style="width: 308px;" aria-label="City: activate to sort column ascending">City</th>
+                                                    <th class="sorting" role="columnheader" tabindex="0" aria-controls="datatable_tabletools" rowspan="1" colspan="1" style="width: 115px;" aria-label="Date: activate to sort column ascending">Date</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody role="alert" aria-live="polite" aria-relevant="all">
+                                                <tr class="odd">
+                                                    <td>
+                                                        <label class="checkbox">
+                                                            <input type="checkbox" name="checkbox-inline">
+                                                        </label>
+                                                    </td>
+                                                    <td class="  sorting_1">1</td>
+                                                    <td class=" ">Jennifer</td>
+                                                    <td class=" ">1-342-463-8341</td>
+                                                    <td class=" ">Et Rutrum Non Associates</td>
+                                                    <td class=" ">35728</td>
+                                                    <td class=" ">Fogo</td>
+                                                    <td class=" ">03/04/14</td>
+                                                </tr>
+                                                <tr class="even">
+                                                    <td>
+                                                        <label class="checkbox">
+                                                            <input type="checkbox" name="checkbox-inline">
+                                                            <i></i>
+                                                        </label>
+                                                    </td>
+                                                    <td class="  sorting_1">2</td>
+                                                    <td class=" ">Clark</td>
+                                                    <td class=" ">1-516-859-1120</td>
+                                                    <td class=" ">Nam Ac Inc.</td>
+                                                    <td class=" ">7162</td>
+                                                    <td class=" ">Machelen</td>
+                                                    <td class=" ">03/23/13</td>
+                                                </tr>
+                                                <tr class="odd">
+                                                    <td>
+                                                        <label class="checkbox">
+                                                            <input type="checkbox" name="checkbox-inline">
+                                                            <i></i>
+                                                        </label>
+                                                    </td>
+                                                    <td class="  sorting_1">3</td>
+                                                    <td class=" ">Brendan</td>
+                                                    <td class=" ">1-724-406-2487</td>
+                                                    <td class=" ">Enim Commodo Limited</td>
+                                                    <td class=" ">98611</td>
+                                                    <td class=" ">Norman</td>
+                                                    <td class=" ">02/13/14</td>
+                                                </tr>
+                                                <tr class="even">
+                                                    <td>
+                                                        <label class="checkbox">
+                                                            <input type="checkbox" name="checkbox-inline">
+                                                            <i></i>
+                                                        </label>
+                                                    </td>
+                                                    <td class="  sorting_1">4</td>
+                                                    <td class=" ">Warren</td>
+                                                    <td class=" ">1-412-485-9725</td>
+                                                    <td class=" ">Odio Etiam Institute</td>
+                                                    <td class=" ">10312</td>
+                                                    <td class=" ">Sautin</td>
+                                                    <td class=" ">01/01/13</td>
+                                                </tr>
+                                                <tr class="odd">
+                                                    <td>
+                                                        <label class="checkbox">
+                                                            <input type="checkbox" name="checkbox-inline">
+                                                            <i></i>
+                                                        </label>
+                                                    </td>
+                                                    <td class="  sorting_1">5</td>
+                                                    <td class=" ">Rajah</td>
+                                                    <td class=" ">1-849-642-8777</td>
+                                                    <td class=" ">Neque Ltd</td>
+                                                    <td class=" ">29131</td>
+                                                    <td class=" ">Glovertown</td>
+                                                    <td class=" ">02/16/13</td>
+                                                </tr>
+                       
+                                            </tbody>
+                                        </table>
+                                    </div><div class="dt-row dt-bottom-row"><div class="row"><div class="col-sm-6"><div class="dataTables_info" id="datatable_tabletools_info">Showing 1 to 10 of 100 entries</div></div><div class="col-sm-6 text-right"><div class="dataTables_paginate paging_bootstrap"><ul class="pagination"><li class="prev disabled"><a href="#">Previous</a></li><li class="active"><a href="#">1</a></li><li><a href="#">2</a></li><li><a href="#">3</a></li><li><a href="#">4</a></li><li><a href="#">5</a></li><li class="next"><a href="#">Next</a></li></ul></div></div></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+    <link href="../../vendors/css/daterangepicker.css" rel="stylesheet" />
+    <script src="../../vendors/js/jquery/jquery-2.0.2.min.js"></script>
+    <script src="../../vendors/js/moment-with-locales.js"></script>
+    <script src="../../vendors/js/date/daterangepicker.js"></script>
+    <script type="text/javascript">
+        moment.locale('zh-cn');
+        $('#date').daterangepicker({
+            format: 'YYYY-MM-DD',
+            startDate: '2014-01-01',
+            endDate: '2014-12-31',
+            locale: {
+                applyLabel: '确定',
+                cancelLabel: '清空',
+                fromLabel: '开始时间',
+                toLabel: '结束时间',
+            }
+        });
+    </script>
+</body>
+</html>

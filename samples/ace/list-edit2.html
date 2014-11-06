@@ -13,9 +13,8 @@
     <link rel="stylesheet" href="../../themes/ace/assets/css/font-awesome.min.css" />
 
     <!-- 样式 页面特定插件 -->
-    <link rel="stylesheet" href="../../themes/ace/assets/css/datepicker.css" />
-    <link rel="stylesheet" href="../../themes/ace/assets/css/daterangepicker.css" />
-    <link rel="stylesheet" href="../../themes/ace/assets/css/colorpicker.css" />
+    <link href="../../vendors/css/daterangepicker.css" rel="stylesheet" />
+    <link href="../../vendors/css/colorpicker.css" rel="stylesheet" />
 
     <!-- 样式 文本字体 -->
     <link rel="stylesheet" href="../../themes/ace/assets/css/ace-fonts.css" />
@@ -555,26 +554,15 @@
             </div>
         </div>
     </div>
-    <!--[if !IE]> -->
-    <script type="text/javascript">
-        window.jQuery || document.write("<script src='../../themes/ace/assets/js/jquery.min.js'>" + "<" + "/script>");
-    </script>
-    <!-- <![endif]-->
-    <!--[if IE]>
-    <script type="text/javascript">
-        window.jQuery || document.write("<script src='../../themes/ace/assets/js/jquery1x.min.js'>"+"<"+"/script>");
-    </script>
-    <![endif]-->
-    <script type="text/javascript">
-        if ('ontouchstart' in document.documentElement) document.write("<script src='../../themes/ace/assets/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
-    </script>
-    <script src="../../themes/ace/assets/js/bootstrap.min.js"></script>
+
+    <script src="../../vendors/js/jquery/jquery-2.0.2.min.js"></script>
+    <script src="../../vendors/js/bootstrap/bootstrap-3.1.1.min.js"></script>
     <script src="../../themes/ace/assets/js/ace.min.js"></script>
-    <script src="../../themes/ace/assets/js/date-time/moment-with-locales.js"></script>
+    <script src="../../vendors/js/moment-with-locales.js"></script>
     <script src="../../themes/ace/assets/js/bootstrap-wysiwyg.min.js"></script>
     <script src="../../themes/ace/assets/js/jquery.hotkeys.min.js"></script>
-    <script src="../../themes/ace/assets/js/date-time/daterangepicker.js"></script>
-    <script src="../../themes/ace/assets/js/bootstrap-colorpicker.min.js"></script>
+    <script src="../../vendors/js/bootstrap-colorpicker.min.js"></script>
+    <script src="../../vendors/js/date/daterangepicker.js"></script>
     <script src="../../themes/ace/assets/js/ace-elements.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -648,10 +636,6 @@
             $(".ace-file-container").addClass('col-xs-10 col-sm-5');
             $('#colorpicker1').colorpicker();
         });
-
-
-
     </script>
-
 </body>
 </html>

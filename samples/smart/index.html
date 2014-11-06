@@ -1,0 +1,297 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <title> 唯一特卖 </title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 基础样式 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/font-awesome.min.css">
+    <!-- SmartAdmin 样式 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/smartadmin-production.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/smartadmin-skins.css">
+
+    <!-- SmartAdmin RTL Support is under construction
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/smartadmin-rtl.css"> -->
+
+    <link rel="shortcut icon" href="../../themes/smart/assets/img/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../../themes/smart/assets/img/favicon/favicon.ico" type="image/x-icon">
+
+    <link href="../../themes/smart/assets/css/font-ve.css" rel="stylesheet" />
+    <!--Echarts 图形插件-->
+    <script src="../../vendors/js/echarts/esl/esl.js"></script>
+    <script type="text/javascript">
+        // 路径配置
+        require.config({
+            paths: {
+                'echarts': '../../vendors/js/echarts/build/echarts',
+                'echarts/chart/pie': '../../vendors/js/echarts/src/chart/pie'
+            }
+        });
+
+        //使用1
+        require(
+            [
+                'echarts',
+                'echarts/chart/pie'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart = ec.init(document.getElementById('chart1'));
+
+                var option = {
+                    title: {
+                        text: '',
+                        x: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        x: 'left',
+                        data: ['普通商品', '团购商品', '积分商品']
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            mark: { show: true },
+                            dataView: { show: true, readOnly: false },
+                            restore: { show: true },
+                            saveAsImage: { show: true }
+                        }
+                    },
+                    calculable: true,
+                    series: [
+                        {
+                            name: '上线商品',
+                            type: 'pie',
+                            radius: '55%',
+                            center: ['50%', '60%'],
+                            itemStyle: {
+                                normal: {
+                                    label: {
+                                        position: 'inner',
+                                        formatter: function (a, b, c, d) {
+                                            return c;
+                                        }
+                                    },
+                                    labelLine: {
+                                        show: false
+                                    }
+                                },
+                            },
+                            data: [
+                                { value: 50000, name: '普通商品' },
+                                { value: 30000, name: '团购商品' },
+                                { value: 20000, name: '积分商品' }
+                            ]
+                        }
+                    ]
+                };
+                // 为echarts对象加载数据
+                myChart.setOption(option);
+            }
+        );
+
+        //使用2
+        require(
+            [
+                'echarts',
+                'echarts/chart/pie'
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart = ec.init(document.getElementById('chart2'));
+
+                var option = {
+                    title: {
+                        text: '',
+                        x: 'center'
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{b} : {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        x: 'left',
+                        data: ['普通订单', '充值订单']
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            mark: { show: true },
+                            dataView: { show: true, readOnly: false },
+                            restore: { show: true },
+                            saveAsImage: { show: true }
+                        }
+                    },
+                    calculable: true,
+                    series: [
+                        {
+                            type: 'pie',
+                            radius: '55%',
+                            center: ['50%', '60%'],
+                            itemStyle: {
+                                normal: {
+                                    label: {
+                                        position: 'inner',
+                                        formatter: function (a, b, c, d) {
+                                            return c;
+                                        }
+                                    },
+                                    labelLine: {
+                                        show: false
+                                    }
+                                },
+                            },
+                            data: [
+                                { value: 50000, name: '普通订单' },
+                                { value: 30000, name: '充值订单' }
+                            ]
+                        }
+                    ]
+                };
+
+                // 为echarts对象加载数据
+                myChart.setOption(option);
+            }
+        );
+    </script>
+</head>
+    <body>
+        <!--导航条-->
+        <header>
+            <div id="shortcut">
+                <ul>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes selected bg-color-blue" href="#inbox.html"> <span class="iconbox"> <i class="fa fa-home fa-4x"></i> <span>首页</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-orangeDark" href="#calendar.html"> <span class="iconbox"> <i class="fa fa-shopping-cart fa-4x"></i> <span>商品管理</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-purple" href="#gmap-xml.html"> <span class="iconbox"> <i class="fa fa-indent fa-4x"></i> <span>订单管理</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-blueDark" href="#invoice.html"> <span class="iconbox"> <i class="fa fa-user fa-4x"></i> <span>会员管理<span class="label pull-right bg-color-darken">99</span></span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-greenLight" href="#gallery.html"> <span class="iconbox"> <i class="fa fa-inbox fa-4x"></i> <span>短信邮件</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-yellow" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-gear fa-4x"></i> <span>商城设置</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-teal" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-gear fa-4x"></i> <span>系统设置</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-redLight" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-calendar fa-4x"></i> <span>排期管理</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-blue" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-columns fa-4x"></i> <span>添加栏目</span> </span> </a>
+                    </li>
+                </ul>
+            </div>
+        </header>
+
+        <!--左侧菜单-->
+        <aside id="left-panel">
+            <nav>
+                <ul>
+                    <li class="active">
+                        <a href="index.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">首页</span></a>
+                    </li>
+                    <li class="">
+                        <a href="list.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-check"></i> <span class="menu-item-parent">列表</span></a>
+                    </li>
+                    <li class="">
+                        <a href="list-edit1.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-check"></i> <span class="menu-item-parent">列表-编辑01</span></a>
+                    </li>
+                    <li class="">
+                        <a href="list-edit2.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-check"></i> <span class="menu-item-parent">列表-编辑02</span></a>
+                    </li>
+                </ul>
+            </nav>
+            <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
+        </aside>
+        
+        <!--主要容器-->
+        <div id="main" role="main">
+            <!--内容-->
+            <div id="content">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+                        <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-home"></i>首页<span></span></h1>
+                    </div>
+                    <div class="col-xs-12 col-sm-5 col-md-5 col-lg-8">
+                        <ul id="sparks" class="">
+                            <li class="sparks-info">
+                                <h5><i class="fa fa-comment"></i>评论统计 <span class="txt-color-blue">250000&nbsp;<i class="fa fa-arrow-circle-up"></i>10%</span></h5>
+                                <div class="sparkline txt-color-blue hidden-mobile hidden-md hidden-sm">
+                                </div>
+                            </li>
+                            <li class="sparks-info">
+                                <h5><i class="fa fa-user"></i>会员统计 <span class="txt-color-purple">300000&nbsp;<i class="fa fa-arrow-circle-up"></i>10%</span></h5>
+                                <div class="sparkline txt-color-purple hidden-mobile hidden-md hidden-sm">
+                                </div>
+                            </li>
+                            <li class="sparks-info">
+                                <h5><i class="fa fa-shopping-cart"></i>上线商品 <span class="txt-color-greenDark">100000&nbsp;<i class="fa fa-arrow-circle-up"></i>20%</span></h5>
+                                <div class="sparkline txt-color-greenDark hidden-mobile hidden-md hidden-sm">
+                                </div>
+                            </li>
+                            <li class="sparks-info">
+                                <h5><i class="fa fa-indent"></i>订单统计 <span class="txt-color-orange">150000&nbsp;<i class="fa fa-arrow-circle-up"></i>50%</span></h5>
+                                <div class="sparkline txt-color-greenDark hidden-mobile hidden-md hidden-sm">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="well">
+                            <h1>当前系统版本 <sup class="badge bg-color-red bounceIn animated">v 2.0</sup> ,当前时间 2014-10-31 18:08:55</h1>
+                        </div>
+                    </div>
+                </div>
+                <section id="widget-grid" class="">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="jarviswidget">
+                                <header>
+                                    <span class="widget-icon">
+                                        <i class="fa fa-picture-o"></i>
+                                    </span>
+                                    <h2 class="font-md"><strong>上线商品</strong></h2>
+                                </header>
+                                <div class="widget-body">
+                                    <div id="chart1" style="height: 400px"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+                            <div class="jarviswidget">
+                                <header>
+                                    <span class="widget-icon">
+                                        <i class="fa fa-picture-o"></i>
+                                    </span>
+                                    <h2 class="font-md"><strong>订单统计</strong></h2>
+                                </header>
+                                <div class="widget-body">
+                                    <div id="chart2" style="height: 400px"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </body>
+</html>

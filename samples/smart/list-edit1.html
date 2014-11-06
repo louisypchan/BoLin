@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <title> 唯一特卖 </title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 基础样式 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/font-awesome.min.css">
+    <!-- SmartAdmin 样式 -->
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/smartadmin-production.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/smartadmin-skins.css">
+
+    <!-- SmartAdmin RTL Support is under construction
+    <link rel="stylesheet" type="text/css" media="screen" href="../../themes/smart/assets/css/smartadmin-rtl.css"> -->
+
+    <link rel="shortcut icon" href="../../themes/smart/assets/img/favicon/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../../themes/smart/assets/img/favicon/favicon.ico" type="image/x-icon">
+
+    <link href="../../themes/smart/assets/css/font-ve.css" rel="stylesheet" />
+
+</head>
+    <body style="min-height: 1400px;">
+        <!--导航条-->
+        <header>
+            <div id="shortcut">
+                <ul>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes selected bg-color-blue" href="#inbox.html"> <span class="iconbox"> <i class="fa fa-home fa-4x"></i> <span>首页</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-orangeDark" href="#calendar.html"> <span class="iconbox"> <i class="fa fa-shopping-cart fa-4x"></i> <span>商品管理</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-purple" href="#gmap-xml.html"> <span class="iconbox"> <i class="fa fa-indent fa-4x"></i> <span>订单管理</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-blueDark" href="#invoice.html"> <span class="iconbox"> <i class="fa fa-user fa-4x"></i> <span>会员管理<span class="label pull-right bg-color-darken">99</span></span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-greenLight" href="#gallery.html"> <span class="iconbox"> <i class="fa fa-inbox fa-4x"></i> <span>短信邮件</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-yellow" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-gear fa-4x"></i> <span>商城设置</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-teal" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-gear fa-4x"></i> <span>系统设置</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-redLight" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-calendar fa-4x"></i> <span>排期管理</span> </span> </a>
+                    </li>
+                    <li>
+                        <a class="jarvismetro-tile big-cubes bg-color-blue" href="javascript:void(0);"> <span class="iconbox"> <i class="fa fa-columns fa-4x"></i> <span>添加栏目</span> </span> </a>
+                    </li>
+                </ul>
+            </div>
+        </header>
+
+        <!--左侧菜单-->
+        <aside id="left-panel" style="min-height: 1400px">
+            <nav>
+                <ul>
+                    <li class="active">
+                        <a href="index.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-home"></i> <span class="menu-item-parent">首页</span></a>
+                    </li>
+                    <li class="">
+                        <a href="list.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-check"></i> <span class="menu-item-parent">列表</span></a>
+                    </li>
+                    <li class="">
+                        <a href="list-edit1.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-check"></i> <span class="menu-item-parent">列表-编辑01</span></a>
+                    </li>
+                    <li class="">
+                        <a href="list-edit2.html" title="Dashboard"><i class="fa fa-lg fa-fw fa-check"></i> <span class="menu-item-parent">列表-编辑02</span></a>
+                    </li>
+                </ul>
+            </nav>
+            <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
+        </aside>
+        
+        <!--主要容器-->
+        <div id="main" role="main">
+            <!--内容-->
+            <div id="content">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+                        <h1 class="page-title txt-color-blueDark">
+                            <i class="fa fa-edit fa-shopping-cart"></i>
+                            商品列表
+                            <span>
+                                &gt;
+                                编辑
+                            </span>
+                        </h1>
+                    </div>
+                </div> 
+                <div class="row">
+                    <article class="col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
+                        <div class="jarviswidget" id="wid-id-5" data-widget-colorbutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false" data-widget-custombutton="false" data-widget-sortable="false">
+                            <header>
+                                <h2><i class="fa fa-edit"></i>编辑</h2>
+                            </header>
+
+                            <div>
+                                <div class="widget-body">
+                                    <div class="tabs-left">
+                                        <ul class="nav nav-tabs tabs-left" id="demo-pill-nav">
+                                            <li class="active">
+                                                <a href="#tab-r1" data-toggle="tab"><span class="badge bg-color-blue txt-color-white"></span>基础属性</a>
+                                            </li>
+                                            <li>
+                                                <a href="#tab-r2" data-toggle="tab"><span class="badge bg-color-blue"></span>价格与类型</a>
+                                            </li>
+                                            <li>
+                                                <a href="#tab-r3" data-toggle="tab"><span class="badge bg-color-blue"></span>规格属性</a>
+                                            </li>
+                                            <li>
+                                                <a href="#tab-r4" data-toggle="tab"><span class="badge bg-color-blue"></span>SEO设置</a>
+                                            </li>
+                                            <li>
+                                                <a href="#tab-r5" data-toggle="tab"><span class="badge bg-color-blue"></span>活动设置</a>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content">
+                                            <div class="tab-pane active" id="tab-r1">
+                                                <form class="smart-form">
+
+                                                    <fieldset>
+                                                        <section>
+                                                            <label class="label">商品ID</label>
+                                                            <label class="input ">
+                                                                <input type="text" placeholder="商品ID" class="input-xs">
+                                                            </label>
+                                                        </section>
+
+                                                        <section>
+                                                            <label class="label">商品名称</label>
+                                                            <label class="input ">
+                                                                <input type="text" placeholder="商品名称" class="input-xs">
+                                                            </label>
+                                                        </section>
+
+                                                        <section>
+                                                            <label class="label">商品名称</label>
+                                                            <label class="input ">
+                                                                <input type="text" placeholder="商品名称" class="input-xs">
+                                                            </label>
+                                                        </section>
+
+                                                        <section>
+                                                            <label class="label">缩略名</label>
+                                                            <label class="input">
+                                                                <input type="text" placeholder="缩略名" class="input-xs">
+                                                            </label>
+                                                            <div class="note txt-color-orange">
+                                                                用于剪短的名称
+                                                            </div>
+                                                        </section>
+
+                                                        <section>
+                                                            <label class="label">首页卖点描述</label>
+                                                            <label class="textarea">
+                                                                <textarea class="custom-scroll" rows="3"></textarea>
+                                                            </label>
+                                                            <div class="note txt-color-orange">
+                                                                [如果这里的内容为空时，以商品简介来替代显示]
+                                                            </div>
+                                                        </section>
+
+                                                        <section>
+                                                            <label class="label">分类列表</label>
+                                                            <label class="select">
+                                                                <select>
+                                                                    <option value="未选择分类">未选择分类</option>
+                                                                    <option value="妈妈专区">妈妈专区</option>
+                                                                    <option value="宝宝营养">宝宝营养</option>
+                                                                    <option value="宝宝用品">宝宝用品</option>
+                                                                </select><i></i>
+                                                            </label>
+                                                        </section>
+
+                                                        <section>
+                                                            <section>
+                                                                <label class="label">状态</label>
+                                                                <div class="inline-group">
+                                                                    <label class="radio">
+                                                                        <input type="radio" checked="checked" name="radio-inline">
+                                                                        <i></i>有效
+                                                                    </label>
+                                                                    <label class="radio">
+                                                                        <input type="radio" name="radio-inline">
+                                                                        <i></i>无效
+                                                                    </label>
+                                                                </div>
+                                                            </section>
+                                                            <section>
+                                                                <label class="label">缩略图</label>
+                                                                <div class="input input-file">
+                                                                    <span class="button">
+                                                                        <input type="file" onchange="this.parentNode.nextSibling.value = this.value" name="file" id="file">点击上传
+                                                                    </span><input type="text" readonly="" placeholder="没有文件...">
+                                                                </div>
+                                                            </section>
+                                                        </section>
+                                                    </fieldset>
+
+                                                    <footer>
+                                                        <button class="btn btn-primary" type="submit">
+                                                            编辑
+                                                        </button>
+                                                        <button onclick="window.history.back();" class="btn btn-default" type="button">
+                                                            重置
+                                                        </button>
+                                                    </footer>
+                                                </form>
+                                            </div>
+                               
+                                       </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
