@@ -23,9 +23,10 @@
 /**
  * The base class to be inherited
  */
-$.add("ve/core/base", ["./declare", ".kernel"], function(declare, kernel){
+$.add("ve/core/base", ["./declare", "./kernel"], function(declare, kernel){
     return declare({
-        "~name" : "ve.core.base",
+        "~name" : "$.core.base",
+
 
         ctor : function(){
             this.observedprops = {};

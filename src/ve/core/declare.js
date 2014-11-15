@@ -20,11 +20,7 @@
 /**
  * Created by Louis Y P Chen on 2014/10/31.
  */
-$.add(["./kernel", "ve/extensions/object"], function(kernel){
-
-    "use strict";
-
-
+$.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kernel){
     var __synthesizes  = [];
     /**
      * http://www.python.org/download/releases/2.3/mro/
@@ -133,7 +129,7 @@ $.add(["./kernel", "ve/extensions/object"], function(kernel){
      */
     function callSuperImpl(){
         var caller = callSuperImpl.caller, name = caller._name,
-            meta = this._class._meta, p, _super;
+            meta = this._class._meta, p, _super;name
         if(meta.super){
             _super = [].concat(meta.super);
             _super = _super[_super.length - 1];
@@ -146,7 +142,7 @@ $.add(["./kernel", "ve/extensions/object"], function(kernel){
 
 
     var isPrivate = function(it){
-            return (it.indexOf("-") == 0 || it.indexOf("_") == 0);
+            return it.indexOf("-") == 0;
         },
 
         isStatic = function(it){
@@ -155,14 +151,15 @@ $.add(["./kernel", "ve/extensions/object"], function(kernel){
         isNelectful  = function(it){
             return it.indexOf("~") == 0;
         },
-        safeMixin = function(target, source){
-            var name, t;
+        safeMixin = function(target, source, crackPrivate){
+            var name, t, p = [];
             for(name in source){
                 t = source[name];
-                if(kernel.isNotObjectProperty(t, name) && name != "ctor" && !isNelectful(name)){
+                if(kernel.isNotObjectProperty(t, name) && !isNelectful(name)){
                     //crack private
                     if(isPrivate(name)){
-                       continue;
+                        name = name.substr(1);
+                        p.push(name);
                     }
                     if(kernel.isFunction(t)){
                         //assign the name to a function
@@ -171,10 +168,25 @@ $.add(["./kernel", "ve/extensions/object"], function(kernel){
                     target[name] = t;
                 }
             }
+            //crack all the privates
+            if(crackPrivate && target._class){
+                var __proto__;
+                target._class.privates.forEach(function(i){
+                    delete  target[i];
+                    __proto__ = target.__proto__;
+                    while(__proto__ && !__proto__[i]){
+                        __proto__ = __proto__.__proto__;
+                    }
+                    if(__proto__ && __proto__[i]){
+                        delete __proto__[i];
+                    }
+                });
+            }
+            return p;
         },
         aF = new Function,
 
-        runCtor = function(superclass, ctor){
+        /*runCtor = function(superclass, ctor){
             if(kernel.isFunction(superclass)){
                 if(superclass._meta){
                     ctor.unshift(superclass._meta.ctor);
@@ -193,7 +205,7 @@ $.add(["./kernel", "ve/extensions/object"], function(kernel){
             }else{
                 return;
             }
-        },
+        },*/
 
         crackStatic = function(it){
             var t = it.prototype, name, src;
@@ -209,63 +221,62 @@ $.add(["./kernel", "ve/extensions/object"], function(kernel){
         },
 
         declare = function(obj){
-            var superclass = obj["~superclass"], proto = {}, clsName = obj["~name"], ctor = [];
+            var superclass = obj["~superclass"], proto = {}, clsName = obj["~name"], ctor = false, crackPrivate = false, privates = [];
             if(superclass){
-                //inheritance
-                var _superclass = superclass;
-
-                if(kernel.isFunction(superclass)){
-                    //force new
-                    aF.prototype = superclass.prototype;
-                    proto = new aF;
-                    //clean up
-                    aF.prototype = null;
-                }else if(kernel.isArray(superclass)){
-                    var t = superclass.slice(0);
-                    t = mro_c3(t);
-                    for(var i = 0, base, l = t.length; i < l; i++){
-                        base = t[i];
-                        aF.prototype = base.prototype;
-                        safeMixin(proto, new aF);
+                (function(supercls){
+                    if(kernel.isFunction(supercls)){
+                        //force new
+                        aF.prototype = supercls.prototype;
+                        proto = new aF;
+                        //clean up
                         aF.prototype = null;
+                    }else if(kernel.isArray(supercls)){
+                        var t = supercls.slice(0);
+                        t = mro_c3(t);
+                        for(var i = 0, base, l = t.length; i < l; i++){
+                            base = t[i];
+                            aF.prototype = base.prototype;
+                            privates = privates.concat(safeMixin(proto, new aF, false));
+                            aF.prototype = null;
+                        }
                     }
-                }
-                runCtor(_superclass, ctor);
-                _superclass = null;
+                    //runCtor(supercls, ctor);
+                    crackPrivate = true;
+                })(superclass);
             }
+            //clone the properties
+            var rPorot = kernel.mixin(true, {}, proto);
             //add all properties
-            safeMixin(proto, obj);
+            privates = privates.concat(safeMixin(rPorot, obj, crackPrivate));
             //new constructor
             if(obj.ctor){
-                ctor = ctor.concat(obj.ctor);
+                ctor =  rPorot.ctor = obj.ctor;
             }
             var f = (function(ctor){
                 return function(){
                     f.executed || processSynthesize();
                     if(ctor){
-                        for(var i = 0, l = ctor.length; i < l; i++){
-                            ctor[i] && ctor[i].apply(this, arguments);
-                        }
+                        ctor.apply(this,arguments);
                     }
                 }
             })(ctor);
             f.executed = false;
             //cache meta information
             f._meta = {ctor : obj.ctor, synthesize : obj["~synthesize"], super : superclass};
-            //
-            proto.callSuper = callSuperImpl;
+            rPorot.callSuper = callSuperImpl;
             //constructor the prototype
-            f.prototype = proto;
-            //
+            f.prototype = rPorot;
+            f.privates = privates;
             //crack static
             crackStatic(f);
             //
-            proto._class = f;
+            rPorot._class = f;
             //synthesize properties
             __synthesizes.push(f);
             //add name if specified
             if(clsName){
-                proto._class._name = clsName;
+                kernel.set(clsName, f);
+                rPorot._class._name = clsName;
             }
             //return
             return f;

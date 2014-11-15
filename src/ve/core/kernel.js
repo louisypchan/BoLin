@@ -21,9 +21,9 @@
  */
 $.add(["lang"], function(lang){
     var result = {};
-    result = lang.mixin(result, lang),
+    result = lang.mixin(result, lang);
     op = Object.prototype;
-//exclude the following css properties to add px 以下属性是否要加 px
+    //exclude the following css properties to add px 以下属性是否要加 px
     var exclude = /z-?index|font-?weight|opacity|zoom|line-?height/i;
     /**
      * A internal plugin to fix the accuracy of float number calculation
@@ -51,7 +51,7 @@ $.add(["lang"], function(lang){
          */
         isArrayLike : function(it){
             return it && it !== undefined &&
-// keep out built-in constructors (Number, String, ...) which have length
+                // keep out built-in constructors (Number, String, ...) which have length
                 !lang.isString(it) && !lang.isFunction(it) &&
                 !(it.tagName && it.tagName.toLowerCase() == "form") &&
                 (lang.isArray(it) || isFinite(it.length));
@@ -202,6 +202,10 @@ $.add(["lang"], function(lang){
 
         isNotObjectProperty : function(obj, name){
             return (obj !== op[name] || !(name in op));
+        },
+        set : function(name, value, context){
+            var parts = name.split("."), p = parts.pop(), obj = lang.getProp(parts, true, context);
+            return obj && p ? (obj[p] = value) : undefined;
         }
     });
     return result;

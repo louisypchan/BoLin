@@ -204,7 +204,7 @@ $.add(["ve/core/kernel"], function(kernel) {
 
             if (computedStyle && !color(elem))
                 ret = computedStyle.getPropertyValue(name);
-// If the element isn't reporting its values properly in Safari
+            // If the element isn't reporting its values properly in Safari
             // then some display: none elements are involved
             else {
                 var swap = [], stack = [], a = elem, i = 0;

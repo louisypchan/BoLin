@@ -53,6 +53,8 @@
 
     ve.__uidSeed = 1;
 
+    ve.noop = noop;
+
     ve.majorEvent = !!document.addEventListener;
 
     //Returns a unique identifier
@@ -558,7 +560,6 @@
             var isRelative = /^\./.test(name), match, pid, pack, rs, url, midInPackage;
             if(/(^\/)|(\:)|(\.js$)/.test(name) || (isRelative && !refMod)){
                 //not a module but just a URL of some sort
-                //
                 return  new Module({
                     pid : 0,
                     mid : name,
@@ -766,6 +767,7 @@
                  * @returns {string}
                  */
                 redress : function(path){
+                    //console.log(path);
                     if(!path) return "";
                     //reform the string
                     path = path.replace(/\\/g, '/').replace(/[^\/]+(?=\/)\//g, function($0){
