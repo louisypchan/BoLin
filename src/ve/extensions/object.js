@@ -21,6 +21,7 @@
  * Created by Louis Y P Chen on 2014/10/31.
  */
 $.add("ve/extensions/object", [], function(){
+
     // ES 15.2.3.6 Object.defineProperty ( O, P, Attributes )
     // Partial support for most common case - getters, setters, and values
     (function() {

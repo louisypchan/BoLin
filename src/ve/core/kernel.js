@@ -19,7 +19,7 @@
 /**
  * Created by Louis Y P Chen on 2014/10/23.
  */
-$.add(["lang"], function(lang){
+$.add(["lang", "ve/extensions/string"], function(lang){
     var result = {};
     result = lang.mixin(result, lang);
     op = Object.prototype;
@@ -67,6 +67,10 @@ $.add(["lang"], function(lang){
          */
         isNative : function(it){
             return /^[^{]+\{\s*\[native code/.test(it + "");
+        },
+
+        isNumber : function(it){
+            return lang.type(it) === "number";
         },
         /**
          * Acoording to the format passing in to adjust the accuracy of float number
@@ -206,6 +210,25 @@ $.add(["lang"], function(lang){
         set : function(name, value, context){
             var parts = name.split("."), p = parts.pop(), obj = lang.getProp(parts, true, context);
             return obj && p ? (obj[p] = value) : undefined;
+        },
+        trim : function(it){
+            return it == null ? "" : (it + "").trim();
+        },
+        /**
+         * results is for internal usage only
+         * @param arr
+         * @param results
+         */
+        makeArray : function(arr, results){
+            var ret = results || [];
+            if ( arr != null ) {
+                if (this.isArrayLike( Object(arr) ) ) {
+                    ret.concat(typeof arr === "string" ? [arr] : arr);
+                }else{
+                    ret.push(arr);
+                }
+            }
+            return ret;
         }
     });
     return result;

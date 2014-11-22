@@ -26,7 +26,7 @@
 $.add("ve/event/event", ["ve/core/kernel", "ve/extensions/date"], function(kernel){
     "use strict";
 
-    var hasStopimmediatepropagation = window.Event && !!window.Event.prototype && !!window.Event.prototype.stopImmediatePropagation,
+    var hasStopimmediatepropagation = $.global.Event && !!$.global.Event.prototype && !!$.global.Event.prototype.stopImmediatePropagation,
         lastEvent = {},
         _event =  function(event){
         var me = this, e, t;
@@ -69,7 +69,7 @@ $.add("ve/event/event", ["ve/core/kernel", "ve/extensions/date"], function(kerne
                     me.which = e.button & 1 ? 1 : ( e.button & 2 ? 3 : ( e.button & 4 ? 2 : 0 ) );
                 }
 
-                var doc = document.documentElement, body = document.body;
+                var doc = $.doc.documentElement, body = $.doc.body;
 
                 me.pageX = e.pageX || (e.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0));
 

@@ -35,7 +35,8 @@
     //will be replaced from moduleCfg
     //TODO: replace the version in build phase
     ve.version = "${version}";
-
+    //store document
+    ve.doc = doc;
     //user configurations for VE
     ve.Cfg = {
         debug : false //by default, turn off the debug mode
@@ -55,7 +56,7 @@
 
     ve.noop = noop;
 
-    ve.majorEvent = !!document.addEventListener;
+    ve.majorEvent = !!doc.addEventListener;
 
     //Returns a unique identifier
     ve.uid = function() {
@@ -75,8 +76,52 @@
     })();
 
     //check supportive
+    //Test support is borrowed from jQuery
     ve.support = {};
-    ve.support.advanceEvent = !!document.addEventListener;
+    (function(support){
+        var a, b, c, d,e;
+        d = ve.doc.createElement("div");
+        d.setAttribute("className", "v");
+        d.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";
+        a = d.getElementsByTagName("a")[0];
+        c = ve.doc.createElement("select");
+        e = c.appendChild(ve.doc.createElement("option"));
+        b = d.getElementsByTagName("input")[0];
+
+        a.style.cssText = "top:1px";
+        // Test setAttribute on camelCase class. If it works, we need attrFixes when doing get/setAttribute (ie6/7)
+        support.getSetAttribute = d.className !== "v";
+        // Get the style information from getAttribute
+        // (IE uses .cssText instead)
+        support.style = /top/.test( a.getAttribute("style") );
+        // Make sure that URLs aren't manipulated
+        // (IE normalizes it by default)
+        support.hrefNormalized = a.getAttribute("href") === "/a";
+        // Check the default checkbox/radio value ("" on WebKit; "on" elsewhere)
+        support.checkOn = !!b.value;
+        // Make sure that a selected-by-default option has a working selected property.
+        // (WebKit defaults to false instead of true, IE too, if it's in an optgroup)
+        support.optSelected = e.selected;
+        // Tests for enctype support on a form
+        support.enctype = !!ve.doc.createElement("form").enctype;
+        // Make sure that the options inside disabled selects aren't marked as disabled
+        // (WebKit marks them as disabled)
+        c.disabled = true;
+        support.optDisabled = !e.disabled;
+        // Support: IE8 only
+        // Check if we can trust getAttribute("value")
+        b = document.createElement( "input" );
+        b.setAttribute( "value", "" );
+        support.input = b.getAttribute( "value" ) === "";
+        // Check if an input maintains its value after becoming a radio
+        b.value = "v";
+        b.setAttribute( "type", "radio" );
+        support.radioValue = b.value === "v";
+
+        //avoid memory leak
+        a = b = c = d = e = null;
+    })(ve.support);
+    ve.support.advanceEvent = !!doc.addEventListener;
 
     //This is a temporary function to  handler the diff event across the browsers
     //The event control will be moved to be an individual module
@@ -118,7 +163,7 @@
             },
 
             isString : function(it){
-                return toString.call(it) == "[[object String]";
+                return this.type(it) == "string";
             },
 
             isArray : function(it) {
@@ -1258,38 +1303,6 @@
         }
     })(ve);
     //+++++++++++++++++++++++++something about logger end+++++++++++++++++++++++++++
-
-    //+++++++++++++++++++++++++something about common methods start+++++++++++++++++++++++++++
-    /**
-     * Log a debug message to indicate that a behavior has been deprecated.
-     *
-     * @param behaviour : The API or behavior being deprecated.
-     * @param extra     : Text to append to the message. Often provides advice on a
-     *                    new function or facility to achieve the same goal during
-     *                    the deprecation period.
-     * @param removal   : Text to indicate when in the future the behavior will be removed. Usually a version number.
-     */
-    ve.deprecated = function(/*String*/ behaviour, /*String?*/ extra, /*String?*/ removal){
-        var message = "DEPRECATED : " + behaviour;
-        if(extra){ message += " " + extra; }
-        if(removal){ message += " -- will be removed in version: " + removal; }
-        console.warn(message);
-    };
-    /**
-     * This can be used to mark a function, file, or module as
-     * experimental.	 Experimental code is not ready to be used, and the
-     * APIs are subject to change without notice.	Experimental code may be
-     * completed deleted without going through the normal deprecation process.
-     * @param moduleName : The name of a module, or the name of a module file or a specific function
-     * @param extra      : some additional message for the user
-     */
-    ve.experimental = function(/* String */ moduleName, /* String? */ extra){
-        var message = "EXPERIMENTAL: " + moduleName + " -- APIs subject to change without notice.";
-        if(extra){ message += " " + extra;}
-        console.warn(message);
-    };
-    //+++++++++++++++++++++++++something about common methods end+++++++++++++++++++++++++++
-
     //expose to public
     win.$ = win.veeb = ve.__lang.safeMix(win.$||{}, ve);
 
