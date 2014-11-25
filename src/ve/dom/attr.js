@@ -95,11 +95,7 @@ $.add(["ve/core/kernel", "ve/dom/selector/q", "ve/extensions/array"], function(k
             }
         },
         rnotwhite = (/\S+/g),
-        camelCase = function(string){
-            return string.replace( /^-ms-/, "ms-" ).replace( /-([\da-z])/gi, function($0, $1){
-                return $1.toUpperCase();
-            });
-        },
+
         boolHook = {
             set: function( elem, value, name ) {
                 if ( value === false ) {
@@ -110,7 +106,7 @@ $.add(["ve/core/kernel", "ve/dom/selector/q", "ve/extensions/array"], function(k
                     elem.setAttribute( !$.support.getSetAttribute && propFix[ name ] || name, name );
                 }else{
                     // Use defaultChecked and defaultSelected for oldIE
-                    elem[ camelCase( "default-" + name ) ] = elem[ name ] = true;
+                    elem[ kernel.camelCase( "default-" + name ) ] = elem[ name ] = true;
                 }
                 return name;
             }
@@ -213,7 +209,7 @@ $.add(["ve/core/kernel", "ve/dom/selector/q", "ve/extensions/array"], function(k
                                 // Support: IE<9
                                 // Also clear defaultChecked/defaultSelected (if appropriate)
                             }else {
-                                elem[ camelCase( "default-" + name ) ] = elem[ propName ] = false;
+                                elem[ kernel.camelCase( "default-" + name ) ] = elem[ propName ] = false;
                             }
                         }else{
                             // See #9699 for explanation of this approach (setting first, then removal)
@@ -298,6 +294,7 @@ $.add(["ve/core/kernel", "ve/dom/selector/q", "ve/extensions/array"], function(k
     return {
         prop : obj.prop,
         attr : obj.attr,
-        removeAttr : obj.removeAttr
+        removeAttr : obj.removeAttr,
+        valHooks : valHooks
     };
 });

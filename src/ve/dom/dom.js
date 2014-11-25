@@ -20,7 +20,8 @@
 /**
  * Created by Louis Y P Chen on 2014/11/13.
  */
-$.add(["ve/core/kernel", "ve/dom/selector/q", "ve/dom/attr", "ve/extensions/array"], function (kernel, query, domAttr) {
+$.add(["ve/core/kernel", "ve/dom/selector/q", "ve/dom/attr",
+    "ve/dom/style", "ve/extensions/array"], function (kernel, query, domAttr, domStyle) {
     // ============================
     // DOM Functions
     // =============================
@@ -43,8 +44,10 @@ $.add(["ve/core/kernel", "ve/dom/selector/q", "ve/dom/attr", "ve/extensions/arra
             tr: [2, "<table><tbody>", "</tbody></table>"],
             _default: [0, "", ""]
         },
-        tagReg = /<\s*([\w\:]+)/i,
-        gcs = 'getComputedStyle' in $.global;
+        pnum = (/[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/).source,
+        rnumnonpx = new RegExp( "^(" + pnum + ")(?!px)[a-z%]+$", "i" ),
+        rclass = /[\t\r\n\f]/g,
+        tagReg = /<\s*([\w\:]+)/i;
     tagMap.optgroup = tagMap.option;
     tagMap.tbody = tagMap.tfoot = tagMap.colgroup = tagMap.caption = tagMap.thead;
     tagMap.th = tagMap.td;
@@ -157,24 +160,54 @@ $.add(["ve/core/kernel", "ve/dom/selector/q", "ve/dom/attr", "ve/extensions/arra
         return this;
     }
 
-    var _contains = $.doc.compareDocumentPosition ?
-        function (container, contained) {
-            return !!(container.compareDocumentPosition(contained) & 16);
-        } : function (container, contained) {
-        if (container === contained) {
-            return false;
+
+    function getWidthOrHeight(elem, prop, value){
+        if(elem === $.global){
+            return elem.document.documentElement["client" + prop];
         }
-        if (container.contains && contained.contains) {
-            return container.contains(contained);
-        } else {
-            while (contained = contained.parentNode) {
-                if (contained === container) {
-                    return true;
+        if(elem.nodeType === 9){
+            var doc = elem.documentElement;
+            return Math.max(elem.body["scroll" + prop], doc["scroll" + prop],
+                            elem.body["offset" + prop], doc["scroll" + prop],
+                            doc["client" + name]);
+        }
+        return value === undefined ?
+            // Get width or height on the element, requesting but not forcing parseFloat
+            domStyle.get(elem, prop, "content") : domStyle.style(elem, prop, value, "content");
+    }
+
+    /**
+     *
+     * @param cls
+     * @param action - "add" or "remove"
+     */
+    function addOrRemoveClass(cls, action){
+        if(kernel.isString(cls)){
+            var classes = (cls||"").match(/\S+/g)||[], i = 0, c, cur;
+            this.each(function(elem){
+                cur = elem.nodeType == 1 && (elem.className ? (" " + elem.className + " ").replace(rclass," "): " ");
+                if(cur){
+                    i = 0;
+                    while(( c = classes[i++] )){
+                        if(action === "add"){
+                            if(cur.indexOf(" " + c + " ") < 0){
+                                cur += c + " ";
+                            }
+                        }
+                        if(action === "remove"){
+                            if(cur.indexOf(" " + c + " ") > -1){
+                                cur = cur.replace( " " + c + " ", " " );
+                            }
+                        }
+                    }
+                    cur = kernel.trim(cur);
+                    if(elem.className !== cur){
+                        elem.className = cur;
+                    }
                 }
-            }
-            return false;
+            });
         }
-    };
+    }
 
     kernel.extend(DOM.prototype, {
 
@@ -205,11 +238,39 @@ $.add(["ve/core/kernel", "ve/dom/selector/q", "ve/dom/attr", "ve/extensions/arra
          * @param value
          */
         val : function(value){
-            return value ? this.each(function(elem){
-               elem.value = value;
-            }) : (this.elems[0] && (this.elems[0].multiple ? query.qsa("option:selected", this.elems[0]).map(function(elem){
-                return elem.value;
-            }) : this.elems[0].value));
+            var hooks, elem = this.elems[0],ret;
+            if(!value){
+                if ( elem ) {
+                    hooks = domAttr.valHooks[ elem.type ] || domAttr.valHooks[ elem.nodeName.toLowerCase() ];
+                    if ( hooks && "get" in hooks && (ret = hooks.get( elem, "value" )) !== undefined ) {
+                        return ret;
+                    }
+                    ret = elem.value;
+                    return typeof ret === "string" ? ret.replace(/\r/g, "") : ret == null ? "" : ret;
+                }
+            }
+            return this.each(function(n){
+                var val;
+                if(n.nodeType !== 1){
+                    return;
+                }
+                val = value;
+                // Treat null/undefined as ""; convert numbers to string
+                if(val == null){
+                    val = "";
+                }else if(kernel.isNumber(val)){
+                    val += "";
+                }else if(kernel.isArray(val)){
+                    val = val.map(function(v){
+                        return v == null ? "" : v + "";
+                    });
+                }
+                hooks = domAttr.valHooks[ this.type ] || domAttr.valHooks[ this.nodeName.toLowerCase() ];
+                // If set returns undefined, fall back to normal setting
+                if ( !hooks || !("set" in hooks) || hooks.set( this, val, "value" ) === undefined ){
+                    n.value = val;
+                }
+            });
         },
         /**
          *
@@ -266,11 +327,11 @@ $.add(["ve/core/kernel", "ve/dom/selector/q", "ve/dom/attr", "ve/extensions/arra
             }
         },
         offset : function(){
-            var pos = {x : 0, y : 0}, elem = this.elems[0], doc = elem && elem.ownerDocument, docElem;
+            var pos = {top : 0, left : 0}, elem = this.elems[0], doc = elem && elem.ownerDocument, docElem;
             if(!doc) return pos;
             docElem = doc.documentElement;
             // Make sure it's not a disconnected DOM node
-            if(!_contains(docElem, elem)){
+            if(!kernel.contains(docElem, elem)){
                 return pos;
             }
             // If we don't have gBCR, just use 0,0 rather than error
@@ -279,21 +340,111 @@ $.add(["ve/core/kernel", "ve/dom/selector/q", "ve/dom/attr", "ve/extensions/arra
                 pos = elem.getBoundingClientRect();
             }
             return {
-                y : pos.y + ($.global.pageYOffset || docElem.scrollTop) - (docElem.clientTop || 0),
-                x : pos.x + ($.global.pageXOffset || docElem.scrollLeft) - (docElem.clientLeft || 0)
+                top : pos.top + ($.global.pageYOffset || docElem.scrollTop) - (docElem.clientTop || 0),
+                left : pos.left + ($.global.pageXOffset || docElem.scrollLeft) - (docElem.clientLeft || 0)
             };
         },
-        style : function(){
-
+        attr : function(name, value){
+            return this.each(function(elem){
+               domAttr.attr(elem, name, value);
+            });
+        },
+        removeAttr : function(name){
+            return this.each(function(elem){
+                domAttr.removeAttr(elem, name);
+            });
+        },
+        style : function(name, value){
+            var arity = arguments.length;
+            if(arity == 2){
+                return this.each(function(elem){
+                    domStyle.style(elem, name, value);
+                });
+            }
+            if(arity == 1){
+                if(kernel.type(name) == "object"){
+                    for(var i in name){
+                            (function(context, p, obj){
+                            context.each(function(elem){
+                                domStyle.style(elem, p, obj[p]);
+                            });
+                        })(this, i, name);
+                    }
+                    return this;
+                }
+                if(kernel.isString(name)){
+                    if(name == "top" || name == "left"){
+                        var that = this;
+                        var t = domStyle.addGetHookIf($.support.pixelPosition, function( elem, computed ) {
+                            if ( computed ) {
+                                computed = domStyle.curCSS( elem, name );
+                                // if curCSS returns percentage, fallback to offset
+                                return rnumnonpx.test( computed ) ? that.position()[name] + "px" : computed;
+                            }
+                        });
+                        return domStyle.css(t, this.elems[0], name);
+                    }
+                    return domStyle.get(this.elems[0], name);
+                }
+            }
         },
         position : function(){
-
+            var l = this.size();
+            if(l){
+                var offsetParent, offset,parentOffset = { top: 0, left: 0 },elem = this.elems[0];
+                // fixed elements are offset from window (parentOffset = {top:0, left: 0}, because it is its only offset parent
+                if(domStyle.get(elem, "position") === "fixed"){
+                    offset = elem.getBoundingClientRect();
+                }else{
+                    // Get *real* offsetParent
+                    offsetParent = this.elems.map(function(_elem){
+                        var _offsetParent = _elem.offsetParent || $.doc.documentElement;
+                        while ( _offsetParent && ( !kernel.nodeName( _offsetParent, "html" ) && domStyle.get( _offsetParent, "position" ) === "static" ) ) {
+                            _offsetParent = _offsetParent.offsetParent;
+                        }
+                        return _offsetParent || $.doc.documentElement;
+                    });
+                    // Get correct offsets
+                    offset = this.offset();
+                    if ( !kernel.nodeName(offsetParent[0], "html" ) ) {
+                        parentOffset = dom(offsetParent[0]).offset();
+                    }
+                    parentOffset.top  += domStyle.get( offsetParent[ 0 ], "borderTopWidth", true );
+                    parentOffset.left += domStyle.get( offsetParent[ 0 ], "borderLeftWidth", true );
+                    return {
+                        top:  offset.top  - parentOffset.top - domStyle.get( elem, "marginTop", true ),
+                        left: offset.left - parentOffset.left - domStyle.get( elem, "marginLeft", true)
+                    }
+                }
+            }
+            return {
+                top : 0,
+                left : 0
+            }
         },
-        width : function(){
-
+        width : function(w){
+            return getWidthOrHeight(this.elems[0],"Width", w);
         },
-        height : function(){
-
+        height : function(h){
+            return getWidthOrHeight(this.elems[0],"Height", h);
+        },
+        addClass : function(cls){
+            addOrRemoveClass.call(this, cls, "add");
+            return this;
+        },
+        removeClass : function(cls){
+            addOrRemoveClass.call(this, cls, "remove");
+            return this;
+        },
+        hasClass : function(clsName){
+            var className =  " " + clsName + " ", i = 0, l = this.size(), elem;
+            for(; i < l; ){
+                elem = this.elems[i++];
+                if(elem.nodeType === 1 && (" " + elem.className + " ").replace(rclass, " ").indexOf(className) > -1){
+                    return true;
+                }
+            }
+            return false;
         }
     });
 

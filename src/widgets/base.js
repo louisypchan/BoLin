@@ -18,16 +18,5 @@
  THE SOFTWARE.
  ****************************************************************************/
 /**
- * Created by Louis Y P Chen on 2014/10/31.
+ * Created by Louis Y P Chen on 2014/11/24.
  */
-/**
- * The base class to be inherited
- */
-$.add("ve/core/base", ["./declare", "./kernel"], function(declare, kernel){
-    return declare({
-        "~name" : "$.core.base",
-        ctor : function(){
-            this.observedprops = {};
-        }
-    });
-});

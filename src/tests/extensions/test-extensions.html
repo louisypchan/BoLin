@@ -5,13 +5,10 @@
     <title></title>
 </head>
 <body>
-    <div id="test">
-
+    <div id="test">test
     </div>
 
-    <div>
-
-    </div>
+    <input id="i1" type="text" value="1" />
 </body>
 <script type="text/javascript" src="../../ve.js" vecfg="debug:1"></script>
 <script type="text/javascript">
@@ -28,8 +25,18 @@
     });
 
     $.use(["ve/dom/dom"], function(dom){
-        var t = dom("div");
+        var t = dom("div"), i = dom("#i1");
         t.append("<span>test</span>");
+        t.attr("test","test");
+        console.log(t.html());
+        console.log(i.val());
+        t.style({
+           color : "red"
+        });
+
+        console.log(t.position());
+
+        console.log(i.width());
     });
 </script>
 </html>

@@ -87,13 +87,31 @@
         c = ve.doc.createElement("select");
         e = c.appendChild(ve.doc.createElement("option"));
         b = d.getElementsByTagName("input")[0];
-
-        a.style.cssText = "top:1px";
+        if(!a || !a.style){
+            // Finish early in limited (non-browser) environments
+            a = b = c = d = e = null;
+            return;
+        }
+        a.style.cssText = "top:1px;float:left;opacity:.5";
+        d.style.backgroundClip = "content-box";
+        d.cloneNode(true).style.backgroundClip = "";
         // Test setAttribute on camelCase class. If it works, we need attrFixes when doing get/setAttribute (ie6/7)
         support.getSetAttribute = d.className !== "v";
         // Get the style information from getAttribute
         // (IE uses .cssText instead)
         support.style = /top/.test( a.getAttribute("style") );
+
+        support.clearCloneStyle = d.style.backgroundClip === "content-box";
+        // Support: Firefox<29, Android 2.3
+        // Vendor-prefix box-sizing
+        support.boxSizing = a.style.boxSizing === "" || a.style.MozBoxSizing === "" ||
+            a.style.WebkitBoxSizing === "";
+        // Support: IE<9
+        // Make sure that element opacity exists (as opposed to filter)
+        support.opacity = a.style.opacity === "0.5";
+        // Verify style float existence
+        // (IE uses styleFloat instead of cssFloat)
+        support.cssFloat = !!a.style.cssFloat;
         // Make sure that URLs aren't manipulated
         // (IE normalizes it by default)
         support.hrefNormalized = a.getAttribute("href") === "/a";
@@ -117,9 +135,96 @@
         b.value = "v";
         b.setAttribute( "type", "radio" );
         support.radioValue = b.value === "v";
-
         //avoid memory leak
         a = b = c = d = e = null;
+
+        var pixelPositionVal = null, boxSizingReliableVal = null, reliableMarginRightVal = null,
+            reliableHiddenOffsetsVal = null;
+        function computeStyleTests() {
+            var b,c,d,j;
+            b = ve.doc.getElementsByTagName( "body" )[ 0 ];
+            if ( !b || !b.style ) {
+                // Test fired too early or in an unsupported environment, exit.
+                return;
+            }
+            // Setup
+            d = ve.doc.createElement( "div" );
+            c = document.createElement( "div" );
+            c.style.cssText = "position:absolute;border:0;width:0;height:0;top:0;left:-9999px";
+            b.appendChild( c ).appendChild( d );
+            d.style.cssText =
+                // Support: Firefox<29, Android 2.3
+                // Vendor-prefix box-sizing
+                "-webkit-box-sizing:border-box;-moz-box-sizing:border-box;" +
+                "box-sizing:border-box;display:block;margin-top:1%;top:1%;" +
+                "border:1px;padding:1px;width:4px;position:absolute";
+            // Support: IE<9
+            // Assume reasonable values in the absence of getComputedStyle
+            pixelPositionVal = boxSizingReliableVal = false;
+            reliableMarginRightVal = true;
+            // Check for getComputedStyle so that this code is not run in IE<9.
+            if(win.getComputedStyle){
+                pixelPositionVal = ( win.getComputedStyle( d, null ) || {} ).top !== "1%";
+                boxSizingReliableVal = ( win.getComputedStyle( d, null ) || { width: "4px" } ).width === "4px";
+                // Support: Android 2.3
+                // Div with explicit width and no margin-right incorrectly
+                // gets computed margin-right based on width of container
+                // WebKit Bug 13343 - getComputedStyle returns wrong value for margin-right
+                j = d.appendChild( ve.doc.createElement( "div" ) );
+                // Reset CSS: box-sizing; display; margin; border; padding
+                j.style.cssText = d.style.cssText =
+                    // Support: Firefox<29, Android 2.3
+                    // Vendor-prefix box-sizing
+                    "-webkit-box-sizing:content-box;-moz-box-sizing:content-box;" +
+                    "box-sizing:content-box;display:block;margin:0;border:0;padding:0";
+                j.style.marginRight = j.style.width = "0";
+                d.style.width = "1px";
+                reliableMarginRightVal = !parseFloat( ( win.getComputedStyle( j, null ) || {} ).marginRight );
+            }
+            // Support: IE8
+            // Check if table cells still have offsetWidth/Height when they are set
+            // to display:none and there are still other visible table cells in a
+            // table row; if so, offsetWidth/Height are not reliable for use when
+            // determining if an element has been hidden directly using
+            // display:none (it is still safe to use offsets if a parent element is
+            // hidden; don safety goggles and see bug #4512 for more information).
+            d.innerHTML = "<table><tr><td></td><td>t</td></tr></table>";
+            j = d.getElementsByTagName( "td" );
+            j[ 0 ].style.cssText = "margin:0;border:0;padding:0;display:none";
+            reliableHiddenOffsetsVal = j[ 0 ].offsetHeight === 0;
+            if ( reliableHiddenOffsetsVal ) {
+                j[ 0 ].style.display = "";
+                j[ 1 ].style.display = "none";
+                reliableHiddenOffsetsVal = j[ 0 ].offsetHeight === 0;
+            }
+            b.removeChild(c);
+
+            b = c = d = j = null;
+        }
+        support.reliableHiddenOffsets = function(){
+            if ( reliableHiddenOffsetsVal == null ) {
+                computeStyleTests();
+            }
+            return reliableHiddenOffsetsVal;
+        };
+        support.boxSizingReliable = function(){
+            if ( boxSizingReliableVal == null ) {
+                computeStyleTests();
+            }
+            return boxSizingReliableVal;
+        };
+        support.pixelPosition = function(){
+            if ( pixelPositionVal == null ) {
+                computeStyleTests();
+            }
+            return pixelPositionVal;
+        };
+        support.reliableMarginRight = function(){
+            if ( reliableMarginRightVal  == null ) {
+                computeStyleTests();
+            }
+            return reliableMarginRightVal;
+        };
     })(ve.support);
     ve.support.advanceEvent = !!doc.addEventListener;
 

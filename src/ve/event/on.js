@@ -169,7 +169,7 @@ $.add(["ve/event/event", "ve/core/kernel", "ve/core/aspect"], function(Event, ke
      *          An object that provides the properties for the event.
      *          See https://developer.mozilla.org/en/DOM/event.initEvent
      */
-    on.trigger = on. emit = function(target, type, eventprops){
+    on.trigger = on.emit = function(target, type, eventprops){
         if(target.dispatchEvent && $.doc.createEvent){
             var ownerDocument = target.ownerDocument || $.doc;
             var nativeEvent = ownerDocument.createEvent("HTMLEvents");
