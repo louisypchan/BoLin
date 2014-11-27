@@ -30,7 +30,6 @@
         noop = function(){},
         toString =  {}.toString,
         hasOwn = {}.hasOwnProperty;
-
     //the version of ve
     //will be replaced from moduleCfg
     //TODO: replace the version in build phase
@@ -54,6 +53,8 @@
 
     ve.__uidSeed = 1;
 
+    ve.__uid = 0;
+
     ve.noop = noop;
 
     ve.majorEvent = !!doc.addEventListener;
@@ -62,11 +63,16 @@
     ve.uid = function() {
         return "_" + ve.__uidSeed++;
     };
+    //A consistent way of creating unique IDs
+    ve.nextUid = function(){
+        return ++ve.__uid;
+    };
     //The locale to assume for loading localized resources in this page,
     //specified according to [RFC 3066](http://www.ietf.org/rfc/rfc3066.txt).
     //Must be specified entirely in lowercase,e.g. `en-us` and `zh-cn`.
     ve.locale = "zh-cn";
-
+    //prefix of directive
+    ve.veAttrPrefixes = ['ve-', 've:'];
     (function(){
         //populate into types
         var arr = "Boolean Number String Function Array Date RegExp Object Error".split(" ");
@@ -245,7 +251,7 @@
             }
         }
     };
-
+    ve.monitor = domOn;
     //+++++++++++++++++++++++++define a minimal library to help build the loader+++++++++++++++++++++++++++
     (function(v){
         //internal, can be reused in kernel.js
@@ -428,6 +434,7 @@
 
         return v > 4 ? v : !v;
     })();
+    ve.browser.msie = ve.doc.documentMode;
     ve.browser.opera = typeof window.opera !== "undefined";
 
     //+++++++++++++++++++++++++something about JSON start+++++++++++++++++++++++++++

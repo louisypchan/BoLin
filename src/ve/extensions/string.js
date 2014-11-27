@@ -29,4 +29,17 @@ $.add("ve/extensions/string",[], function(){
             return String(this).replace(/^\s+/, '').replace(/\s+$/, '');
         };
     }
+
+    // String#toLowerCase and String#toUpperCase don't produce correct results in browsers with Turkish
+    // locale, for this reason we need to detect this case and redefine lowercase/uppercase methods
+    // with correct but slower alternatives.
+    if('i' !== "I".toLowerCase()){
+        String.prototype.toLowerCase = function(){
+            return this.replace(/[A-Z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) | 32);});
+        };
+
+        String.prototype.toUpperCase = function(){
+            return this.replace(/[a-z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) & ~32);});
+        };
+    }
 });

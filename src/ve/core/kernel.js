@@ -22,7 +22,7 @@
 $.add(["lang", "ve/extensions/string"], function(lang){
     var result = {};
     result = lang.mixin(result, lang);
-    op = Object.prototype;
+    var op = Object.prototype;
     //exclude the following css properties to add px 以下属性是否要加 px
     var exclude = /z-?index|font-?weight|opacity|zoom|line-?height/i;
     /**
@@ -252,7 +252,43 @@ $.add(["lang", "ve/extensions/string"], function(lang){
             return str.replace( /^-ms-/, "ms-" ).replace( /-([\da-z])/gi, function($0, $1){
                 return $1.toUpperCase();
             });
+        },
+        sortedKeys : function(it){
+            return Object.keys(it).sort();
+        },
+        isUndefined : function(it){
+            return typeof value === 'undefined';
+        },
+        // Copied from:
+        // http://docs.closure-library.googlecode.com/git/local_closure_goog_string_string.js.source.html#line1021
+        // Prereq: s is a string.
+        escapeForRegexp : function(){
+            return s.replace(/([-()\[\]{}+?*.$\^|,:#<!\\])/g, '\\$1').
+                replace(/\x08/g, '\\x08');
+        },
+        /**
+         * We need our custom method because encodeURIComponent is too aggressive and doesn't follow
+         *  http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
+         * @param val
+         * @returns {*}
+         */
+        encodeUriSegment : function(val){
+            return this.encodeUriQuery(val, true).replace(/%26/gi, '&').
+                replace(/%3D/gi, '=').replace(/%2B/gi, '+');
+        },
+        /**
+         * This method is intended for encoding *key* or *value* parts of query component. We need a custom
+         * method because encodeURIComponent is too aggressive and encodes stuff that doesn't have to be
+         * encoded per http://tools.ietf.org/html/rfc3986:
+         * @param val
+         * @param pctEncodeSpaces
+         */
+        encodeUriQuery : function(val, pctEncodeSpaces){
+            return encodeURIComponent(val).replace(/%40/gi, '@').replace(/%3A/gi, ':').
+                replace(/%24/g, '$').replace(/%2C/gi, ',').replace(/%3B/gi, ';').
+                replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
         }
     });
+
     return result;
 });

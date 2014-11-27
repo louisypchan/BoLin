@@ -20,3 +20,13 @@
 /**
  * Created by Louis Y P Chen on 2014/11/24.
  */
+$.add("ve/widgets/base",["ve/core/declare", "ve/core/base"], function(declare, base){
+    return declare({
+        "~name" : "ve.widgets.base",
+        "~superclass" : base,
+
+        ctor : function(){
+
+        }
+    });
+});

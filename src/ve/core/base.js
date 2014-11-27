@@ -28,6 +28,10 @@ $.add("ve/core/base", ["./declare", "./kernel"], function(declare, kernel){
         "~name" : "$.core.base",
         ctor : function(){
             this.observedprops = {};
+        },
+
+        watch : function(){
+
         }
     });
 });

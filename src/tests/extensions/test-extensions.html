@@ -23,20 +23,5 @@
         var date = new Date();
         console.log(date.getDaysInMonth());
     });
-
-    $.use(["ve/dom/dom"], function(dom){
-        var t = dom("div"), i = dom("#i1");
-        t.append("<span>test</span>");
-        t.attr("test","test");
-        console.log(t.html());
-        console.log(i.val());
-        t.style({
-           color : "red"
-        });
-
-        console.log(t.position());
-
-        console.log(i.width());
-    });
 </script>
 </html>
