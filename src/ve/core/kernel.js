@@ -290,5 +290,76 @@ $.add(["lang", "ve/extensions/string"], function(lang){
         }
     });
 
+    (function(){
+        /**
+         // IE8 not all JavaScript Objects can use Object.defineProperty. This is so werid
+         // We have to chose another solution to support IE7 and IE8
+         // Here we consider that to use watch solution to simulate setter method
+         // That means when there is an asignment there will notify the specific method to be executed
+         // And consider that if we don't change to use function to minitor watching callbacks
+         // Here we go
+         */
+        result.watcher = (function(){
+            var observedprops = {}, PROPERTY_CHANGED = "handlePropertyChange";
+            //to check whether is an obeserved property
+            function isPropertyObserved(prop){
+                return observedprops[prop] !== undefined;
+            }
+            //add the property into observation pool
+            function addPropertyObserver(context, prop, methodName){
+                var obj = observedprops[prop];
+                if(isPropertyObserved(prop)){
+                    if(obj.targets.indexOf(context) > -1){
+                        return;
+                    }
+                }else{
+                    obj = observedprops[prop] = {
+                        targets : [],
+                        methodNames : []
+                    };
+                    methodName = methodName||PROPERTY_CHANGED;
+                    if(result.objectHasMethod(context, methodName)){
+                        obj.targets.push(context);
+                        obj.methodNames.push(methodName);
+                    }
+                }
+            }
+            function removePropertyObserver(context, prop){
+                if(!isPropertyObserved(prop)) return false;
+                var obj = observedprops[prop],
+                    index = obj.targets.indexOf(context);
+                if(index){
+                    obj.targets.splice(index, 1);
+                    obj.methodNames.splice(index, 1);
+                    obj.targets.length == 0 && delete observedprops[prop];
+                }
+                return index;
+            }
+
+            function notifyPropertyChange(prop, context){
+                if(isPropertyObserved(prop)){
+                    var obj = observedprops[prop],
+                        c = obj.targets.slice(),
+                        m = obj.methodNames.slice();
+                    for(var i = 0, l = c.length; i < l; i++){
+                        //syn up the real property's value
+                        c[i]["_"+prop] = c[i][prop];
+                        if(context && c[i] === context){
+                            context[m[i]].call(context, context[prop]);
+                            break;
+                        }
+                        c[i][m[i]].call(c[i], context[prop]);
+                    }
+                }
+            }
+            //open APIs
+            return {
+                add : addPropertyObserver,
+                remove : removePropertyObserver,
+                notify : notifyPropertyChange
+            };
+        })();
+    })();
+    //open up
     return result;
 });

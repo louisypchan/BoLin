@@ -29,7 +29,7 @@ $.add("ve/extensions/object", [], function(){
             !(function () { try { Object.defineProperty({}, 'x', {}); return true; } catch (e) { return false; } } ())) {
             var orig = Object.defineProperty;
             Object.defineProperty = function (o, prop, desc) {
-                // In IE8 try built-in implementation for defining properties on DOM prototypes.
+                // In IE8 built-in implementation for defining properties on DOM prototypes.
                 if (orig) { try { return orig(o, prop, desc); } catch (e) {} }
                 if (o !== Object(o)) { throw TypeError("Object.defineProperty called on non-object"); }
                 if (Object.prototype.__defineGetter__ && ('get' in desc)) {

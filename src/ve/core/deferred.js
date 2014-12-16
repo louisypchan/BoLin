@@ -26,7 +26,6 @@ $.add("ve/core/deferred", ["ve/core/declare", "ve/core/base", "ve/core/kernel"],
         "~name" : "$.core.Deferred",
         "~superclass" : base,
         "~synthesize" : ["canceler", "listener", "waiting"],
-
         "+STATE" : {
             PROGRESS : "progress",
             RESOLVED : "resolved",
@@ -34,14 +33,15 @@ $.add("ve/core/deferred", ["ve/core/declare", "ve/core/base", "ve/core/kernel"],
         },
 
         ctor : function(canceler){
-            this.callSuper();
+            this._super();
             this.promise = this;
             this.canceler = canceler;
+            //To be removed if IE7 and IE8 are not in the supportive list
+            kernel.watcher.notify("canceler", this);
             this.fulfilled = false;
             this.promise.then = this.then;
             this.canceled = false;
             this._waiting = [];
-
         },
 
         isResolved : function(){
@@ -67,6 +67,8 @@ $.add("ve/core/deferred", ["ve/core/declare", "ve/core/base", "ve/core/kernel"],
             if(!this.fulfilled){
                 this.fulfilled = $.core.Deferred.STATE.RESOLVED;
                 this.waiting = [this._waiting, this.fulfilled, value];
+                //To be removed if IE7 and IE8 are not in the supportive list
+                kernel.watcher.notify("waiting", this);
                 this._waiting = null;
             }
             return this.promise;
@@ -79,6 +81,8 @@ $.add("ve/core/deferred", ["ve/core/declare", "ve/core/base", "ve/core/kernel"],
             if(!this.fulfilled){
                 this.fulfilled = $.core.Deferred.STATE.REJECTED;
                 this.waiting = [this._waiting, this.fulfilled, value];
+                //To be removed if IE7 and IE8 are not in the supportive list
+                kernel.watcher.notify("waiting", this);
                 this._waiting = null;
             }
             return this.promise;
@@ -99,6 +103,8 @@ $.add("ve/core/deferred", ["ve/core/declare", "ve/core/base", "ve/core/kernel"],
             });
             if(this.fulfilled && !this.waiting){
                 this.listener = [promise, this.fulfilled, result];
+                //To be removed if IE7 and IE8 are not in the supportive list
+                kernel.watcher.notify("listener", this);
             }else{
                 this._waiting.push(promise);
             }
@@ -112,6 +118,8 @@ $.add("ve/core/deferred", ["ve/core/declare", "ve/core/base", "ve/core/kernel"],
             if(!this.fulfilled){
                 this.fulfilled = $.core.Deferred.STATE.PROGRESS;
                 this.waiting = [this._waiting, this.fulfilled, update];
+                //To be removed if IE7 and IE8 are not in the supportive list
+                kernel.watcher.notify("waiting", this);
             }
             return this.promise;
         },
@@ -172,6 +180,8 @@ $.add("ve/core/deferred", ["ve/core/declare", "ve/core/base", "ve/core/kernel"],
             var waiting = args[0], type = args[1], result = args[2];
             for(var i = 0; i < waiting.length; i++){
                 this.listener = [waiting[i], type, result];
+                //To be removed if IE7 and IE8 are not in the supportive list
+                kernel.watcher.notify("listener", this);
             }
         },
 

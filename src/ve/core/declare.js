@@ -38,14 +38,14 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
      * [A,B]
      */
     function MRO(it){
-        var t = it._meta.super, seqs = [it];
+        var t = it._meta._super, seqs = [it];
         if(t){
             if(!kernel.isArray(t)){
                 return seqs.concat(t);
             }else{
                 while(true){
                     seqs = seqs.concat(t);
-                    t = t._meta.super;
+                    t = t._meta._super;
                     if(!t){
                         break;
                     }
@@ -59,21 +59,19 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
      * C3 Method Resolution Order (see http://www.python.org/download/releases/2.3/mro/)
      */
     function mro_c3(bases){
-        var l = bases.length,t;
+        var l = bases.length;
         if(l == 1){
-            if(!bases[0]._meta.super){
+            if(!bases[0]._meta._super){
                 return bases;
             }else{
-                return bases.concat(mro_c3([].concat(bases[0]._meta.super)));
+                return bases.concat(mro_c3([].concat(bases[0]._meta._super)));
             }
         }else{
             var seqs = [], res = [];
             for(var i = 0; i < l; i++){
                 seqs.push(MRO(bases[i]));
             }
-//
             seqs.push(bases);
-//
             while(seqs.length){
                 res = res.concat(merge(seqs));
             }
@@ -130,8 +128,8 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
     function callSuperImpl(){
         var caller = callSuperImpl.caller, name = caller._name,
             meta = this._class._meta, p, _super;name
-        if(meta.super){
-            _super = [].concat(meta.super);
+        if(meta._super){
+            _super = [].concat(meta._super);
             _super = _super[_super.length - 1];
             p = _super.prototype;
             if(p && p[name] && kernel.isFunction(p[name])){
@@ -139,7 +137,6 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
             }
         }
     }
-
 
     var isPrivate = function(it){
             return it.indexOf("-") == 0;
@@ -186,27 +183,6 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
         },
         aF = new Function,
 
-        /*runCtor = function(superclass, ctor){
-            if(kernel.isFunction(superclass)){
-                if(superclass._meta){
-                    ctor.unshift(superclass._meta.ctor);
-                    superclass = superclass._meta.super || null;
-                    runCtor(superclass, ctor);
-                }
-            }else if(kernel.isArray(superclass)){
-                var t = superclass.splice(0), base;
-                t = mro_c3(t);
-                for(var i = 0, base, l = t.length; i < l; i++){
-                    base = t[i];
-                    if(base._meta){
-                        ctor = ctor.concat(base._meta.constructor);
-                    }
-                }
-            }else{
-                return;
-            }
-        },*/
-
         crackStatic = function(it){
             var t = it.prototype, name, src;
             for(name in t){
@@ -219,7 +195,11 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
             }
             t = name = src = null;
         },
-
+        /**
+         * Create a constructor using a compact notation for inheritance and
+         * prototype extension.
+         * @param obj
+         */
         declare = function(obj){
             var superclass = obj["~superclass"], proto = {}, clsName = obj["~name"], ctor = false, crackPrivate = false, privates = [];
             if(superclass){
@@ -240,7 +220,6 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
                             aF.prototype = null;
                         }
                     }
-                    //runCtor(supercls, ctor);
                     crackPrivate = true;
                 })(superclass);
             }
@@ -254,7 +233,7 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
             }
             var f = (function(ctor){
                 return function(){
-                    f.executed || processSynthesize();
+                    f.executed || processSynthesize(this);
                     if(ctor){
                         ctor.apply(this,arguments);
                     }
@@ -262,8 +241,8 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
             })(ctor);
             f.executed = false;
             //cache meta information
-            f._meta = {ctor : obj.ctor, synthesize : obj["~synthesize"], super : superclass};
-            rPorot.callSuper = callSuperImpl;
+            f._meta = {ctor : obj.ctor, synthesize : obj["~synthesize"], _super : superclass};
+            rPorot._super = callSuperImpl;
             //constructor the prototype
             f.prototype = rPorot;
             f.privates = privates;
@@ -281,20 +260,20 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
             //return
             return f;
         },
-        processSynthesize = function(){
+        processSynthesize = function(context){
             for(var it, i = 0, l = __synthesizes.length; i < l; i++){
                 it = __synthesizes[i];
-                it.executed || injectSynthesize(it);
+                it.executed || injectSynthesize(it, context);
             }
             __synthesizes.length = 0;
         },
-        injectSynthesize = function (it){
+        injectSynthesize = function (it, context){
             for(var i = 0 , synthesize = it._meta.synthesize, l = synthesize ? synthesize.length : 0; i < l; i++){
-                synthesizeProperty(it.prototype, synthesize[i]);
+                synthesizeProperty(it.prototype, synthesize[i], context);
             }
             it.executed = true;
         },
-        synthesizeProperty = function (proto, prop){
+        synthesizeProperty = function (proto, prop, context){
             var m = prop.charAt(0).toUpperCase() + prop.substr(1),
                 //getter
                 mGet = "get" + m,
@@ -315,12 +294,16 @@ $.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kern
             //define getter
             var getter = function(){
                 return this[mGet]();
+            };
+            //to support IE7/IE8
+            if($.browser.ie && $.browser.ie < 9){
+                kernel.watcher.add(context, prop, mSet);
+            }else{
+                Object.defineProperty(proto, prop, {
+                    get: getter,
+                    set: setter
+                });
             }
-            //
-            Object.defineProperty(proto, prop, {
-               get : getter,
-               set : setter
-            });
         };
 
     return declare;

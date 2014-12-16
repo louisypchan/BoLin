@@ -27,8 +27,7 @@ $.add(["ve/core/kernel"], function(kernel){
 
     // indexOf, lastIndexOf
     function index(up){
-        console.log("[ve/extensions/array] : index");
-        var delta = 1, lOver = 0, uOver = 0;
+        var delta = 1, lOver = 0, uOver = 0, u;
         if(!up){
             delta = lOver = uOver = -1;
         }
