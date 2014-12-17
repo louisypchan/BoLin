@@ -37,7 +37,7 @@
     //store document
     ve.doc = doc;
     //user configurations for VE
-    ve.Cfg = {
+    ve.Cfg = win.BLCfg ||{
         debug : false //by default, turn off the debug mode
     };
 
@@ -302,6 +302,15 @@
                     }
                 }
             },
+            _rideArgs : function(scope, method){
+                var pre = Array.prototype.slice.call(arguments, 2);
+                var named = this.isString(method);
+                return function(){
+                    var args = Array.prototype.slice.call(arguments);
+                    var f = named ? (scope||ve.global)[method] : method;
+                    return f && f.apply(scope || this, pre.concat(args)); // mixed
+                };
+            },
             /**
              * Allows for easy use of object member functions in callbacks and other places
              * in which the "this" keyword
@@ -309,6 +318,9 @@
              * @param method
              */
             ride : function (scope, method){
+                if(arguments.length > 2){
+                    return this._rideArgs.apply(this, arguments);
+                }
                 if(!method){
                     method = scope;
                     scope = null;
@@ -678,15 +690,13 @@
             }
             // if result is not absolute, add baseUrl
             if(!(/(^\/)|(\:)/.test(url))){
-                if(pid){
-                    //TODO:
-                    url = pack.baseUrl + url;
+                if(pid ){
+                    url = pack.baseUrl ?  pack.baseUrl + url : v.__AMD.baseUrl + url;
                 }else{
                     url = v.__AMD.baseUrl + url;
                 }
             }
             url += ".js";
-
             return new Module({
                 pid : pid,
                 mid : name,
@@ -921,8 +931,9 @@
                         }
                         v.__lang.aliases.push([new RegExp("^" + aliase[0] + "$"), aliase[1]]);
                     });
-
-                    v.__lang.getProp(["__debug"], true, v).state = cfg['debug'] || 0;
+					if(cfg['debug']){
+						v.__lang.getProp(["__debug"], true, v).state = cfg['debug'];
+					}
                 },
 
                 context : {
@@ -1298,7 +1309,7 @@
             ve.__AMD.pkg.configure(ve.__AMD.sniffCfg);
         }
     };
-
+    //before booting, set AMD user config
     ve.boot.start(ve.Cfg);
     //+++++++++++++++++++++++++something about logger start+++++++++++++++++++++++++++
     (function(v){

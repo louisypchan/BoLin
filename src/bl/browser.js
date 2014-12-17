@@ -18,45 +18,5 @@
  THE SOFTWARE.
  ****************************************************************************/
 /**
- * Created by Louis Y P Chen on 2014/10/31.
+ * Created by Louis Y P Chen on 2014/12/17.
  */
-/**
- * The base class to be inherited
- */
-$.add("ve/core/base", ["./declare", "./kernel"], function(declare, kernel){
-    return declare({
-        "~name" : "$.core.base",
-        /**
-         * constructor
-         * @param params
-         */
-        ctor : function(/*Object?*/ params){
-            // Automatic setting of params during construction
-
-        },
-        /**
-         * private function that does a get based off a hash of names
-         * @param name
-         * @param names  Hash of names of custom attributes
-         */
-        "-_get" : function(name, names){
-
-        },
-
-        "get" : function(name){
-
-        },
-
-        "-_set" : function(){
-
-        },
-
-        "set" : function(){
-
-        },
-
-        watch : function(){
-
-        }
-    });
-});

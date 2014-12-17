@@ -8,6 +8,13 @@
         $.use(["tests/amd/amdDeps", "tests/amd/amdObj"], function(a1, a2){
             a1.test(a2);
         });
+
+        $.use(["ve/core/kernel"], function(kernel){
+            var foo = { bar: function(a, b, c){ console.log(a, b, c); } };
+            var fn = kernel.ride(foo, "bar", 1, 2);
+            console.log(fn);
+            fn(3);
+        });
     </script>
 </head>
 <body>
