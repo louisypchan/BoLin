@@ -56,8 +56,8 @@
 
         pkgs : [
             {
-                name : "bl",
-                path : "bl"
+                name : "bn",
+                path : "bn"
             }
         ],
 
@@ -113,7 +113,7 @@
     function callback(){
         ++recursiveGuard;
         if(recursiveGuard == end){
-            $.use(["bl/dom/ready", "bl"], function(ready, doh){
+            $.use(["bl/dom/ready", "bn"], function(ready, doh){
                 ready(function(){
                     runTestCases(doh);
                 });

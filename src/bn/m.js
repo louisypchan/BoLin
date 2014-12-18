@@ -20,6 +20,6 @@
 /**
  * Created by Louis Y P Chen on 2014/12/17.
  */
-$.add(["bl/doh", "bl/browser"], function(doh){
+$.add(["bn/doh", "bn/browser"], function(doh){
    return doh;
 });
