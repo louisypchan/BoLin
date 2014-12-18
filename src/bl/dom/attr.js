@@ -1,6 +1,6 @@
 ﻿/****************************************************************************
  Copyright (c) 2014 chenchangwen
- http://www.ve.cn
+ http://www.bl.cn
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
@@ -21,7 +21,7 @@
  * Created by chenchangwen on 2014/10/24
  */
 
-$.add(["ve/core/kernel", "ve/dom/selector/q", "ve/extensions/array"], function(kernel, query) {
+$.add(["bl/core/kernel", "bl/dom/selector/q", "bl/extensions/array"], function(kernel, query) {
 
     var propFix = {
         "for": "htmlFor",

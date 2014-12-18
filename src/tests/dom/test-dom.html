@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <script type="text/javascript" src="../../ve.js" vecfg="debug:1"></script>
+    <script type="text/javascript" src="../../bl.js" vecfg="debug:1"></script>
     <title>dom</title>
     <style type="text/css">
         div {
@@ -74,7 +74,7 @@
     <input type="button" id="btn" value="scrollLeft scrollTop 事件按钮" />
 
     <script type="text/javascript">
-        $.use(["ve/dom/dom"], function(dom){
+        $.use(["bl/dom/dom"], function(dom){
             var t = dom("div"), i = dom("#i1");
             t.append("<span>test</span>");
             t.attr("test","test");

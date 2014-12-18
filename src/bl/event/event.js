@@ -23,7 +23,7 @@
  * An extension to window.event
  *
  */
-$.add("ve/event/event", ["ve/core/kernel", "ve/extensions/date"], function(kernel){
+$.add("bl/event/event", ["bl/core/kernel", "bl/extensions/date"], function(kernel){
     "use strict";
 
     var hasStopimmediatepropagation = $.global.Event && !!$.global.Event.prototype && !!$.global.Event.prototype.stopImmediatePropagation,

@@ -18,31 +18,28 @@
  THE SOFTWARE.
  ****************************************************************************/
 /**
- * Created by Louis Y P Chen on 2014/10/23.
+ * Created by Louis Y P Chen on 2014/10/31.
  */
-$.add(["ve/core/kernel"], function(kernel){
+$.add("bl/extensions/string",[], function(){
 
-    var fn = Function.prototype,
-        slice = Array.prototype.slice;
+    // ES5 15.9.4.4 Date.now ( )
+    // From https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Date/now
+    if (!String.prototype.trim) {
+        String.prototype.trim = function () {
+            return String(this).replace(/^\s+/, '').replace(/\s+$/, '');
+        };
+    }
 
-    kernel.extend(fn, {
-        /**
-         *  Creates a function that is associated with a specified object, and that can have specific initial parameters.
-         */
-        bind : fn.bind || function(o){
-            if (!kernel.isFunction(this)) { throw TypeError("Bind must be called on a function"); }
-            var slice = [].slice,
-                args = slice.call(arguments, 1),
-                self = this,
-                bound = function () {
-                    return self.apply(this instanceof nop ? this : (o || {}),
-                        args.concat(slice.call(arguments)));
-                };
-            /** @constructor */
-            function nop() {}
-            nop.prototype = self.prototype;
-            bound.prototype = new nop();
-            return bound;
-        }
-    });
+    // String#toLowerCase and String#toUpperCase don't produce correct results in browsers with Turkish
+    // locale, for this reason we need to detect this case and redefine lowercase/uppercase methods
+    // with correct but slower alternatives.
+    if('i' !== "I".toLowerCase()){
+        String.prototype.toLowerCase = function(){
+            return this.replace(/[A-Z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) | 32);});
+        };
+
+        String.prototype.toUpperCase = function(){
+            return this.replace(/[a-z]/g, function(ch) {return String.fromCharCode(ch.charCodeAt(0) & ~32);});
+        };
+    }
 });

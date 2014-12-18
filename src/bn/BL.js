@@ -22,7 +22,7 @@
  */
 (function(win){
 
-    var boot  = ["../ve.js"],
+    var boot  = ["../bl.js"],
 
         standardBoot = boot,
 
@@ -113,7 +113,7 @@
     function callback(){
         ++recursiveGuard;
         if(recursiveGuard == end){
-            $.use(["ve/dom/ready", "bl"], function(ready, doh){
+            $.use(["bl/dom/ready", "bl"], function(ready, doh){
                 ready(function(){
                     runTestCases(doh);
                 });

@@ -20,7 +20,7 @@
 /**
  * Created by Louis Y P Chen on 2014/10/31.
  */
-$.add(["./kernel", "ve/extensions/object", "ve/extensions/array"], function(kernel){
+$.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kernel){
     var __synthesizes  = [];
     /**
      * http://www.python.org/download/releases/2.3/mro/

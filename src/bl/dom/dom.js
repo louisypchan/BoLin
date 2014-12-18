@@ -20,8 +20,8 @@
 /**
  * Created by Louis Y P Chen on 2014/11/13.
  */
-$.add(["ve/core/kernel", "ve/dom/selector/q", "ve/dom/attr",
-    "ve/dom/style", "ve/extensions/array"], function (kernel, query, domAttr, domStyle) {
+$.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
+    "bl/dom/style", "bl/extensions/array"], function (kernel, query, domAttr, domStyle) {
     // ============================
     // DOM Functions
     // =============================

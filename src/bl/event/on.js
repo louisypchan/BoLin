@@ -20,7 +20,7 @@
 /**
  * Created by Louis Y P Chen on 2014/11/4.
  */
-$.add(["ve/event/event", "ve/core/kernel", "ve/core/aspect"], function(Event, kernel, aspect){
+$.add(["bl/event/event", "bl/core/kernel", "bl/core/aspect"], function(Event, kernel, aspect){
 
     var jscript = 11; //IE 8
 
@@ -140,7 +140,7 @@ $.add(["ve/event/event", "ve/core/kernel", "ve/core/aspect"], function(Event, ke
      */
     on.add = function(target, type, listener){
         return _add(target, type, function(evt){
-            evt = Event(evt || ve.global.event);
+            evt = Event(evt || bl.global.event);
             listener(evt);
         });
     };

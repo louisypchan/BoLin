@@ -1,4 +1,4 @@
-$.add("bl/doh", ["ve/core/kernel"], function(kernel){
+$.add("bl/doh", ["bl/core/kernel"], function(kernel){
 
     var doh = {
         // summary:
@@ -1440,7 +1440,7 @@ $.add("bl/doh", ["ve/core/kernel"], function(kernel){
             // let doh reference "this.group.thinger..." which can be set by
             // another test or group-level setUp function
             fixture.group = tg;
-            // only execute the parts of the fixture we've got
+            // only execute the parts of the fixture we'bl got
 
             if(fixture["setUp"]){ fixture.setUp(this); }
             if(fixture["runTest"]){		// should we error out of a fixture doesn't have a runTest?
@@ -1610,7 +1610,7 @@ $.add("bl/doh", ["ve/core/kernel"], function(kernel){
     };
 
     doh.runOnLoad = function(){
-        $.use(["ve/dom/ready"], function(ready){
+        $.use(["bl/dom/ready"], function(ready){
             ready(function(){
                 doh.run();
             })

@@ -2494,7 +2494,7 @@ if (!document.createElement('canvas').getContext) {
 
     var scaleX = scaleY = 1;
     
-    // For some reason that I've now forgotten, using divs didn't work
+    // For some reason that I'bl now forgotten, using divs didn't work
     vmlStr.push(' <g_vml_:group',
                 ' coordsize="', Z * W, ',', Z * H, '"',
                 ' coordorigin="0,0"' ,

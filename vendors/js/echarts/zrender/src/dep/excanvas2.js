@@ -1077,7 +1077,7 @@ if (!document.createElement('canvas').getContext) {
       var W = 10;
       var H = 10;
 
-      // For some reason that I've now forgotten, using divs didn't work
+      // For some reason that I'bl now forgotten, using divs didn't work
       this.rootDom_ = createVMLElement('group');
       this.rootDom_.coordsize = Z * W + ' ' + Z * H;
       this.rootDom_.coordorigin = '0 0';

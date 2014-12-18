@@ -20,7 +20,7 @@
 /**
  * Created by Louis Y P Chen on 2014/11/6.
  */
-$.add("ve/core/deferred", ["ve/core/declare", "ve/core/base", "ve/core/kernel"], function(declare, base, kernel){
+$.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"], function(declare, base, kernel){
 
     return declare({
         "~name" : "$.core.Deferred",

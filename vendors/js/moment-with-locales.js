@@ -4044,9 +4044,9 @@
                 case 2:
                     return '[v] dddd [v] LT';
                 case 3:
-                    return '[ve středu v] LT';
+                    return '[bl středu v] LT';
                 case 4:
-                    return '[ve čtvrtek v] LT';
+                    return '[bl čtvrtek v] LT';
                 case 5:
                     return '[v pátek v] LT';
                 case 6:

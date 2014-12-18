@@ -20,9 +20,9 @@
 /**
  * Created by Louis Y P Chen on 2014/10/23.
  */
-$.add(["ve/core/kernel"], function(kernel){
+$.add(["bl/core/kernel"], function(kernel){
     // module:
-    //		ve/extensions/array
+    //		bl/extensions/array
     //      an extension of Array
 
     // indexOf, lastIndexOf

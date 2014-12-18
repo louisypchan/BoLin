@@ -3,7 +3,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
-    <script type="text/javascript" src="../../ve.js" vecfg="debug:1"></script>
+    <script type="text/javascript" src="../../bl.js" vecfg="debug:1"></script>
 
 </head>
 <body>
@@ -13,7 +13,7 @@
 
     <script type="text/javascript">
     //array
-    $.use(["ve/dom/attribute"], function (attribute) {
+    $.use(["bl/dom/attribute"], function (attribute) {
         var $div1 = document.getElementById('div1');
         attribute.attr($div1, 'asdf', 'hello world');
         alert(attribute.attr($div1, 'asdf'));

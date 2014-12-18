@@ -20,32 +20,43 @@
 /**
  * Created by Louis Y P Chen on 2014/10/31.
  */
-$.add("ve/extensions/object", [], function(){
+/**
+ * The base class to be inherited
+ */
+$.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
+    return declare({
+        "~name" : "$.core.base",
+        /**
+         * constructor
+         * @param params
+         */
+        ctor : function(/*Object?*/ params){
+            // Automatic setting of params during construction
 
-    // ES 15.2.3.6 Object.defineProperty ( O, P, Attributes )
-    // Partial support for most common case - getters, setters, and values
-    (function() {
-        if (!Object.defineProperty ||
-            !(function () { try { Object.defineProperty({}, 'x', {}); return true; } catch (e) { return false; } } ())) {
-            var orig = Object.defineProperty;
-            Object.defineProperty = function (o, prop, desc) {
-                // In IE8 built-in implementation for defining properties on DOM prototypes.
-                if (orig) { try { return orig(o, prop, desc); } catch (e) {} }
-                if (o !== Object(o)) { throw TypeError("Object.defineProperty called on non-object"); }
-                if (Object.prototype.__defineGetter__ && ('get' in desc)) {
-                    Object.prototype.__defineGetter__.call(o, prop, desc.get);
-                }
-                if (Object.prototype.__defineSetter__ && ('set' in desc)) {
-                    Object.prototype.__defineSetter__.call(o, prop, desc.set);
-                }
-                if ('value' in desc) {
-                    o[prop] = desc.value;
-                }
-                return o;
-            };
+        },
+        /**
+         * private function that does a get based off a hash of names
+         * @param name
+         * @param names  Hash of names of custom attributes
+         */
+        "-_get" : function(name, names){
+
+        },
+
+        "get" : function(name){
+
+        },
+
+        "-_set" : function(){
+
+        },
+
+        "set" : function(){
+
+        },
+
+        watch : function(){
+
         }
-    }());
-
-
-
+    });
 });

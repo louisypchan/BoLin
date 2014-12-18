@@ -11,14 +11,14 @@
             color: blue;
         }
     </style>
-    <script type="text/javascript" src="../../ve.js" vecfg="debug:1"></script>
+    <script type="text/javascript" src="../../bl.js" vecfg="debug:1"></script>
      
 </head>
 <body>
     <div id="div1" class="demo">asdf</div>
     <input type="button" value="testToggle" id="testToggle"/>
     <script type="text/javascript">
-        $.use(["ve/dom/class"], function (style) {
+        $.use(["bl/dom/class"], function (style) {
             var $div1 = document.getElementById('div1');
             //style.addClass($div1, 'demo2');
             var btn = document.getElementById('testToggle');

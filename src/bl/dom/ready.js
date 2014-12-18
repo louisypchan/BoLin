@@ -1,4 +1,4 @@
-$.add("ve/dom/ready",[], function(){
+$.add("bl/dom/ready",[], function(){
     var global = $.global,
         doc = $.doc,
         readyStates = { 'loaded': 1, 'complete': 1 },

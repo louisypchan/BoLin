@@ -19,79 +19,79 @@
  ****************************************************************************/
 
 /**
- * The main namespace of ve, all engine core class, functions, properties and constants are defined in this namespace
+ * The main namespace of bl, all engine core class, functions, properties and constants are defined in this namespace
  * private :
  *         __*
  * otherwise are public
  */
 (function(win){
-    var ve = win["ve"]||{}, doc = win.document,
+    var bl = win["bl"]||{}, doc = win.document,
         ie_event_behavior = doc.attachEvent && typeof Windows === "undefined" && (typeof opera === "undefined" || opera.toString() != "[object Opera]"),
         noop = function(){},
         toString =  {}.toString,
         hasOwn = {}.hasOwnProperty;
-    //the version of ve
+    //the version of bl
     //will be replaced from moduleCfg
     //TODO: replace the version in build phase
-    ve.version = "${version}";
+    bl.version = "${version}";
     //store document
-    ve.doc = doc;
-    //user configurations for VE
-    ve.Cfg = win.BLCfg ||{
+    bl.doc = doc;
+    //user configurations for bl
+    bl.Cfg = win.BLCfg ||{
         debug : false //by default, turn off the debug mode
     };
 
-    ve.global = win;
+    bl.global = win;
 
     //Currently now it is browser-base framework
-    ve.isNative = false;
+    bl.isNative = false;
 
     //AMD namespace
-    ve.__AMD = {};
+    bl.__AMD = {};
 
-    ve.__types = {};
+    bl.__types = {};
 
-    ve.__uidSeed = 1;
+    bl.__uidSeed = 1;
 
-    ve.__uid = 0;
+    bl.__uid = 0;
 
-    ve.noop = noop;
+    bl.noop = noop;
 
-    ve.majorEvent = !!doc.addEventListener;
+    bl.majorEvent = !!doc.addEventListener;
 
     //Returns a unique identifier
-    ve.uid = function() {
-        return "_" + ve.__uidSeed++;
+    bl.uid = function() {
+        return "_" + bl.__uidSeed++;
     };
     //A consistent way of creating unique IDs
-    ve.nextUid = function(){
-        return ++ve.__uid;
+    bl.nextUid = function(){
+        return ++bl.__uid;
     };
     //The locale to assume for loading localized resources in this page,
     //specified according to [RFC 3066](http://www.ietf.org/rfc/rfc3066.txt).
     //Must be specified entirely in lowercase,e.g. `en-us` and `zh-cn`.
-    ve.locale = "zh-cn";
+    bl.locale = "zh-cn";
     //prefix of directive
-    ve.veAttrPrefixes = ['ve-', 've:'];
+    bl.veAttrPrefixes = ['bl-', 'bl:'];
     (function(){
         //populate into types
         var arr = "Boolean Number String Function Array Date RegExp Object Error".split(" ");
         for(var i = 0, l = arr.length; i < l; i++){
-            ve.__types["[object " + arr[i] + "]"] = arr[i].toLowerCase();
+            bl.__types["[object " + arr[i] + "]"] = arr[i].toLowerCase();
         }
     })();
 
     //check supportive
     //Test support is borrowed from jQuery
-    ve.support = {};
+    bl.support = {};
     (function(support){
         var a, b, c, d,e;
-        d = ve.doc.createElement("div");
+        d = bl.doc.createElement("div");
         d.setAttribute("className", "v");
         d.innerHTML = "  <link/><table></table><a href='/a'>a</a><input type='checkbox'/>";
         a = d.getElementsByTagName("a")[0];
-        c = ve.doc.createElement("select");
-        e = c.appendChild(ve.doc.createElement("option"));
+        c = bl.doc.createElement("select");
+        e = c.appendChild(bl.doc.createElement("option"));
         b = d.getElementsByTagName("input")[0];
         if(!a || !a.style){
             // Finish early in limited (non-browser) environments
@@ -127,7 +127,7 @@
         // (WebKit defaults to false instead of true, IE too, if it's in an optgroup)
         support.optSelected = e.selected;
         // Tests for enctype support on a form
-        support.enctype = !!ve.doc.createElement("form").enctype;
+        support.enctype = !!bl.doc.createElement("form").enctype;
         // Make sure that the options inside disabled selects aren't marked as disabled
         // (WebKit marks them as disabled)
         c.disabled = true;
@@ -148,13 +148,13 @@
             reliableHiddenOffsetsVal = null;
         function computeStyleTests() {
             var b,c,d,j;
-            b = ve.doc.getElementsByTagName( "body" )[ 0 ];
+            b = bl.doc.getElementsByTagName( "body" )[ 0 ];
             if ( !b || !b.style ) {
                 // Test fired too early or in an unsupported environment, exit.
                 return;
             }
             // Setup
-            d = ve.doc.createElement( "div" );
+            d = bl.doc.createElement( "div" );
             c = document.createElement( "div" );
             c.style.cssText = "position:absolute;border:0;width:0;height:0;top:0;left:-9999px";
             b.appendChild( c ).appendChild( d );
@@ -176,7 +176,7 @@
                 // Div with explicit width and no margin-right incorrectly
                 // gets computed margin-right based on width of container
                 // WebKit Bug 13343 - getComputedStyle returns wrong value for margin-right
-                j = d.appendChild( ve.doc.createElement( "div" ) );
+                j = d.appendChild( bl.doc.createElement( "div" ) );
                 // Reset CSS: box-sizing; display; margin; border; padding
                 j.style.cssText = d.style.cssText =
                     // Support: Firefox<29, Android 2.3
@@ -231,8 +231,8 @@
             }
             return reliableMarginRightVal;
         };
-    })(ve.support);
-    ve.support.advanceEvent = !!doc.addEventListener;
+    })(bl.support);
+    bl.support.advanceEvent = !!doc.addEventListener;
 
     //This is a temporary function to  handler the diff event across the browsers
     //The event control will be moved to be an individual module
@@ -251,7 +251,7 @@
             }
         }
     };
-    ve.monitor = domOn;
+    bl.monitor = domOn;
     //+++++++++++++++++++++++++define a minimal library to help build the loader+++++++++++++++++++++++++++
     (function(v){
         //internal, can be reused in kernel.js
@@ -307,7 +307,7 @@
                 var named = this.isString(method);
                 return function(){
                     var args = Array.prototype.slice.call(arguments);
-                    var f = named ? (scope||ve.global)[method] : method;
+                    var f = named ? (scope||bl.global)[method] : method;
                     return f && f.apply(scope || this, pre.concat(args)); // mixed
                 };
             },
@@ -328,7 +328,7 @@
                 if(this.isString(method)){
                     scope = scope || window;
                     if(!scope[method]){
-                        throw new Error('ve.__lang.ride: scope["', method, '"] is null (scope="', scope, '")');
+                        throw new Error('bl.__lang.ride: scope["', method, '"] is null (scope="', scope, '")');
                     }
                     return function() { return scope[method].apply(scope, arguments || []);};
                 }
@@ -403,7 +403,7 @@
                                 }
 
                                 // Never move original objects, clone them
-                                target[name] = ve.__lang.mixin(deep, clone, copy);
+                                target[name] = bl.__lang.mixin(deep, clone, copy);
                             }else if(copy !== undefined){
                                 // Don't bring in undefined values
                                 target[name] = copy;
@@ -430,13 +430,13 @@
                 return rs;
             }
         };
-    })(ve);
+    })(bl);
     //+++++++++++++++++++++++++define a minimal library to help build the loader+++++++++++++++++++++++++++
 
     //non-UA-based IE version check by James Padolsey, modified by jdalton - from http://gist.github.com/527683
-    ve.browser = {};
+    bl.browser = {};
 
-    ve.browser.ie = (function(){
+    bl.browser.ie = (function(){
         var v = 3,
             div = doc.createElement("div"),
             a = div.all||[];
@@ -446,8 +446,8 @@
 
         return v > 4 ? v : !v;
     })();
-    ve.browser.msie = ve.doc.documentMode;
-    ve.browser.opera = typeof window.opera !== "undefined";
+    bl.browser.msie = bl.doc.documentMode;
+    bl.browser.opera = typeof window.opera !== "undefined";
 
     //+++++++++++++++++++++++++something about JSON start+++++++++++++++++++++++++++
     (function(v){
@@ -580,7 +580,7 @@
                 }
             };
         }
-    })(ve);
+    })(bl);
     //+++++++++++++++++++++++++something about JSON end+++++++++++++++++++++++++++
     //+++++++++++++++++++++++++something about AMD start+++++++++++++++++++++++++++
     (function(v){
@@ -603,8 +603,8 @@
         };
         /**
          * @param cfg
-         *      pid     : the package identifier to which the module belongs (e.g., "ve"); "" indicates the system or default package
-         *      mid     : the fully-resolved (i.e., mappings have been applied) module identifier without the package identifier (eg:ve/dom/selector)
+         *      pid     : the package identifier to which the module belongs (e.g., "bl"); "" indicates the system or default package
+         *      mid     : the fully-resolved (i.e., mappings have been applied) module identifier without the package identifier (eg:bl/dom/selector)
          *      url     : the URL from which the module was retrieved
          *      pack    : the package object of the package to which the module belongs
          *      exected : TODO:
@@ -626,7 +626,7 @@
             this.result = null;
             this.attached =  this.context.state.INIT;
             this.plugin = null;
-            ve.__lang.mix(this, cfg);
+            bl.__lang.mix(this, cfg);
         };
         /**
          *
@@ -940,7 +940,7 @@
                     init : function(name, dependencies, factory, refMod){
                         var mod, syntheticMid;
                         if(v.__lang.isArray(name)){
-                            syntheticMid = "use*" + ve.uid();
+                            syntheticMid = "use*" + bl.uid();
                             //resolve the request list with respect to the reference module
                             for(var mid, deps = [], i = 0, l = name.length; i <l;){
                                 mid = name[i++];
@@ -1226,9 +1226,9 @@
                 var l = arguments.length,
                     args = [0, name, deps];
                 if(l == 1){
-                    args = [0, ve.__lang.isFunction(name) ? this.defalutDeps :[], name];
-                }else if(l == 2 && ve.__lang.isString(name)){
-                    args = [name, ve.__lang.isFunction(deps) ? this.defalutDeps :[], deps];
+                    args = [0, bl.__lang.isFunction(name) ? this.defalutDeps :[], name];
+                }else if(l == 2 && bl.__lang.isString(name)){
+                    args = [name, bl.__lang.isFunction(deps) ? this.defalutDeps :[], deps];
                 }else if(l == 3){
                     args = [name, deps, factory];
                 }
@@ -1271,21 +1271,21 @@
         };
 
         //only for easy use
-        ve.use = ve.__AMD.BoLin.use;
-        ve.add = ve.__AMD.BoLin.add;
-    })(ve);
+        bl.use = bl.__AMD.BoLin.use;
+        bl.add = bl.__AMD.BoLin.add;
+    })(bl);
     //+++++++++++++++++++++++++something about AMD end+++++++++++++++++++++++++++
 
 
-    //looks for a src attribute ending in ve.js
+    //looks for a src attribute ending in bl.js
     (function(v){
         //
         var scripts = doc.getElementsByTagName("script"),
             i = 0, l = scripts.length, script,src, match;
         while(i < l){
             script = scripts[i++];
-            if((src = script.getAttribute("src")) && (match = src.match(/(((.*)\/)|^)ve\.js(\W|$)/i))){
-                //sniff ve dir and baseUrl
+            if((src = script.getAttribute("src")) && (match = src.match(/(((.*)\/)|^)bl\.js(\W|$)/i))){
+                //sniff bl dir and baseUrl
                 //v.__loader.baseUrl = (match[3] + "/") ||"./";
                 v.__AMD.baseUrl = (match[3] + "/") || "./";
                 //remember an inster point sibling
@@ -1298,19 +1298,19 @@
             }
 
         }
-    })(ve);
+    })(bl);
     /**
      * An engine to boot the framework
      */
-    ve.boot = {
+    bl.boot = {
         start : function(config){
-            ve.__AMD.pkg.configure(ve.__AMD.defaultCfg);
-            ve.__AMD.pkg.configure(config);
-            ve.__AMD.pkg.configure(ve.__AMD.sniffCfg);
+            bl.__AMD.pkg.configure(bl.__AMD.defaultCfg);
+            bl.__AMD.pkg.configure(config);
+            bl.__AMD.pkg.configure(bl.__AMD.sniffCfg);
         }
     };
     //before booting, set AMD user config
-    ve.boot.start(ve.Cfg);
+    bl.boot.start(bl.Cfg);
     //+++++++++++++++++++++++++something about logger start+++++++++++++++++++++++++++
     (function(v){
         typeof console !== "undefined" || (win.console = {});
@@ -1336,9 +1336,9 @@
                }
             }
         }
-    })(ve);
+    })(bl);
     //+++++++++++++++++++++++++something about logger end+++++++++++++++++++++++++++
     //expose to public
-    win.$ = win.veeb = ve.__lang.safeMix(win.$||{}, ve);
+    win.$ = win.veeb = bl.__lang.safeMix(win.$||{}, bl);
 
 })(window);

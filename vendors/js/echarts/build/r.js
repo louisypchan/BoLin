@@ -3854,7 +3854,7 @@ define('rhino/file', ['prim'], function (prim) {
                 // Note that when we use utf-8, the BOM should appear as "EF BB BF", but it doesn't due to this bug in the JDK:
                 // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4508058
                 if (line && line.length() && line.charAt(0) === 0xfeff) {
-                    // Eat the BOM, since we've already found the encoding on this file,
+                    // Eat the BOM, since we'bl already found the encoding on this file,
                     // and we plan to concatenating this buffer with others; the BOM should
                     // only appear at the top of a file.
                     line = line.substring(1);

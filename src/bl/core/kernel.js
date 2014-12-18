@@ -19,7 +19,7 @@
 /**
  * Created by Louis Y P Chen on 2014/10/23.
  */
-$.add(["lang", "ve/extensions/string"], function(lang){
+$.add(["lang", "bl/extensions/string"], function(lang){
     var result = {};
     result = lang.mixin(result, lang);
     var op = Object.prototype;
