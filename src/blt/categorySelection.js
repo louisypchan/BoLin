@@ -18,44 +18,24 @@
  THE SOFTWARE.
  ****************************************************************************/
 /**
- * Created by Louis Y P Chen on 2014/10/31.
+ * Created by Louis Y P Chen on 2014/12/22.
  */
-/**
- * The base class to be inherited
- */
-$.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
+$.add("blt/categorySelection", ["bl/core/declare", "widgets/base"], function(declare, base){
     return declare({
-        "~name" : "$.core.base",
-        /**
-         * constructor
-         * @param params
-         */
-        ctor : function(/*Object?*/ params){
-            // Automatic setting of params during construction
-        },
-        /**
-         * private function that does a get based off a hash of names
-         * @param name
-         * @param names  Hash of names of custom attributes
-         */
-        "-_get" : function(name, names){
+        "~name" : "blt.widgets.categorySelection",
+        "~superclass" : base,
 
+        ctor : function(options){
+            this._super(arguments);
+            console.log("dd");
         },
 
-        "get" : function(name){
-
+        onPreCreate : function(){
+            console.log("onPreCreate1");
         },
 
-        "-_set" : function(){
-
-        },
-
-        "set" : function(){
-
-        },
-
-        watch : function(){
-
+        onPostCreate : function(){
+            console.log("onPostCreate1");
         }
     });
 });

@@ -18,44 +18,49 @@
  THE SOFTWARE.
  ****************************************************************************/
 /**
- * Created by Louis Y P Chen on 2014/10/31.
+ * Created by Louis Y P Chen on 2014/12/22.
  */
-/**
- * The base class to be inherited
- */
-$.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
-    return declare({
-        "~name" : "$.core.base",
+
+$.add("bl/widgets/register", [], function(){
+    var widgets = {}, id = 0;
+
+    return {
+
+        length : 0, //Number of registered widgets
+
         /**
-         * constructor
-         * @param params
+         * Add a widget into storage
+         * @param widget
          */
-        ctor : function(/*Object?*/ params){
-            // Automatic setting of params during construction
+        add : function(widget){
+            if(!widgets[widget.id]){
+                widgets[widget.id] = widget;
+                this.length++;
+            }
         },
+
         /**
-         * private function that does a get based off a hash of names
-         * @param name
-         * @param names  Hash of names of custom attributes
+         * remove a widget
+         * @param widget
          */
-        "-_get" : function(name, names){
-
+        remove : function(widget){
+            if(widgets[widget.id]){
+                delete widgets[widget.id];
+                this.length--;
+            }
         },
 
-        "get" : function(name){
-
+        getWidget : function(id){
+            return typeof id == "string" ? widgets[id] : id;
         },
 
-        "-_set" : function(){
-
+        removeAll : function(){
+            this.length = 0;
+            widgets.length = 0;
         },
 
-        "set" : function(){
-
-        },
-
-        watch : function(){
-
+        getUniqueId : function(widgetName){
+            return widgetName + "_" + (id++);
         }
-    });
+    };
 });

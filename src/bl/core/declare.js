@@ -124,17 +124,26 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
     }
     /**
      * call parents' method implementation
+     *
+     * TODO:  OOM run loop here
      */
     function callSuperImpl(){
         var caller = callSuperImpl.caller, name = caller._name,
-            meta = this._class._meta, p, _super;name
-        if(meta._super){
-            _super = [].concat(meta._super);
-            _super = _super[_super.length - 1];
+            meta = this._class._meta, p, _super, f, pos = 0,
+            icb = this.__icb__ = this.__icb__||{};
+
+        while(meta){
+            _super = meta._super;
             p = _super.prototype;
-            if(p && p[name] && kernel.isFunction(p[name])){
-                p[name].apply(p, arguments);
+            if(p && p[name] && (kernel.isFunction(p[name]|| meta.ctor === caller))){
+                f = p[name];
+                break;
             }
+            meta = _super.meta;
+        }
+
+        if(f){
+            f.apply(this, arguments);
         }
     }
 
@@ -237,12 +246,15 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
                     if(ctor){
                         ctor.apply(this,arguments);
                     }
+                    return this;
                 }
             })(ctor);
             f.executed = false;
             //cache meta information
             f._meta = {ctor : obj.ctor, synthesize : obj["~synthesize"], _super : superclass};
             rPorot._super = callSuperImpl;
+            //add inheritance cache brust
+            rPorot.__icb__ = {};
             //constructor the prototype
             f.prototype = rPorot;
             f.privates = privates;

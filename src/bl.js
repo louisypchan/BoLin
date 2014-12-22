@@ -72,7 +72,7 @@
     //Must be specified entirely in lowercase,e.g. `en-us` and `zh-cn`.
     bl.locale = "zh-cn";
     //prefix of directive
-    bl.veAttrPrefixes = ['bl-', 'bl:'];
+    bl.blAttrPrefixes = ['bl-', 'bl:'];
     (function(){
         //populate into types
         var arr = "Boolean Number String Function Array Date RegExp Object Error".split(" ");
@@ -607,7 +607,7 @@
          *      mid     : the fully-resolved (i.e., mappings have been applied) module identifier without the package identifier (eg:bl/dom/selector)
          *      url     : the URL from which the module was retrieved
          *      pack    : the package object of the package to which the module belongs
-         *      exected : TODO:
+         *      executed: the state of the package object has been executed
          *      deps    : the dependency vector for this module (vector of modules objects)
          *      factory : the factory for this module
          *      result  : the result of the running the factory for this module
@@ -878,6 +878,8 @@
                         //match[2] plulgin
                         //TODO: won't handle plugin here
                         //TODO: move to phase 2
+                        //name was {plugin-module}>{plugin-resource}
+                        //var plugin = this.getModule(match[1], refMod);
                     }else{
                         var rs = getModInfo(name, refMod, v.__AMD.packs, v.__AMD.mods, v.__AMD.aliases);
                         var mod = v.__AMD.mods[rs.mid];

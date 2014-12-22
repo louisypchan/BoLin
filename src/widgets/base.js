@@ -20,13 +20,31 @@
 /**
  * Created by Louis Y P Chen on 2014/11/24.
  */
-$.add("bl/widgets/base",["bl/core/declare", "bl/core/base"], function(declare, base){
+$.add("widgets/base",["bl/core/declare", "bl/core/base", "bl/core/aspect"], function(declare, base, aspect){
     return declare({
         "~name" : "bl.widgets.base",
         "~superclass" : base,
 
+        //the widget container
+        "$el" : null,
+        //the widget id
+        id : "",
+        //
         ctor : function(){
+            this._super(arguments);
+            console.log("base");
+        },
 
+        create : function(){
+            console.log("create");
+        },
+
+        onPreCreate : function(){
+            console.log("onPreCreate");
+        },
+
+        onPostCreate : function(){
+            console.log("onPostCreate");
         }
     });
 });
