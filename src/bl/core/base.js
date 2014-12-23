@@ -39,7 +39,7 @@ $.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
          * @param name
          * @param names  Hash of names of custom attributes
          */
-        "-_get" : function(name, names){
+        "_get" : function(name, names){
 
         },
 
@@ -47,7 +47,7 @@ $.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
 
         },
 
-        "-_set" : function(){
+        "_set" : function(){
 
         },
 

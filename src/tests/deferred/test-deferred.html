@@ -9,24 +9,24 @@
 </body>
 <script type="text/javascript" src="../../bl.js" vecfg="debug:1"></script>
 <script type="text/javascript">
-//    $.use(["bl/core/deferred"], function(Deferred){
-//        function asyncProcess(){
-//            var deferred = new Deferred();
-//
-//            document.getElementById("test").innerHTML = "I'm running...";
-//
-//            setTimeout(function(){
-//                deferred.resolve("success");
-//            }, 1000);
-//
-//            return deferred.promise;
-//        }
-//
-//        var p = asyncProcess();
-//        p.then(function(results){
-//            document.getElementById("test").innerHTML = "I'm finished, and the result was: " + results;
-//        });
-//    });
+    $.use(["bl/core/deferred"], function(Deferred){
+        function asyncProcess(){
+            var deferred = new Deferred();
+
+            document.getElementById("test").innerHTML = "I'm running...";
+
+            setTimeout(function(){
+                deferred.resolve("success");
+            }, 1000);
+
+            return deferred.promise;
+        }
+
+        var p = asyncProcess();
+        p.then(function(results){
+            document.getElementById("test").innerHTML = "I'm finished, and the result was: " + results;
+        });
+    });
 
     $.use(["blt/categorySelection"], function(categorySelection){
         new categorySelection();

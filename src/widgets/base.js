@@ -37,7 +37,7 @@ $.add("widgets/base",["bl/core/declare", "bl/core/base", "bl/core/aspect"], func
             this.create();
         },
 
-        create : function(){
+        "create" : function(){
             console.log("create");
         },
 

@@ -146,11 +146,7 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
         }
     }
 
-    var isPrivate = function(it){
-            return it.indexOf("-") == 0;
-        },
-
-        isStatic = function(it){
+    var isStatic = function(it){
             return it.indexOf("+") == 0;
         },
         isNelectful  = function(it){
@@ -161,31 +157,12 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
             for(name in source){
                 t = source[name];
                 if(kernel.isNotObjectProperty(t, name) && !isNelectful(name)){
-                    //crack private
-                    if(isPrivate(name)){
-                        name = name.substr(1);
-                        p.push(name);
-                    }
                     if(kernel.isFunction(t)){
                         //assign the name to a function
                         t._name = name;
                     }
                     target[name] = t;
                 }
-            }
-            //crack all the privates
-            if(crackPrivate && target._class){
-                var __proto__;
-                target._class.privates.forEach(function(i){
-                    delete  target[i];
-                    __proto__ = target.__proto__;
-                    while(__proto__ && !__proto__[i]){
-                        __proto__ = __proto__.__proto__;
-                    }
-                    if(__proto__ && __proto__[i]){
-                        delete __proto__[i];
-                    }
-                });
             }
             return p;
         },

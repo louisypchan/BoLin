@@ -124,7 +124,7 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
             return this.promise;
         },
 
-        "-setCanceler" : function(canceler){
+        "setCanceler" : function(canceler){
             this._canceler = canceler;
             this.promise.cancel = this.cancel = function(reason){
                 if(!this.fulfilled){
@@ -137,11 +137,11 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
                 return reason;
             };
         },
-        "-getCanceler" : function(){
+        "getCanceler" : function(){
             return this._canceler;
         },
 
-        "-mkHandler" : function(deferred, type){
+        "mkHandler" : function(deferred, type){
             return (function(context){
                 return function(value){
                     context.handle(deferred, type, value);
@@ -149,7 +149,7 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
             })(this);
         },
 
-        "-setListener" : function(args){
+        "setListener" : function(args){
             var promise = args[0], type = args[1], result = args[2],
                 func = promise[type], deferred = promise.deferred;
             if(func){
@@ -176,7 +176,7 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
                 this.handle(deferred, type, result);
             }
         },
-        "-setWaiting" : function(args){
+        "setWaiting" : function(args){
             var waiting = args[0], type = args[1], result = args[2];
             for(var i = 0; i < waiting.length; i++){
                 this.listener = [waiting[i], type, result];
@@ -185,7 +185,7 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
             }
         },
 
-        "-handle" : function(deferred, type, result){
+        "handle" : function(deferred, type, result){
             if(!deferred.isCanceled()){
                 switch (type){
                     case $.core.Deferred.STATE.PROGRESS :
@@ -201,7 +201,7 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
             }
         },
 
-        "-toString" : function(){
+        "toString" : function(){
             return "[object Deferred]";
         }
     });

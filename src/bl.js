@@ -931,7 +931,7 @@
                         if(v.__lang.isString(aliase[0])){
                             aliase[0] = aliase[0].replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, function(str) { return "\\" + str });
                         }
-                        v.__lang.aliases.push([new RegExp("^" + aliase[0] + "$"), aliase[1]]);
+                        v.__AMD.aliases.push([new RegExp("^" + aliase[0] + "$"), aliase[1]]);
                     });
 					if(cfg['debug']){
 						v.__lang.getProp(["__debug"], true, v).state = cfg['debug'];
