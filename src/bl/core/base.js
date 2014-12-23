@@ -32,6 +32,7 @@ $.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
          */
         ctor : function(/*Object?*/ params){
             // Automatic setting of params during construction
+            console.log("I am the top");
         },
         /**
          * private function that does a get based off a hash of names

@@ -25,9 +25,8 @@ $.add("blt/categorySelection", ["bl/core/declare", "widgets/base"], function(dec
         "~name" : "blt.widgets.categorySelection",
         "~superclass" : base,
 
-        ctor : function(options){
-            this._super(arguments);
-            console.log("dd");
+        ctor : function(){
+            this._super();
         },
 
         onPreCreate : function(){

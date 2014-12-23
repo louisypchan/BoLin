@@ -31,8 +31,10 @@ $.add("widgets/base",["bl/core/declare", "bl/core/base", "bl/core/aspect"], func
         id : "",
         //
         ctor : function(){
-            this._super(arguments);
-            console.log("base");
+            this._super();
+            aspect.before(this, "create", this.onPreCreate);
+            aspect.after(this, "create", this.onPostCreate);
+            this.create();
         },
 
         create : function(){

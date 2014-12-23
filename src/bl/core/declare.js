@@ -124,24 +124,23 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
     }
     /**
      * call parents' method implementation
-     *
-     * TODO:  OOM run loop here
+     * [fix the OOM issue]
      */
     function callSuperImpl(){
         var caller = callSuperImpl.caller, name = caller._name,
-            meta = this._class._meta, p, _super, f, pos = 0,
-            icb = this.__icb__ = this.__icb__||{};
-
+            meta = this._class._meta, p, _super, f;
         while(meta){
             _super = meta._super;
             p = _super.prototype;
-            if(p && p[name] && (kernel.isFunction(p[name]|| meta.ctor === caller))){
+            // fix the OOM issue
+            // to find out the inheritance relation ships
+            if(p && p[name] && (kernel.isFunction(p[name]) && (meta.ctor === caller||meta.transparent[name] === caller))){
                 f = p[name];
                 break;
             }
-            meta = _super.meta;
+            // go loop
+            meta = _super._meta;
         }
-
         if(f){
             f.apply(this, arguments);
         }
@@ -251,7 +250,7 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
             })(ctor);
             f.executed = false;
             //cache meta information
-            f._meta = {ctor : obj.ctor, synthesize : obj["~synthesize"], _super : superclass};
+            f._meta = {ctor : obj.ctor, synthesize : obj["~synthesize"], _super : superclass, transparent : rPorot};
             rPorot._super = callSuperImpl;
             //add inheritance cache brust
             rPorot.__icb__ = {};
