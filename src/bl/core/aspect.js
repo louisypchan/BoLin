@@ -49,6 +49,7 @@ $.add(["public"], function(expose){
             this.next_after = this.prev_after = this.next_around = this.prev_around = this;
         this.inst = inst;
         this.method = method;
+        this.target = inst[method];
     }
 
     function __around(f, a){
@@ -62,7 +63,7 @@ $.add(["public"], function(expose){
             advice.before = before;
             advice.after = after;
             advice.around = around;
-            advice.target = target;
+            advice.target = this.target||target;
 
             this._add("before", advice);
             this._add("around", advice);
@@ -117,7 +118,7 @@ $.add(["public"], function(expose){
             }
             //running the around chain
             try{
-                if(advised.prev_around !== advised){
+                if(advised.prev_around == advised){
                     advised.prev_around.target.apply(this, arguments);
                 }
             }catch (e){ throw e; }
