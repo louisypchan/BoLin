@@ -229,8 +229,6 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
             //cache meta information
             f._meta = {ctor : obj.ctor, synthesize : obj["~synthesize"], _super : superclass, transparent : rPorot};
             rPorot._super = callSuperImpl;
-            //add inheritance cache brust
-            rPorot.__icb__ = {};
             //constructor the prototype
             f.prototype = rPorot;
             f.privates = privates;
@@ -285,6 +283,14 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
             };
             //to support IE7/IE8
             if($.browser.ie && $.browser.ie < 9){
+                /**
+                 // IE8 not all JavaScript Objects can use Object.defineProperty. This is so werid
+                 // We have to chose another solution to support IE7 and IE8
+                 // Here we consider that to use watch solution to simulate setter method
+                 // That means when there is an asignment there will notify the specific method to be executed
+                 // And consider that if we don't change to use function to minitor watching callbacks
+                 // Here we go
+                 */
                 kernel.watcher.add(context, prop, mSet);
             }else{
                 Object.defineProperty(proto, prop, {

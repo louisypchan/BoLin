@@ -5,16 +5,10 @@
     <title></title>
     <script type="text/javascript" src="../../bl.js" vecfg="debug :1"></script>
     <script type="text/javascript">
-        $.use(["tests/amd/amdDeps", "tests/amd/amdObj"], function(a1, a2){
-            a1.test(a2);
+        $.use(["tests/amd/amdObj"], function(a2){
+            console.log(a2);
         });
 
-        $.use(["bl/core/kernel"], function(kernel){
-            var foo = { bar: function(a, b, c){ console.log(a, b, c); } };
-            var fn = kernel.ride(foo, "bar", 1, 2);
-            console.log(fn);
-            fn(3);
-        });
     </script>
 </head>
 <body>

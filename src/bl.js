@@ -1311,6 +1311,14 @@
             bl.__AMD.pkg.configure(bl.__AMD.sniffCfg);
         }
     };
+//    bl.Cfg = {
+//        pkgs : [
+//            {
+//                name : "uu",
+//                path : "tests/amd"
+//            }
+//        ]
+//    };
     //before booting, set AMD user config
     bl.boot.start(bl.Cfg);
     //+++++++++++++++++++++++++something about logger start+++++++++++++++++++++++++++

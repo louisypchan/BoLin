@@ -1,3 +1,3 @@
-$.add({
-   "bl" : "bl"
+$.add([],function(){
+    return "dfdsfdsf";
 });

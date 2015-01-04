@@ -343,7 +343,7 @@ $.add(["lang", "bl/extensions/string"], function(lang){
                         m = obj.methodNames.slice();
                     for(var i = 0, l = c.length; i < l; i++){
                         //syn up the real property's value
-                        c[i]["_"+prop] = c[i][prop];
+                        //c[i]["_"+prop] = c[i][prop];
                         if(context && c[i] === context){
                             context[m[i]].call(context, context[prop]);
                             break;
