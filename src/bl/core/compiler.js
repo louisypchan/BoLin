@@ -20,3 +20,26 @@
 /**
  * Created by Louis Y P Chen on 2015/1/4.
  */
+$.add("bl/core/compiler", ["bl/core/kernel", "bl/dom/dom"], function(kernel, dom){
+
+    function parseNodes(){
+
+    }
+
+
+    var compile = function(nodes){
+        if(!nodes instanceof  dom){
+            nodes = dom(nodes);
+        }
+        nodes.each(function(node, idx){
+            if(node.nodeType === $.DOM.NODE_TYPE_TEXT && /\S+/.test(node.nodeValue)){
+                nodes.elems[idx] = dom(node).wrap('<span></span>').elems[0];
+            }
+
+        });
+    };
+
+
+
+    return compile;
+});
