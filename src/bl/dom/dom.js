@@ -76,7 +76,6 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
         }
         //return the node itself if noe node
         if(div.childNodes.length == 1){
-            console.log(div);
             return div.removeChild(div.firstChild);
         }
         //return multiple nodes as a documetn fragment
@@ -445,6 +444,15 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
                 }
             }
             return false;
+        },
+        wrap : function(html){
+            var wrap = dom(html);
+            wrap.append(kernel.clone(this.elems[0]));
+            this.replace(wrap.elems[0]);
+            return wrap;
+        },
+        toString : function(){
+            return "[object Dom]";
         }
     });
 
@@ -461,7 +469,12 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
         return (function(obj){
             //the results
             if(kernel.isString(selector)){
-                obj.elems = query.qsa(selector, context);
+                if(selector.charAt(0) === '<' && selector.charAt(selector.length - 1) === '>' && selector.length >= 3){
+                    var doc = context ? context.ownerDocument : $.doc;
+                    obj.elems = [createElements(selector, doc)];
+                }else{
+                    obj.elems = query.qsa(selector, context);
+                }
             }
             else if(selector && selector.nodeType){
                 obj.elems = [selector];

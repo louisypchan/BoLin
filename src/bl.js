@@ -80,7 +80,14 @@
             bl.__types["[object " + arr[i] + "]"] = arr[i].toLowerCase();
         }
     })();
-
+    //Node Type
+    bl.DOM = {
+        NODE_TYPE_ELEMENT : 1,
+        NODE_TYPE_TEXT : 3,
+        NODE_TYPE_COMMENT : 8,
+        NODE_TYPE_DOCUMENT : 9,
+        NODE_TYPE_DOCUMENT_FRAGMENT : 11
+    };
     //check supportive
     //Test support is borrowed from jQuery
     bl.support = {};
@@ -1329,7 +1336,7 @@
             "groupEnd", "info", "profile", "profileEnd", "time", "timeEnd",
             "trace", "warn", "log"
         ];
-        var tn, i = 0, origins = {};
+        var tn, i = 0;
         while((tn = mds[i++])){
             if(!console[tn]){
                 (function(method){
