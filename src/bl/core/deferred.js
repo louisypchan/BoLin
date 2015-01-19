@@ -42,6 +42,7 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
             this.promise.then = this.then;
             this.canceled = false;
             this._waiting = [];
+            this.result = [];
         },
 
         isResolved : function(){
@@ -102,7 +103,7 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
                 return promise.canel && promise.cancel(reason);
             });
             if(this.fulfilled && !this.waiting){
-                this.listener = [promise, this.fulfilled, result];
+                this.listener = [promise, this.fulfilled, this.result];
                 //To be removed if IE7 and IE8 are not in the supportive list
                 kernel.watcher.notify("listener", this);
             }else{
@@ -179,6 +180,7 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
         "setWaiting" : function(args){
             var waiting = args[0], type = args[1], result = args[2];
             for(var i = 0; i < waiting.length; i++){
+                this.result[i] = result;
                 this.listener = [waiting[i], type, result];
                 //To be removed if IE7 and IE8 are not in the supportive list
                 kernel.watcher.notify("listener", this);

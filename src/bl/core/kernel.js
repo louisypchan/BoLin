@@ -39,6 +39,21 @@ $.add(["lang", "bl/extensions/string"], function(lang){
         void 0 == num[1] && precision > 0 && (num[1] == "0");
         return num[1].length < precision ? (num[1] += "0", addZeros(num[0] + decimalSeparator + num[1], decimalSeparator, precision)) : void 0 != num[1] ? num[0] + decimalSeparator + num[1] : num[0];
     }
+
+    function merge(a, b){
+        var len = +b.length, j = 0, i = a.length;
+        while(j < len){
+            a[i++] = b[j++];
+        }
+        if(len !== len){
+            while ( b[j] !== undefined ) {
+                a[ i++ ] = b[ j++ ];
+            }
+        }
+        a.length = i;
+        return a;
+    }
+
     lang.mixin(result, {
         /**
          * similar to isArray() but more permissive
@@ -223,7 +238,7 @@ $.add(["lang", "bl/extensions/string"], function(lang){
             var ret = results || [];
             if ( arr != null ) {
                 if (this.isArrayLike( Object(arr) ) ) {
-                    ret.concat(typeof arr === "string" ? [arr] : arr);
+                    merge(ret, typeof arr === "string" ? [arr] : arr);
                 }else{
                     ret.push(arr);
                 }
