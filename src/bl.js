@@ -32,7 +32,6 @@
         hasOwn = {}.hasOwnProperty;
     //the version of bl
     //will be replaced from moduleCfg
-    //TODO: replace the version in build phase
     bl.version = "${version}";
     //store document
     bl.doc = doc;
@@ -57,6 +56,8 @@
 
     bl.noop = noop;
 
+    bl.directives = {};
+
     bl.majorEvent = !!doc.addEventListener;
 
     //Returns a unique identifier
@@ -72,7 +73,6 @@
     //Must be specified entirely in lowercase,e.g. `en-us` and `zh-cn`.
     bl.locale = "zh-cn";
     //prefix of directive
-    bl.blAttrPrefixes = ['bl-', 'bl:'];
     (function(){
         //populate into types
         var arr = "Boolean Number String Function Array Date RegExp Object Error".split(" ");

@@ -20,34 +20,6 @@
 /**
  * Created by Louis Y P Chen on 2015/1/4.
  */
-$.add("bl/core/compiler", ["bl/core/kernel", "bl/dom/dom", "bl/directive/directive"], function(kernel, dom, directive){
-    /**
-     * To parse the nodeList against the directives.
-     * @param nodes
-     */
-    function parseNodes(nodes){
-        if(!(nodes instanceof dom)){
-            nodes = dom(nodes);
-        }
-        var directives, childNodes;
-        nodes.each(function(node){
-            directives = directive.collect(node);
-            console.log(directives);
-            childNodes = node.childNodes;
-            childNodes && childNodes.length && parseNodes(childNodes);
-        });
-    }
-
-
-    return function(nodes){
-        if(!(nodes instanceof  dom)){
-            nodes = dom(nodes);
-        }
-        nodes.each(function(node, idx){
-            if(node.nodeType === $.DOM.NODE_TYPE_TEXT && /\S+/.test(node.nodeValue)){
-                nodes.elems[idx] = dom(node).wrap('<span></span>').elems[0];
-            }
-        });
-        parseNodes(nodes);
-    };
+$.add("bl/directive/all", [], function(){
+    //
 });

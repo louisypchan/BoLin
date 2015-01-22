@@ -20,34 +20,39 @@
 /**
  * Created by Louis Y P Chen on 2015/1/4.
  */
-$.add("bl/core/compiler", ["bl/core/kernel", "bl/dom/dom", "bl/directive/directive"], function(kernel, dom, directive){
-    /**
-     * To parse the nodeList against the directives.
-     * @param nodes
-     */
-    function parseNodes(nodes){
-        if(!(nodes instanceof dom)){
-            nodes = dom(nodes);
-        }
-        var directives, childNodes;
-        nodes.each(function(node){
-            directives = directive.collect(node);
-            console.log(directives);
-            childNodes = node.childNodes;
-            childNodes && childNodes.length && parseNodes(childNodes);
-        });
+$.add("bl/directive/directive", ["bl/core/kernel"], function(kernel){
+    var directive  = {};
+
+    function addDirective(){
+
     }
 
+    function addTextDirective(){
 
-    return function(nodes){
-        if(!(nodes instanceof  dom)){
-            nodes = dom(nodes);
-        }
-        nodes.each(function(node, idx){
-            if(node.nodeType === $.DOM.NODE_TYPE_TEXT && /\S+/.test(node.nodeValue)){
-                nodes.elems[idx] = dom(node).wrap('<span></span>').elems[0];
-            }
-        });
-        parseNodes(nodes);
+    }
+    /**
+     * Look for the directive(s) on the given element
+     * @param elem
+     */
+    directive.collect = function(elem){
+        return this.add(elem.nodeType);
     };
+
+    kernel.extend(directive, {
+        //register a new directive with a fatctory compiler
+        register : function(name, directiveFactory){
+
+        },
+
+        add : function(type){
+            switch (type){
+                case $.DOM.NODE_TYPE_ELEMENT : //Element
+                    break;
+                case $.DOM.NODE_TYPE_TEXT :
+                    break;
+            }
+        }
+    });
+    //export
+    return directive;
 });

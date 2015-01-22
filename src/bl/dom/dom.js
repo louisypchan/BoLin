@@ -481,8 +481,10 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
             }
             else if(kernel.isArray(selector)){
                 obj.elems = selector;
+            }else if(kernel.isArrayLike(Object(selector))) {
+                obj.elems = kernel.makeArray(selector);
             }else{
-                obj.elems = [];
+                    obj.elems = [];
             }
             return obj;
         })(new DOM());
