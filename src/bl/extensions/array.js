@@ -20,7 +20,7 @@
 /**
  * Created by Louis Y P Chen on 2014/10/23.
  */
-$.add(["bl/core/kernel"], function(kernel){
+$.add("bl/extensions/array", ["lang"], function(lang){
     // module:
     //		bl/extensions/array
     //      an extension of Array
@@ -61,7 +61,8 @@ $.add(["bl/core/kernel"], function(kernel){
 
     var arr = Array.prototype;
 
-    kernel.extend(Array.prototype, {
+    lang.mixin(Array.prototype, {
+
         indexOf : arr.indexOf || function(){
             return index(true).apply(this, arguments);
         },

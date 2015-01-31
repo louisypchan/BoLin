@@ -5,7 +5,7 @@ $.add("bl/dom/ready",[], function(){
         fixReadyState = typeof doc.readyState != "string",
         ready = !!readyStates[doc.readyState],
         readyQ = [],
-        recursiveGuard;
+            recursiveGuard;
 
     function domReady(callback){
         readyQ.push(callback);

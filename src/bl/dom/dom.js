@@ -21,7 +21,7 @@
  * Created by Louis Y P Chen on 2014/11/13.
  */
 $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
-    "bl/dom/style", "bl/extensions/array"], function (kernel, query, domAttr, domStyle) {
+    "bl/dom/style"], function (kernel, query, domAttr, domStyle) {
     // ============================
     // DOM Functions
     // =============================
@@ -200,7 +200,9 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
                         }
                     }
                     cur = kernel.trim(cur);
+
                     if(elem.className !== cur){
+                        console.log(elem);
                         elem.className = cur;
                     }
                 }
@@ -218,15 +220,14 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
             this.elems.forEach(kernel.ride(this, cb));
             return this;
         },
-        html : function(){
-            var arity = arguments.length;
-            if(arity == 0){
+        html : function(html){
+            if(typeof html === "undefined"){
                 //get
                 return this.elems[0].innerHTML;
             }else{
                 //set
-                this.each(function(elem, index){
-                   elem.innerHTML = arguments[0];
+                this.each(function(elem){
+                    elem.innerHTML = html
                 });
             }
             return this;
@@ -264,7 +265,7 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
                         return v == null ? "" : v + "";
                     });
                 }
-                hooks = domAttr.valHooks[ this.type ] || domAttr.valHooks[ this.nodeName.toLowerCase() ];
+                hooks = domAttr.valHooks[ n.type ] || domAttr.valHooks[ n.nodeName.toLowerCase() ];
                 // If set returns undefined, fall back to normal setting
                 if ( !hooks || !("set" in hooks) || hooks.set( this, val, "value" ) === undefined ){
                     n.value = val;
@@ -451,12 +452,18 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
             this.replace(wrap.elems[0]);
             return wrap;
         },
+        exist : function(){
+            return !!this.elems.length;
+        },
         toString : function(){
-            return "[object Dom]";
+            return "[object $DOM]";
+        },
+        parent : function(){
+            var elem = this.elems[0],
+                parent = elem.parentNode;
+            return parent && parent.nodeType !== 11 ? parent : null;
         }
     });
-
-    DOM.prototype.query = DOM.prototype.find;
     /**
      * @examples
      *      dom("#ID")
@@ -484,10 +491,11 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
             }else if(kernel.isArrayLike(Object(selector))) {
                 obj.elems = kernel.makeArray(selector);
             }else{
-                    obj.elems = [];
+                obj.elems = [];
             }
             return obj;
         })(new DOM());
     }
+    dom.$DOM = DOM;
     return dom;
 });

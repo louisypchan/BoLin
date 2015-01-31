@@ -106,6 +106,7 @@ $.add("bl/event/event", ["bl/core/kernel", "bl/extensions/date"], function(kerne
     });
 
     return function(event){
+        event = event || $.win.event;
         // should be same event, reuse event object (so it can be augmented);
         if(event["__type__"] === "@VE_EVENT") return event;
         return lastEvent && lastEvent.originalEvent === event ? lastEvent : new _event(event);

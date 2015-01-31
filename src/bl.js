@@ -37,8 +37,13 @@
     bl.doc = doc;
     //user configurations for bl
     bl.Cfg = win.BLCfg ||{
+        pkgs : [
+            {name : "template", path : "../cfg/templates"}
+        ],
         debug : false //by default, turn off the debug mode
     };
+
+    bl.PARENT = "_$_$_parent_$_$_";
 
     bl.global = win;
 
@@ -87,6 +92,12 @@
         NODE_TYPE_COMMENT : 8,
         NODE_TYPE_DOCUMENT : 9,
         NODE_TYPE_DOCUMENT_FRAGMENT : 11
+    };
+
+    bl.restrict = {
+        ELEMENT : 0,
+        ATTR : 1,
+        CLASS : 2
     };
     //check supportive
     //Test support is borrowed from jQuery
@@ -421,7 +432,7 @@
 
                 return target;
             },
-            getProp : function(parts, create, context){
+            getProp : function(parts, create, context, defaultValue){
                 var p, i = 0, rs = context;
                 if(!rs){
                     if(!parts.length){
@@ -453,6 +464,16 @@
 
         return v > 4 ? v : !v;
     })();
+    //in case the detection doesn't work in
+    if(!bl.browser.ie && doc.attachEvent){
+        //use userAgent to check IE's version
+        bl.browser.ie = win.navigator.userAgent.match(/msie\s*(\d+)/i);
+        if(bl.browser.ie){
+            bl.browser.ie = bl.browser.ie[1];
+        }else{
+            bl.browser.ie = false;
+        }
+    }
     bl.browser.msie = bl.doc.documentMode;
     bl.browser.opera = typeof window.opera !== "undefined";
 

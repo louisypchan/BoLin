@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="../../bl.js" vecfg="debug :1"></script>
+</head>
+<body yp-def="">
+  <div yp-controller="test1">
+      <div yp-model="item.title"></div>
+      <div yp-model="item.title"></div>
+      <div yp-model="item.title"></div>
+      <div yp-model="item.title"></div>
+      <div yp-model="item.title"></div>
+      <div yp-model="item.title"></div>
+      <div yp-model="item.title"></div>
+      <span yp-model="item.title"></span>
+      <div yp-model="item.title"></div>
+      <input type="text" yp-model="item.title" placeholder="test" />
+      <div yp-controller="test2">
+        <div yp-template="tests/test" yp-model="items" yp-render="tmpl"></div>
+      </div>
+  </div>
+
+
+  <button onclick="test();">run</button>
+  <script>
+//      $.use(["bl/semantic/base", "bl/dom/dom"], function(it, dom){
+//          new it();
+//      });
+      function test(){
+          $.use(["bl/semantic/base"], function(base){
+              var t = new base();
+              t.set("$test1.item.title", 1);
+              t.set("$test2.items", [{title : 1}, {title :2}, {title :3}]);
+          });
+      }
+  </script>
+</body>
+</html>

@@ -19,12 +19,17 @@
 /**
  * Created by Louis Y P Chen on 2014/10/23.
  */
-$.add(["lang", "bl/extensions/string"], function(lang){
+$.add(["lang", "bl/extensions/string", "bl/extensions/array"], function(lang){
     var result = {};
     result = lang.mixin(result, lang);
     var op = Object.prototype;
     //exclude the following css properties to add px 以下属性是否要加 px
     var exclude = /z-?index|font-?weight|opacity|zoom|line-?height/i;
+    var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg,
+        FN_ARG =  /^\s*(_?)(\S+?)\1\s*$/,
+        FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
+        eventSupport = {},
+        FN_ARG_SPLIT = /,/;
     /**
      * A internal plugin to fix the accuracy of float number calculation
      */
@@ -239,6 +244,8 @@ $.add(["lang", "bl/extensions/string"], function(lang){
             if ( arr != null ) {
                 if (this.isArrayLike( Object(arr) ) ) {
                     merge(ret, typeof arr === "string" ? [arr] : arr);
+                }else if(this.isArray(arr)){
+                    ret = arr;
                 }else{
                     ret.push(arr);
                 }
@@ -302,6 +309,28 @@ $.add(["lang", "bl/extensions/string"], function(lang){
             return encodeURIComponent(val).replace(/%40/gi, '@').replace(/%3A/gi, ':').
                 replace(/%24/g, '$').replace(/%2C/gi, ',').replace(/%3B/gi, ';').
                 replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
+        },
+        annotate : function(fn){
+            var result = [];
+            if(!this.isFunction(fn)) return result;
+            var fnText = fn.toString().replace(STRIP_COMMENTS, ""),
+            argDecl = fnText.match(FN_ARGS);
+            if(argDecl&& argDecl[1]){
+                argDecl[1].split(FN_ARG_SPLIT).forEach(function(arg){
+                    arg.replace(FN_ARG, function(all, underscore, name){
+                        result.push(name);
+                    });
+                });
+            }
+        },
+        hasEvent : function(eventName){
+            if(eventName === "input" && ($.browser.ie && $.browser.ie <= 11)) return false;
+            if(this.isUndefined(eventSupport[eventName])){
+                var divElm = $.doc.createElement('div');
+                eventSupport[eventName] = 'on' + eventName in divElm;
+                divElm = null;
+            }
+            return eventSupport[eventName];
         }
     });
 

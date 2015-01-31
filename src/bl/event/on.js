@@ -57,7 +57,7 @@ $.add(["bl/event/event", "bl/core/kernel", "bl/core/aspect"], function(Event, ke
             var emitter = target[type];
             if(!emitter || !emitter.listeners){
                 var oldListener = emitter;
-                emitter = Function('event', 'event = Event(event); var callee = arguments.callee; for(var i = 0; i < callee.listeners.length; i++){ var listener =  _IEListeners_[callee.listeners[i]]; if(listener){ listeners.call(this, event);}}');
+                emitter = Function('event', 'var callee = arguments.callee; for(var i = 0; i < callee.listeners.length; i++){ var listener =  _IEListeners_[callee.listeners[i]]; if(listener){ listener.call(this, event);}}');
                 emitter.listeners = [];
                 target[type] = emitter;
                 emitter.global = this;
@@ -67,7 +67,7 @@ $.add(["bl/event/event", "bl/core/kernel", "bl/core/aspect"], function(Event, ke
             }
             var handle;
             emitter.listeners.push(handle = (emitter.global._IEListeners_.push(listener) - 1));
-            return IESignal(handle);
+            return new IESignal(handle);
         }
         return aspect.after(target, type, listener);
     }
@@ -140,7 +140,7 @@ $.add(["bl/event/event", "bl/core/kernel", "bl/core/aspect"], function(Event, ke
      */
     on.add = function(target, type, listener){
         return _add(target, type, function(evt){
-            evt = Event(evt || bl.global.event);
+            evt = Event(evt || $.global.event);
             listener(evt);
         });
     };

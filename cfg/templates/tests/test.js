@@ -20,39 +20,6 @@
 /**
  * Created by Louis Y P Chen on 2015/1/4.
  */
-$.add("bl/directive/directive", ["bl/core/kernel"], function(kernel){
-    var directive  = {};
-
-    function addDirective(){
-
-    }
-
-    function addTextDirective(){
-
-    }
-    /**
-     * Look for the directive(s) on the given element
-     * @param elem
-     */
-    directive.collect = function(elem){
-        return this.add(elem.nodeType);
-    };
-
-    kernel.extend(directive, {
-        //register a new directive with a fatctory compiler
-        register : function(name, directiveFactory){
-
-        },
-
-        add : function(type){
-            switch (type){
-                case $.DOM.NODE_TYPE_ELEMENT : //Element
-                    break;
-                case $.DOM.NODE_TYPE_TEXT :
-                    break;
-            }
-        }
-    });
-    //export
-    return directive;
+$.add({
+    "tmpl" : '{{~it :i:idx}}<span >{{=i.title}}</span>{{~}}'
 });

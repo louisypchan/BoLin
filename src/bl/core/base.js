@@ -24,6 +24,11 @@
  * The base class to be inherited
  */
 $.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
+
+    var PROPREGEX =  /[^\[\]]+/g ;
+
+
+
     return declare({
         "~name" : "$.core.base",
         /**
@@ -32,31 +37,72 @@ $.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
          */
         ctor : function(/*Object?*/ params){
             // Automatic setting of params during construction
-            console.log("I am the top");
+
         },
+
         /**
-         * private function that does a get based off a hash of names
-         * @param name
-         * @param names  Hash of names of custom attributes
+         * set value to the particular given name
+         *  name should be a valid variable
+         *  eg : test.items[1].title
+         * @param parts
+         * @param value
+         * @private
          */
-        "_get" : function(name, names){
-
+        _helper : function(parts, value){
+            var len = parts.length, last = parts[len - 1], oldVal;
+            var p, i = 0, rs = this, j = 0, l;
+            while(rs && (p = parts[i++]) && i < len){
+                j = 0;
+                p = p.match(PROPREGEX);
+                for(l = p.length; j < l; j++){
+                    rs = rs[p[j]];
+                }
+            }
+            last = last.match(PROPREGEX);
+            l = last.length;
+            j = 0;
+            for(; j < l; j++){
+                if(j=== (l -1)){
+                    oldVal = rs[last[j]];
+                    rs[last[j]] = value;
+                    break;
+                }
+                rs = rs[last[j]];
+            }
+            return oldVal;
         },
-
-        "get" : function(name){
-
+        //set value to the particular given name
+        set : function(name, value){
+            var parts = name.split(".");
+            //var oldValue = this._helper(name);
+            var oldVal = this._helper(parts, value);
+            if(this._watchCallbacks){
+                this._watchCallbacks(name, oldVal, value);
+            }
         },
-
-        "_set" : function(){
-
-        },
-
-        "set" : function(){
-
-        },
-
-        watch : function(){
-
+        //TODO:
+        watch : function(name, fn){
+            if(!this._watchCallbacks){
+                var self = this;
+                this._watchCallbacks = function(name, oldValue, value, ignoreCatchall){
+                    var notify = function(propertyCallbacks){
+                        if(propertyCallbacks){
+                            propertyCallbacks = propertyCallbacks.slice();
+                            for(var i = 0, l = propertyCallbacks.length; i < l; i++){
+                                propertyCallbacks[i].call(self, name, oldValue, value);
+                            }
+                        }
+                    };
+                    notify(self._watchCallbacks[name]);
+                }
+            }
+            if(kernel.isFunction(name)){
+                name = name();
+            }
+            if(!this._watchCallbacks[name]){
+                this._watchCallbacks[name] = [];
+            }
+            this._watchCallbacks[name].push(fn);
         }
     });
 });

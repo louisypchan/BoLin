@@ -5,31 +5,46 @@
     <title></title>
 </head>
 <body>
-    <div id="test"></div>
+    <div id="test">
+        I'm running...
+    </div>
 </body>
 <script type="text/javascript" src="../../bl.js" vecfg="debug:1"></script>
 <script type="text/javascript">
-    $.use(["bl/core/deferred"], function(Deferred){
+    $.use(["bl/core/deferred", "bl/core/when"], function(Deferred, when){
         function asyncProcess(){
             var deferred = new Deferred();
-
-            document.getElementById("test").innerHTML = "I'm running...";
+            //document.getElementById("test").innerHTML = "I'm running...";
 
             setTimeout(function(){
-                deferred.resolve("success");
-            }, 1000);
+                deferred.resolve("asyncProcess");
+            }, 3000);
 
             return deferred.promise;
         }
 
-        var p = asyncProcess();
-        p.then(function(results){
-            document.getElementById("test").innerHTML = "I'm finished, and the result was: " + results;
+        function asyncProcess2(){
+            var deferred = new Deferred();
+            //document.getElementById("test").innerHTML = "I'm running...";
+
+            setTimeout(function(){
+                deferred.resolve("asyncProcess2");
+            }, 1000);
+            return deferred.promise;
+        }
+
+
+
+        when(asyncProcess(), asyncProcess2()).then(function(results){
+            console.log(results);
+            document.getElementById("test").innerHTML = "I'm finished, and the result was: ";
         });
     });
 
-    $.use(["blt/categorySelection"], function(categorySelection){
-        new categorySelection();
-    })
+//    $.use(["bl/core/compiler", "bl/dom/dom"], function(compile, dom){
+////        var test = dom("#test");
+////        compile(test);
+//          dom("#testa").wrap("<span></span>");
+//    });
 </script>
 </html>
