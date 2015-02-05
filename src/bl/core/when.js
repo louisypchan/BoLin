@@ -16,21 +16,35 @@ $.add("bl/core/when", ["bl/core/kernel", "bl/core/deferred", "bl/extensions/arra
      * when all promisees
      */
     var when = function(/*..*/){
-        var args = kernel.makeArray(arguments), def = new Deferred(), waitCount = args.length, rs;
-        if(!waitCount) return def.resolve();
-        rs = [];
-
-        args.forEach(function(v, i){
-            _exec(v, function(data){
-                if(!def.isFulfilled()){
-                    rs[i] = data;
-                    if(--waitCount === 0){
-                        def.resolve(rs);
+        try{
+            var arity = arguments.length, args;
+            if(arity == 1){
+                args = arguments[0];
+            }else{
+                args = arguments;
+            }
+            args = kernel.makeArray(args);
+            var def = new Deferred(), waitCount = args.length, rs;
+            if(!waitCount) {
+                return def.resolve([]);
+            }
+            rs = [];
+            //
+            args.forEach(function(v, i){
+                _exec(v, function(data){
+                    if(!def.isFulfilled()){
+                        rs[i] = data;
+                        if(--waitCount === 0){
+                            def.resolve(rs);
+                        }
                     }
-                }
-            }, def.reject);
-        });
-        return def.promise;
+                }, def.reject);
+            });
+            return def.promise;
+        }catch (e){
+            throw  e;
+        }
+
     };
 
     return when;

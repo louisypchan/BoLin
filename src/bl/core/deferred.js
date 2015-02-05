@@ -20,11 +20,10 @@
 /**
  * Created by Louis Y P Chen on 2014/11/6.
  */
-$.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"], function(declare, base, kernel){
+$.add("bl/core/deferred", ["bl/core/declare", "bl/core/kernel"], function(declare, kernel){
 
     return declare({
         "~name" : "$.core.Deferred",
-        "~superclass" : base,
         "~synthesize" : ["canceler", "listener", "waiting"],
         "+STATE" : {
             PROGRESS : "progress",
@@ -33,7 +32,6 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
         },
 
         ctor : function(canceler){
-            this._super();
             this.promise = this;
             this.canceler = canceler;
             //To be removed if IE7 and IE8 are not in the supportive list
@@ -42,7 +40,7 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
             this.promise.then = this.then;
             this.canceled = false;
             this._waiting = [];
-            this.result = [];
+            this.value = undefined;
         },
 
         isResolved : function(){
@@ -65,6 +63,7 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
          *      Returns the original promise for the deferred.
          */
         resolve : function(value){
+            this.value = value;
             if(!this.fulfilled){
                 this.fulfilled = $.core.Deferred.STATE.RESOLVED;
                 this.waiting = [this._waiting, this.fulfilled, value];
@@ -78,7 +77,8 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
          * Reject the deferred, putting it in an error state.
          * @returns {promise}
          */
-        reject : function(){
+        reject : function(value){
+            this.value = value;
             if(!this.fulfilled){
                 this.fulfilled = $.core.Deferred.STATE.REJECTED;
                 this.waiting = [this._waiting, this.fulfilled, value];
@@ -102,8 +102,8 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
             promise.deferred = new $.core.Deferred(function(reason){
                 return promise.canel && promise.cancel(reason);
             });
-            if(this.fulfilled && !this.waiting){
-                this.listener = [promise, this.fulfilled, this.result];
+            if(this.fulfilled && !this._waiting){
+                this.listener = [promise, this.fulfilled, this.value];
                 //To be removed if IE7 and IE8 are not in the supportive list
                 kernel.watcher.notify("listener", this);
             }else{
@@ -157,16 +157,16 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
                 try{
                     var newResult = func(result);
                     if(type == $.core.Deferred.STATE.PROGRESS){
-                        if(typeof newResult!== "undefined"){
-                            promise.cancel = newResult.cancel;
-                            newResult.then(this.mkHandler(deferred,$.core.Deferred.STATE.RESOLVED),
-                            this.mkHandler(deferred, $.core.Deferred.STATE.REJECTED),
-                            this.mkHandler(deferred, $.core.Deferred.STATE.PROGRESS));
-                            return;
+                        if(typeof newResult !== "undefined"){
+                            this.handle(deferred, type, newResult);
                         }
                     }else{
                         if(newResult && kernel.isFunction(newResult.then)){
-
+                            promise.cancel = newResult.cancel;
+                            newResult.then(this.mkHandler(deferred,$.core.Deferred.STATE.RESOLVED),
+                                this.mkHandler(deferred, $.core.Deferred.STATE.REJECTED),
+                                this.mkHandler(deferred, $.core.Deferred.STATE.PROGRESS));
+                            return;
                         }
                         this.handle(deferred, $.core.Deferred.STATE.RESOLVED, newResult);
                     }
@@ -179,8 +179,8 @@ $.add("bl/core/deferred", ["bl/core/declare", "bl/core/base", "bl/core/kernel"],
         },
         "setWaiting" : function(args){
             var waiting = args[0], type = args[1], result = args[2];
+            this.value = result;
             for(var i = 0; i < waiting.length; i++){
-                this.result[i] = result;
                 this.listener = [waiting[i], type, result];
                 //To be removed if IE7 and IE8 are not in the supportive list
                 kernel.watcher.notify("listener", this);

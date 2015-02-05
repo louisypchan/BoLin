@@ -21,7 +21,6 @@
  * Created by Louis Y P Chen on 2014/10/31.
  */
 $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kernel){
-    var __synthesizes  = [];
     /**
      * http://www.python.org/download/releases/2.3/mro/
      * class A(O)
@@ -180,11 +179,7 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
             }
             t = name = src = null;
         },
-        /**
-         * Create a constructor using a compact notation for inheritance and
-         * prototype extension.
-         * @param obj
-         */
+       //
         declare = function(obj){
             var superclass = obj["~superclass"], proto = {}, clsName = obj["~name"], ctor = false, crackPrivate = false, privates = [];
             if(superclass){
@@ -218,7 +213,7 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
             }
             var f = (function(ctor){
                 return function(){
-                    f.executed || processSynthesize(this);
+                    f.executed || processSynthesize(f, this);
                     if(ctor){
                         ctor.apply(this,arguments);
                     }
@@ -237,7 +232,7 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
             //
             rPorot._class = f;
             //synthesize properties
-            __synthesizes.push(f);
+            //__synthesizes.push(f);
             //add name if specified
             if(clsName){
                 kernel.set(clsName, f);
@@ -246,20 +241,18 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
             //return
             return f;
         },
-        processSynthesize = function(context){
-            for(var it, i = 0, l = __synthesizes.length; i < l; i++){
-                it = __synthesizes[i];
-                it.executed || injectSynthesize(it, context);
+        processSynthesize = function(it, ctx){
+            if(it){
+                it.executed || injectSynthesize(it, ctx);
             }
-            __synthesizes.length = 0;
         },
-        injectSynthesize = function (it, context){
+        injectSynthesize = function (it, ctx){
             for(var i = 0 , synthesize = it._meta.synthesize, l = synthesize ? synthesize.length : 0; i < l; i++){
-                synthesizeProperty(it.prototype, synthesize[i], context);
+                synthesizeProperty(it.prototype, synthesize[i], ctx);
             }
             it.executed = true;
         },
-        synthesizeProperty = function (proto, prop, context){
+        synthesizeProperty = function (proto, prop, ctx){
             var m = prop.charAt(0).toUpperCase() + prop.substr(1),
                 //getter
                 mGet = "get" + m,
@@ -291,7 +284,7 @@ $.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kern
                  // And consider that if we don't change to use function to minitor watching callbacks
                  // Here we go
                  */
-                kernel.watcher.add(context, prop, mSet);
+                kernel.watcher.add(ctx, prop, mSet);
             }else{
                 Object.defineProperty(proto, prop, {
                     get: getter,

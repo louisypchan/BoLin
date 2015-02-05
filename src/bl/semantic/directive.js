@@ -28,11 +28,16 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
             ypController : {
                 priority : 1,
                 compile : function(node, prop, context){
-                    prop = "$" + prop;
-                    this[prop] = {};
-                    this[prop][$.PARENT] = context;
-                    node.$prop = prop;
-                    dom(node).addClass(directive.IDENTIFY.ypController);
+                    if(!node.$compiled){
+                        prop = "$" + prop;
+                        this[prop] = {};
+                        this[prop][$.PARENT] = context;
+                        node.$prop = prop;
+                        dom(node).addClass(directive.IDENTIFY.ypController);
+                        node.$compiled = true;
+                        return this[prop];
+                    }
+                    return this;
                 }
             },
             ypTemplate  : {
@@ -43,65 +48,70 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                     $.use(["template/" + template], function(tmpl){
                         $def.resolve(tmpl[render]);
                     });
+                    dom(node).addClass(directive.IDENTIFY.ypTemplate);
                     return $def.promise;
                 }
             },
             ypRender  : {
                 priority : 2,
-                compile : function(render){
+                compile : function(render, ctx){
+                    ctx.$scope = kernel.isArray(ctx) ? [] : {};
                     return render;
                 }
             },
+
             ypModel  : {
                 priority : 4,
-                compile : function(node, prop, scope, template){
-                    var parts = prop.split("."), tag = node.nodeName.toLowerCase(), expr = scope.namespace + "." + prop;
-                    kernel.getProp(parts, true, scope.context);
-                    if(tag === "input" || tag === "textarea" || tag === "select"){
-                        //emit event
-                        if(kernel.hasEvent("input")){
-
-                            on(node, "input", kernel.ride(this, function(e){
-                                var value = e.target.value;
-                                this.set(expr, value);
-                            }));
-                        }else{
-                            //<=IE11
-                            var origValue = "";
-                            on(node, "keydown", kernel.ride(this, function(e){
-                                console.log(e);
-                                var key = e.which, target = e.target, that = this;
-                                // ignore
-                                //    command            modifiers                   arrows
-                                if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
-                                setTimeout(function(){
-                                    if(target.value !== origValue){
-                                        origValue = target.value;
-                                        that.set(expr, origValue);
-                                    }
-                                }, 0);
-                            }));
+                compile : function(node, prop, ctx, template){
+                    if(!node.$compiled){
+                        var parts = prop.split("."), tag = node.nodeName.toLowerCase(), expr = prop;
+                        if(prop.indexOf("[") == -1){
+                            kernel.getProp(parts, true, ctx);
                         }
-                        // if user paste into input using mouse on older browser
-                        // or form autocomplete on newer browser, we need "change" event to catch it
-                        on(node, "change", kernel.ride(this, function(e){
-                            this.set(expr, e.target.value);
-                        }));
-                        if($.browser.ie < 11){
-                            on(node, "propertychange", kernel.ride(this, function(e){
-                                this.set(expr, e.target.value);
-                            }));
-                        }
-                    }
-                    this.watch(expr, function(name, oldVal, newVal){
-                        if(newVal !== oldVal){
-                            if(tag === "input" || tag === "textarea" || tag === "select"){
-                                dom(node).val(newVal);
+                        //
+                        if(tag === "input" || tag === "textarea" || tag === "select"){
+                            //emit event
+                            if(kernel.hasEvent("input")){
+                                on(node, "input", kernel.ride(this, function(e){
+                                    var value = e.target.value;
+                                    this.set(expr, value, ctx);
+                                }));
                             }else{
-                                console.log(template);
+                                //<=IE11
+                                var origValue = "";
+                                on(node, "keydown", kernel.ride(this, function(e){
+                                    var key = e.which, target = e.target;
+                                    // ignore
+                                    // command  modifiers  arrows
+                                    if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
+                                    setTimeout(kernel.ride(this,function(){
+                                        if(target.value !== origValue){
+                                            origValue = target.value;
+                                            this.set(expr, origValue, ctx);
+                                        }
+                                    }), 0);
+                                }));
                             }
+                            // if user paste into input using mouse on older browser
+                            // or form autocomplete on newer browser, we need "change" event to catch it
+                            on(node, "change", kernel.ride(this, function(e){
+                                this.set(expr, e.target.value, ctx);
+                            }));
                         }
-                    });
+                        this.watch(expr, function(value){
+                            if(tag === "input" || tag === "textarea" || tag === "select"){
+                                dom(node).val(value);
+                            }else{
+                                if(value !== $.noop){
+                                    template ? dom(node).html(doT.compile(template, value)(value)) : dom(node).html(value);
+                                }else{
+                                    dom(node).remove();
+                                }
+                            }
+                        }, ctx);
+                        node.$compiled = true;
+                        node.$scope = ctx;
+                    }
                 }
             }
         };

@@ -8,31 +8,41 @@
 <body yp-def="">
   <div yp-controller="test1">
       <div yp-model="item.title"></div>
-      <div yp-model="item.title"></div>
-      <div yp-model="item.title"></div>
-      <div yp-model="item.title"></div>
-      <div yp-model="item.title"></div>
-      <div yp-model="item.title"></div>
-      <div yp-model="item.title"></div>
-      <span yp-model="item.title"></span>
-      <div yp-model="item.title"></div>
       <input type="text" yp-model="item.title" placeholder="test" />
       <div yp-controller="test2">
         <div yp-template="tests/test" yp-model="items" yp-render="tmpl"></div>
       </div>
   </div>
 
-
   <button onclick="test();">run</button>
   <script>
-//      $.use(["bl/semantic/base", "bl/dom/dom"], function(it, dom){
-//          new it();
-//      });
       function test(){
-          $.use(["bl/semantic/base"], function(base){
-              var t = new base();
-              t.set("$test1.item.title", 1);
-              t.set("$test2.items", [{title : 1}, {title :2}, {title :3}]);
+          $.use(["bl/semantic/base", "bl/core/declare"], function(base, declare){
+              declare({
+                  "~name" : "just.a.test",
+                  "~superclass" : base,
+                  ctor : function(){
+                      this._super();
+                  },
+
+                  postCreate : function(){
+                      var that = this;
+                      this.$test1.item = {title : 4};
+
+                      that.$test2.items = [{title : 2}, {title : 3}];
+
+                      setTimeout(function(){
+                          //that.$test2.items = {title : 60, quantity : 10};
+                          //that.$test2.items[1].title = 6;
+                          //that.$test1.item.quantity = 10;
+                          //that.$test2.items.splice(1,1);
+                          that.$test2.items.push({title : 5});
+                          that.digest();
+                      },2000);
+                  }
+              });
+
+              new just.a.test();
           });
       }
   </script>

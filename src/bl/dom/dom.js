@@ -200,9 +200,7 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
                         }
                     }
                     cur = kernel.trim(cur);
-
                     if(elem.className !== cur){
-                        console.log(elem);
                         elem.className = cur;
                     }
                 }

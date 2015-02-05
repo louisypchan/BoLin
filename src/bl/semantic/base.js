@@ -37,18 +37,19 @@ $.add("bl/semantic/base",["bl/core/kernel", "bl/core/declare", "bl/core/base", "
             aspect.after(this, "bootStrap", this.afterBootStrap);
             //aspect the methods which related to the DOM operations
             var self = this,
-                collect = function(candicate){
-                    //directive.collect.call(self, this, candicate);
+                collect = function(){
+                    var node = this.elems[0];
+                    self._compile(node.childNodes, [], node.$scope||self);
                 };
             aspect.after(dom.$DOM.prototype, "html", collect);
             aspect.after(dom.$DOM.prototype, "append", collect);
             aspect.after(dom.$DOM.prototype, "prepend", collect);
-            aspect.after(dom.$DOM.prototype, "before", collect);
-            aspect.after(dom.$DOM.prototype, "after", collect);
+            //aspect.after(dom.$DOM.prototype, "before", collect);
+            //aspect.after(dom.$DOM.prototype, "after", collect);
             aspect.after(dom.$DOM.prototype, "replace", collect);
             aspect.after(dom.$DOM.prototype, "empty", collect);
             aspect.after(dom.$DOM.prototype, "remove", collect);
-
+            aspect.after(this, "postCreate", this.digest);
             this.bootStrap();
         },
 
@@ -58,64 +59,56 @@ $.add("bl/semantic/base",["bl/core/kernel", "bl/core/declare", "bl/core/base", "
             if(!def.exist()){
                 throw new Error("Can not find yp-def is defined!");
             }
-            this.compile(def);
+            when(this.compile(def)).then(kernel.ride(this, function(){
+                this.postCreate();
+            }));
         },
 
         compile : function(it){
-            var rootElement = it.elems[0], childNodes = rootElement.childNodes;
-            childNodes && this._compile(childNodes, rootElement);
+            var rootElement = it.elems[0], childNodes = rootElement.childNodes, deferredList = [];
+            childNodes && (deferredList = this._compile(childNodes, deferredList));
+            return deferredList;
         },
 
-        _compile : function(nodeList, parent){
-            var node, i = 0, l = nodeList.length, childNodes,directives;
-            for(; i < l; ){
-                node = nodeList[i++];
+        _compile : function(nodeList, deferredList, scope){
+            scope = scope||this;
+            var node, i = 0, l = nodeList.length, childNodes,directives, $scope;
+            for(; i < l; i++){
+                node = nodeList[i];
+                node.$index = i;
                 directives = directive.collect.call(this, dom(node), true);
-                this.applyDirectivesToNode(directives, node);
+                $scope = this.applyDirectivesToNode(directives, node, deferredList, scope);
                 childNodes = node.childNodes;
-                childNodes && this._compile(childNodes, node);
+                childNodes && this._compile(childNodes, deferredList, $scope);
             }
+            return deferredList;
         },
-        applyDirectivesToNode : function(directives, node){
-            var controller = this.getController(node), renderId = "", renderTemplate = null;
+        applyDirectivesToNode : function(directives, node, deferredList, scope){
+            var renderId = "", renderTemplate = null;
             directives.forEach(kernel.ride(this,function(it){
                 switch (it.identify){
                     case directive.IDENTIFY.ypController :
-                        kernel.isFunction(it.compile) && it.compile.apply(this, [node, it.prop, controller.context]);
+                        scope = kernel.isFunction(it.compile) && it.compile.apply(this, [node, it.prop, scope]);
                         break;
                     case directive.IDENTIFY.ypModel :
                         if(kernel.isFunction(it.compile)){
-                            when(renderTemplate,  it.prop).then(kernel.ride(this, function(results){
-                                it.compile.apply(this, [node, it.prop, controller, results[0]])
-                            }));
+                            deferredList.push(when(renderTemplate).then(kernel.ride(this, function(results){
+                                it.compile.apply(this, [node, it.prop, scope, results[0]]);
+                            })));
                         }
-                        kernel.isFunction(it.compile) && it.compile.apply(this, [node, it.prop, controller]);
                         break;
                     case directive.IDENTIFY.ypTemplate :
                         kernel.isFunction(it.compile) && (renderTemplate = it.compile.apply(this, [node, it.prop, renderId]));
                         break;
                     case directive.IDENTIFY.ypRender :
-                        kernel.isFunction(it.compile) && (renderId = it.compile(it.prop));
+                        kernel.isFunction(it.compile) && (renderId = it.compile(it.prop, scope));
                         break;
                 }
 
             }));
+            return scope;
         },
-        getController : function(node){
-            var parent = dom(node).parent(), prop = "";
-            while(parent){
-                if(dom(parent).hasClass(directive.IDENTIFY.ypController)){
-                    prop = parent.$prop;
-                    break;
-                }
-                parent = dom(parent).parent();
-            }
-            return {
-                context : this[prop]||this,
-                namespace : prop
-            }
-        },
-
+        postCreate : $.noop,
         beforeBootStrap : $.noop,
         afterBootStrap : $.noop
     });

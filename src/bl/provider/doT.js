@@ -96,7 +96,7 @@ $.add("bl/provider/doT", [], function(){
                 .replace(/\r|\n|\t|\/\*[\s\S]*?\*\//g,""): str)
                 .replace(/'|\\/g, "\\$&")
                 .replace(c.interpolate || skip, function(m, code) {
-                    return cse.start + unescape(code) + cse.end;
+                    return cse.start + "typeof " + unescape(code) + ' !== "undefined" ' + " ? " + unescape(code) + " : "  + '""' + cse.end;
                 })
                 .replace(c.encode || skip, function(m, code) {
                     needhtmlencode = true;
@@ -120,7 +120,6 @@ $.add("bl/provider/doT", [], function(){
                 .replace(/\n/g, "\\n").replace(/\t/g, '\\t').replace(/\r/g, "\\r")
                 .replace(/(\s|;|\}|^|\{)out\+='';/g, '$1').replace(/\+''/g, "");
             //.replace(/(\s|;|\}|^|\{)out\+=''\+/g,'$1out+=');
-
             if (needhtmlencode) {
                 if (!c.selfcontained && _globals && !_globals._encodeHTML) _globals._encodeHTML = doT.encodeHTMLSource(c.doNotSkipEncoded);
                 str = "var encodeHTML = typeof _encodeHTML !== 'undefined' ? _encodeHTML : ("

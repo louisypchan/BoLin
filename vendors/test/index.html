@@ -10,19 +10,8 @@
 
 <div ng-repeat='item in items'>
     <span ng-bind="item.title"></span>
-    <input ng-model='item.quantity'/>
-    <span ng-bind="item.price | currency"></span>
-    <span ng-bind="item.price * item.quantity | currency"></span>
-    <button ng-click="remove($index)">Remove</button>
 </div>
 
-<div ng-bind="message"></div>
-<div ng-bind="message"></div>
-<div ng-bind="message"></div>
-<div ng-bind="message"></div>
-<div ng-bind="message"></div>
-<div ng-bind="message"></div>
-<div ng-bind="message"></div>
 <script>
     var testApp = angular.module('testApp',[]);
     console.log(testApp.controller);
@@ -36,23 +25,14 @@
             $scope.items.splice(index, 1);
         };
 
-        $scope.message = "text";
 
         setTimeout(function(){
             $scope.$apply(function() {
-                $scope.items[2].title = "fuck";
+                $scope.items[1].title = "fuck";
             });
 
-        }, 5000);
+        }, 4000);
 
-        setTimeout(function(){
-            var divs = document.getElementsByTagName("div"), div = divs[2];
-            console.log(divs);
-            var span = document.createElement("span");
-            span.innerHTML = "fuck";
-            div.appendChild(span);
-
-        }, 3000);
     });
 </script>
 </body>

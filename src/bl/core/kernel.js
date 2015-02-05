@@ -130,10 +130,7 @@ $.add(["lang", "bl/extensions/string", "bl/extensions/array"], function(lang){
                 // null, undefined, any non-object, or function
                 return src;
             }
-            if(src.nodeType && "cloneNode" in src){
-                // DOM Node
-                return src.cloneNode(true); // Deep clone
-            }
+
             if(src instanceof Date){
                 // Date
                 return new Date(src.getTime()); // Date
@@ -144,18 +141,12 @@ $.add(["lang", "bl/extensions/string", "bl/extensions/array"], function(lang){
             }
             var r, i, l;
             if(lang.isArray(src)){
-                // array
-                r = [];
-                for(i = 0, l = src.length; i < l; ++i){
-                    if(i in src){
-                        r.push(lang.clone(src[i]));
-                    }
-                }
+                return Array.prototype.slice.call(src);
             }else{
                 // generic objects
                 r = src.constructor ? new src.constructor() : {};
             }
-            return lang.mixin(true, {}, r, src);
+            return lang.mixin(true, {} , r, src);
         },
         /**
          * Add zero to number

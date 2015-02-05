@@ -24,33 +24,28 @@
  * The base class to be inherited
  */
 $.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
-
     var PROPREGEX =  /[^\[\]]+/g ;
-
-
 
     return declare({
         "~name" : "$.core.base",
         /**
          * constructor
-         * @param params
+         *
          */
-        ctor : function(/*Object?*/ params){
-            // Automatic setting of params during construction
-
+        ctor : function(){
+            this.__$$__watchers__$$__ = [];
+            this.$dirtyChecking = true; //turn on the dirty checking
         },
-
         /**
-         * set value to the particular given name
-         *  name should be a valid variable
-         *  eg : test.items[1].title
-         * @param parts
+         *
+         * @param expr
          * @param value
+         * @param ctx
+         * @returns {*}
          * @private
          */
-        _helper : function(parts, value){
-            var len = parts.length, last = parts[len - 1], oldVal;
-            var p, i = 0, rs = this, j = 0, l;
+        _helper : function(expr, value, ctx){
+            var parts = expr.split("."), len = parts.length, last = parts[len - 1], oldVal = null, p, i = 0, rs = ctx, j = 0, l;
             while(rs && (p = parts[i++]) && i < len){
                 j = 0;
                 p = p.match(PROPREGEX);
@@ -58,51 +53,83 @@ $.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
                     rs = rs[p[j]];
                 }
             }
+            if(rs === undefined) return $.noop;
             last = last.match(PROPREGEX);
             l = last.length;
             j = 0;
-            for(; j < l; j++){
-                if(j=== (l -1)){
-                    oldVal = rs[last[j]];
-                    rs[last[j]] = value;
-                    break;
-                }
+            for(; j < l - 1; j++){
                 rs = rs[last[j]];
+            }
+            if(j=== (l -1)){
+                oldVal = rs[last[j]];
+                value !== undefined && (rs[last[j]] = value);
             }
             return oldVal;
         },
-        //set value to the particular given name
-        set : function(name, value){
-            var parts = name.split(".");
-            //var oldValue = this._helper(name);
-            var oldVal = this._helper(parts, value);
-            if(this._watchCallbacks){
-                this._watchCallbacks(name, oldVal, value);
+        /**
+         *
+         * @param expr
+         * @param context
+         * @returns {*}
+         */
+        get : function(expr, context){
+            return this._helper(expr, undefined, context);
+        },
+        /**
+         *
+         * @param expr
+         * @param value
+         * @param context
+         */
+        set : function(expr, value, context){
+            this._helper(expr, value, context);
+            this.digest();
+        },
+        /**
+         *
+         * @param expr
+         * @param listener
+         * @param ctx
+         */
+        watch : function(expr, listener, ctx){
+            if(this.$dirtyChecking){
+                this.__$$__watchers__$$__.push({
+                    expr : expr,
+                    $new : this.get,
+                    $old : $.noop,
+                    listener : listener || $.noop,
+                    ctx : ctx
+                });
             }
         },
-        //TODO:
-        watch : function(name, fn){
-            if(!this._watchCallbacks){
-                var self = this;
-                this._watchCallbacks = function(name, oldValue, value, ignoreCatchall){
-                    var notify = function(propertyCallbacks){
-                        if(propertyCallbacks){
-                            propertyCallbacks = propertyCallbacks.slice();
-                            for(var i = 0, l = propertyCallbacks.length; i < l; i++){
-                                propertyCallbacks[i].call(self, name, oldValue, value);
+        /**
+         *dirty check
+         */
+        digest : function(){
+            if(!this.$dirtyChecking) return;
+            var watch, len = this.__$$__watchers__$$__.length, ctx, newVal, dirty,j;
+            j = len-1;
+            do{
+                dirty = false;
+                for(;j>=0;j--){
+                    watch = this.__$$__watchers__$$__[j];
+                    if(watch){
+                        ctx = watch.ctx;
+                        if((newVal = watch.$new.call(this, watch.expr, ctx)) != watch.$old){
+                            dirty = true;
+                            watch.listener.apply(this, [newVal]);
+                            watch.$old = newVal;
+                        }else{
+                            if(newVal === $.noop){
+                                //the last time to publish the listener
+                                watch.listener.apply(this, [newVal]);
+                                //remove watch
+                                this.__$$__watchers__$$__.splice(j,1);
                             }
                         }
-                    };
-                    notify(self._watchCallbacks[name]);
+                    }
                 }
-            }
-            if(kernel.isFunction(name)){
-                name = name();
-            }
-            if(!this._watchCallbacks[name]){
-                this._watchCallbacks[name] = [];
-            }
-            this._watchCallbacks[name].push(fn);
+            }while(dirty);
         }
     });
 });
