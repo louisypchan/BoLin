@@ -99,6 +99,8 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                             }));
                         }
                         this.watch(expr, function(value){
+                            if(kernel.type(value) === "object" && kernel.isEmpty(value)) return;
+                            if(kernel.isArray(value) && value.length == 0) return;
                             if(tag === "input" || tag === "textarea" || tag === "select"){
                                 dom(node).val(value);
                             }else{

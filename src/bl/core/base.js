@@ -23,7 +23,7 @@
 /**
  * The base class to be inherited
  */
-$.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
+$.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(declare, kernel, Deferred){
     var PROPREGEX =  /[^\[\]]+/g ;
 
     return declare({
@@ -45,7 +45,7 @@ $.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
          * @private
          */
         _helper : function(expr, value, ctx){
-            var parts = expr.split("."), len = parts.length, last = parts[len - 1], oldVal = null, p, i = 0, rs = ctx, j = 0, l;
+            var parts = expr.split("."), len = parts.length, last = parts[len - 1], val = null, p, i = 0, rs = ctx, j = 0, l;
             while(rs && (p = parts[i++]) && i < len){
                 j = 0;
                 p = p.match(PROPREGEX);
@@ -61,10 +61,10 @@ $.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
                 rs = rs[last[j]];
             }
             if(j=== (l -1)){
-                oldVal = rs[last[j]];
+                val = rs[last[j]] === undefined ? $.noop : rs[last[j]];
                 value !== undefined && (rs[last[j]] = value);
             }
-            return oldVal;
+            return val;
         },
         /**
          *
@@ -93,10 +93,11 @@ $.add("bl/core/base", ["./declare", "./kernel"], function(declare, kernel){
          */
         watch : function(expr, listener, ctx){
             if(this.$dirtyChecking){
+                var get = this.get;
                 this.__$$__watchers__$$__.push({
                     expr : expr,
-                    $new : this.get,
-                    $old : $.noop,
+                    $new : get,
+                    $old : null,
                     listener : listener || $.noop,
                     ctx : ctx
                 });

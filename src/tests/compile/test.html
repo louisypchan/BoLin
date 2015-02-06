@@ -30,15 +30,14 @@
                       this.$test1.item = {title : 4};
 
                       that.$test2.items = [{title : 2}, {title : 3}];
-
                       setTimeout(function(){
                           //that.$test2.items = {title : 60, quantity : 10};
                           //that.$test2.items[1].title = 6;
                           //that.$test1.item.quantity = 10;
                           //that.$test2.items.splice(1,1);
-                          that.$test2.items.push({title : 5});
+                          that.$test2.items[1] = {title : 5};
                           that.digest();
-                      },2000);
+                      }, 5000);
                   }
               });
 
