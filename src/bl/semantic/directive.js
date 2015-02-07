@@ -98,19 +98,21 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                                 this.set(expr, e.target.value, ctx);
                             }));
                         }
-                        this.watch(expr, function(value){
-                            if(kernel.type(value) === "object" && kernel.isEmpty(value)) return;
-                            if(kernel.isArray(value) && value.length == 0) return;
-                            if(tag === "input" || tag === "textarea" || tag === "select"){
-                                dom(node).val(value);
-                            }else{
-                                if(value !== $.noop){
-                                    template ? dom(node).html(doT.compile(template, value)(value)) : dom(node).html(value);
+                        if(!template){
+                            this.watch(expr, function(value){
+                                if(kernel.type(value) === "object" && kernel.isEmpty(value)) return;
+                                if(kernel.isArray(value) && value.length == 0) return;
+                                if(tag === "input" || tag === "textarea" || tag === "select"){
+                                    dom(node).val(value);
                                 }else{
-                                    dom(node).remove();
+                                    value !== $.noop ? dom(node).html(value) : dom(node).remove();
                                 }
-                            }
-                        }, ctx);
+                            }, ctx);
+                        }else{
+                            this.watchCollection(expr, function(){
+
+                            }, ctx);
+                        }
                         node.$compiled = true;
                         node.$scope = ctx;
                     }
@@ -126,7 +128,7 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
             ypModel      : 'M'
         },
 
-        collect : function(node, candicate){
+        collect : function(node){
             var results = [];
             if(!(node instanceof dom.$DOM)){
                 node = dom(node);
