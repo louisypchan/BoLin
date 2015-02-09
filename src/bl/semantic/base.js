@@ -101,7 +101,10 @@ $.add("bl/semantic/base",["bl/core/kernel", "bl/core/declare", "bl/core/base", "
                         kernel.isFunction(it.compile) && (renderTemplate = it.compile.apply(this, [node, it.prop, renderId]));
                         break;
                     case directive.IDENTIFY.ypRender :
-                        kernel.isFunction(it.compile) && (renderId = it.compile(it.prop, scope));
+                        kernel.isFunction(it.compile) && (renderId = it.compile(it.prop));
+                        break;
+                    case directive.IDENTIFY.ypVar :
+                        scope = kernel.isFunction(it.compile) && (renderTemplate = it.compile.apply(this, [node, it.prop, scope]));
                         break;
                 }
 

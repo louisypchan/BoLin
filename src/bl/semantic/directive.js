@@ -54,14 +54,22 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
             },
             ypRender  : {
                 priority : 2,
-                compile : function(render, ctx){
-                    ctx.$scope = kernel.isArray(ctx) ? [] : {};
+                compile : function(render){
                     return render;
                 }
             },
 
-            ypModel  : {
+            ypVar : {
                 priority : 4,
+                compile : function(node, prop, scope){
+                    console.log(scope);
+                    dom(node).addClass(directive.IDENTIFY.ypVar);
+                    return prop;
+                }
+            },
+
+            ypModel  : {
+                priority : 5,
                 compile : function(node, prop, ctx, template){
                     if(!node.$compiled){
                         var parts = prop.split("."), tag = node.nodeName.toLowerCase(), expr = prop;
@@ -109,8 +117,11 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                                 }
                             }, ctx);
                         }else{
-                            this.watchCollection(expr, function(){
-
+                            this.watchCollection(expr, function(value, $scope){
+                                if(!$scope.$initRun){
+                                    $scope.$initRun = true;
+                                    dom(node).html(doT.compile(template, $scope.$newValue)($scope.$newValue));
+                                }
                             }, ctx);
                         }
                         node.$compiled = true;
@@ -125,6 +136,7 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
             ypController : 'C',
             ypTemplate   : 'T',
             ypRender     : "R",
+            ypVar        : "V",
             ypModel      : 'M'
         },
 

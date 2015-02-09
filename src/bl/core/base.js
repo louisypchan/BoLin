@@ -43,6 +43,7 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
         this.$oldLength = 0;
         this.$internalArray = [];
         this.$internalObject = {};
+        this.$initRun = false;
     }
 
     /**
@@ -228,12 +229,12 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
                         ctx = watch.ctx;
                         if((newVal = watch.$new.call(watch.$scope, watch.expr, ctx)) != watch.$old){
                             dirty = true;
-                            watch.listener.apply(this, [newVal]);
+                            watch.listener.apply(this, [newVal, watch.$scope]);
                             watch.$old = newVal;
                         }else{
                             if(newVal === $.noop){
                                 //the last time to publish the listener
-                                watch.listener.apply(this, [newVal]);
+                                watch.listener.apply(this, [newVal, watch.$scope]);
                                 //remove watch
                                 this.__$$__watchers__$$__.splice(j,1);
                             }

@@ -21,5 +21,5 @@
  * Created by Louis Y P Chen on 2015/1/4.
  */
 $.add({
-    "tmpl" : '{{~it :i:idx}}<div yp-model="items[{{=idx}}].title">{{=i.title}}</div><div yp-model="items[{{=idx}}].quantity">{{=i.quantity}}</div>{{~}}'
+    "tmpl" : '{{~it :i:idx}}<div yp-var="item"><div yp-model="item.title">{{=i.title}}</div><div yp-model="item.quantity"></div>{{=i.quantity}}</div></div>{{~}}'
 });
