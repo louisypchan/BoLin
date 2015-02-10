@@ -27,13 +27,15 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
     var PROPREGEX =  /[^\[\]]+/g ;
 
     /**
-     * 
+     *
      * @param scope
      * @param expr
+     * @param listener
      * @param ctx
+     * @returns {{expr: *, $new: Function, $scope: CollectionWatcher, $old: number, listener: (*|noop|_.noop|angular.noop|publishExternalAPI.noop|lodash.noop), ctx: *}}
      * @constructor
      */
-    function CollectionWatcher(scope, expr, ctx){
+    function CollectionWatcher(scope, expr, listener, ctx){
         this.$newValue = null;
         this.$oldValue = null;
         this.$changeDetected = 0;
@@ -44,6 +46,16 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
         this.$internalArray = [];
         this.$internalObject = {};
         this.$initRun = false;
+        this.$listener = listener;
+
+        return {
+            expr : expr,
+            $new : this.interceptor,
+            $scope : this,
+            $old : 0,
+            listener : this.$listener || $.noop,
+            ctx : scope
+        };
     }
 
     /**
@@ -191,7 +203,7 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
         watch : function(expr, listener, ctx){
             if(this.$dirtyChecking){
                 var get = this.get;
-                this.__$$__watchers__$$__.push({
+                this.__$$__watchers__$$__.unshift({
                     expr : expr,
                     $new : get,
                     $old : null,
@@ -203,15 +215,7 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
         },
         watchCollection : function(expr, listener, ctx){
             if(this.$dirtyChecking){
-                var watcher = new CollectionWatcher(ctx, expr, this);
-                this.__$$__watchers__$$__.push({
-                    expr : expr,
-                    $new : watcher.interceptor,
-                    $scope : watcher,
-                    $old : 0,
-                    listener : listener || $.noop,
-                    ctx : ctx
-                });
+                this.__$$__watchers__$$__.unshift(new CollectionWatcher(ctx, expr, listener, this));
             }
         },
         /**
@@ -229,19 +233,26 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
                         ctx = watch.ctx;
                         if((newVal = watch.$new.call(watch.$scope, watch.expr, ctx)) != watch.$old){
                             dirty = true;
-                            watch.listener.apply(this, [newVal, watch.$scope]);
+                            watch.listener.apply(this, [newVal, watch.$scope, j]);
                             watch.$old = newVal;
                         }else{
                             if(newVal === $.noop){
                                 //the last time to publish the listener
-                                watch.listener.apply(this, [newVal, watch.$scope]);
-                                //remove watch
-                                this.__$$__watchers__$$__.splice(j,1);
+                                watch.listener.apply(this, [newVal, watch.$scope, j]);
                             }
                         }
                     }
                 }
             }while(dirty);
+        },
+
+        destory : function(idx){
+            var arity = arguments.length;
+            if(arity === 0){
+                this.__$$__watchers__$$__.length = 0;
+            }else{
+                this.__$$__watchers__$$__.splice(idx, 1);
+            }
         }
     });
 });

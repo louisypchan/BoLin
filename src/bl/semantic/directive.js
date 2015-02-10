@@ -24,6 +24,14 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
 
     var DIRECTIVE_SEPARATE =  /([\:\-\_]+(.))/g,
 
+        DIRETIVES = {
+            ypVar : 'yp-var',
+            ypTemplate : 'yp-template',
+            ypRender : 'yp-render',
+            ypController : 'yp-controller',
+            ypModel : 'yp-model'
+        },
+
         DIRECTIVE_FACTORY = {
             ypController : {
                 priority : 1,
@@ -62,9 +70,16 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
             ypVar : {
                 priority : 4,
                 compile : function(node, prop, scope){
-                    console.log(scope);
+                    node.$scope = {};
+                    var parent = dom(node).parent();
+                    while(!dom(parent).hasClass(directive.IDENTIFY.ypTemplate)){
+                        parent = dom(parent).parent();
+                    }
+                    node.$scope[prop] = scope[dom(parent).attr(DIRETIVES.ypModel)][node.$index];
+                    node.$scope.$index = node.$index;
+                    node.$scope.$$watch = [];
                     dom(node).addClass(directive.IDENTIFY.ypVar);
-                    return prop;
+                    return node.$scope;
                 }
             },
 
@@ -107,13 +122,13 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                             }));
                         }
                         if(!template){
-                            this.watch(expr, function(value){
+                            this.watch(expr, function(value, $scope, idx){
                                 if(kernel.type(value) === "object" && kernel.isEmpty(value)) return;
                                 if(kernel.isArray(value) && value.length == 0) return;
                                 if(tag === "input" || tag === "textarea" || tag === "select"){
                                     dom(node).val(value);
                                 }else{
-                                    value !== $.noop ? dom(node).html(value) : dom(node).remove();
+                                    value !== $.noop ? dom(node).html(value) : (dom(node).remove(), this.destory(idx));
                                 }
                             }, ctx);
                         }else{
@@ -121,6 +136,32 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                                 if(!$scope.$initRun){
                                     $scope.$initRun = true;
                                     dom(node).html(doT.compile(template, $scope.$newValue)($scope.$newValue));
+                                }else{
+                                    var _childNodes = node.childNodes, _node;
+                                    if(_childNodes){
+                                        var i = 0, l = _childNodes.length, nl;
+                                        if(kernel.isArrayLike($scope.$newValue)){
+                                            nl = $scope.$newValue.length;
+                                            for(; i < l; i++){
+                                                _node = _childNodes[i];
+                                                _node.$scope[dom(_node).attr(DIRETIVES.ypVar)] = $scope.$newValue[i];
+                                                _node.$scope.$index = i;
+                                                if($scope.$newValue[i] === undefined){
+                                                    dom(_node).remove();
+                                                    //clear dirty watchers
+                                                    //TODO:
+                                                }
+                                            }
+                                            if(nl > l){
+                                                var newAdded = $scope.$newValue.slice(i, nl);
+                                                dom(node).append(doT.compile(template,newAdded)(newAdded));
+                                            }
+                                        }else{
+
+                                        }
+                                    }else{
+                                        dom(node).html(doT.compile(template, $scope.$newValue)($scope.$newValue));
+                                    }
                                 }
                             }, ctx);
                         }

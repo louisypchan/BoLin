@@ -343,9 +343,14 @@ $.add(["bl/core/kernel", "bl/dom/selector/q", "bl/dom/attr",
             };
         },
         attr : function(name, value){
-            return this.each(function(elem){
-               domAttr.attr(elem, name, value);
-            });
+            if(arguments.length == 2){
+                this.each(function(elem){
+                    domAttr.attr(elem, name, value);
+                });
+                return this;
+            }else{
+                return domAttr.attr(this.elems[0], name, value);
+            }
         },
         removeAttr : function(name){
             return this.each(function(elem){
