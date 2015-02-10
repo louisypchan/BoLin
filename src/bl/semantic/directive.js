@@ -88,9 +88,7 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                 compile : function(node, prop, ctx, template){
                     if(!node.$compiled){
                         var parts = prop.split("."), tag = node.nodeName.toLowerCase(), expr = prop;
-                        if(prop.indexOf("[") == -1){
-                            kernel.getProp(parts, true, ctx);
-                        }
+                        kernel.getProp(parts, true, ctx);
                         //
                         if(tag === "input" || tag === "textarea" || tag === "select"){
                             //emit event
@@ -149,7 +147,6 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                                                 if($scope.$newValue[i] === undefined){
                                                     dom(_node).remove();
                                                     //clear dirty watchers
-                                                    //TODO:
                                                 }
                                             }
                                             if(nl > l){

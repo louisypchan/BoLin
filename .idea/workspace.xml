@@ -26,7 +26,7 @@
       <file leaf-file-name="base.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/bl/semantic/base.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1575">
+            <state vertical-scroll-proportion="0.0" vertical-offset="630" max-vertical-offset="1575">
               <caret line="85" column="78" selection-start-line="85" selection-start-column="73" selection-end-line="85" selection-end-column="78" />
               <folding />
             </state>
@@ -36,28 +36,28 @@
       <file leaf-file-name="base.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/bl/core/base.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.037037" vertical-offset="2780" max-vertical-offset="3675">
-              <caret line="216" column="36" selection-start-line="216" selection-start-column="36" selection-end-line="216" selection-end-column="36" />
+            <state vertical-scroll-proportion="-3.7037036" vertical-offset="2705" max-vertical-offset="3690">
+              <caret line="205" column="35" selection-start-line="205" selection-start-column="35" selection-end-line="205" selection-end-column="35" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="test.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/tests/compile/test.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.66815144" vertical-offset="0" max-vertical-offset="898">
-              <caret line="40" column="31" selection-start-line="40" selection-start-column="31" selection-end-line="40" selection-end-column="31" />
+            <state vertical-scroll-proportion="-5.0" vertical-offset="0" max-vertical-offset="840">
+              <caret line="8" column="29" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="directive.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="directive.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/bl/semantic/directive.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="608" max-vertical-offset="3255">
-              <caret line="79" column="39" selection-start-line="79" selection-start-column="32" selection-end-line="79" selection-end-column="39" />
+            <state vertical-scroll-proportion="-1.7599452" vertical-offset="2288" max-vertical-offset="3210">
+              <caret line="85" column="24" selection-start-line="85" selection-start-column="24" selection-end-line="85" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -173,17 +173,17 @@
         <option value="$PROJECT_DIR$/src/bl/semantic/base.js" />
         <option value="$PROJECT_DIR$/src/bl/dom/dom.js" />
         <option value="$PROJECT_DIR$/cfg/templates/tests/test.js" />
-        <option value="$PROJECT_DIR$/src/bl/core/base.js" />
         <option value="$PROJECT_DIR$/src/tests/compile/test.html" />
         <option value="$PROJECT_DIR$/src/bl/semantic/directive.js" />
+        <option value="$PROJECT_DIR$/src/bl/core/base.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="width" value="1616" />
+    <option name="height" value="876" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -256,38 +256,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="BoLin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BoLin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="vendors" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BoLin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="vendors" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -861,15 +829,15 @@
       <workItem from="1423038329763" duration="53225000" />
       <workItem from="1423308720596" duration="5961000" />
       <workItem from="1423462078117" duration="7555000" />
-      <workItem from="1423547067107" duration="12710000" />
+      <workItem from="1423547067107" duration="18235000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="933168000" />
+    <option name="totallyTimeSpent" value="938693000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1616" height="876" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -890,7 +858,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.225" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1268,18 +1236,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/bl/semantic/directive.js">
+    <entry file="file://$PROJECT_DIR$/src/tests/compile/test.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="608" max-vertical-offset="3255">
-          <caret line="79" column="39" selection-start-line="79" selection-start-column="32" selection-end-line="79" selection-end-column="39" />
+        <state vertical-scroll-proportion="-5.0" vertical-offset="0" max-vertical-offset="840">
+          <caret line="8" column="29" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/bl/core/base.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.037037" vertical-offset="2780" max-vertical-offset="3675">
-          <caret line="216" column="36" selection-start-line="216" selection-start-column="36" selection-end-line="216" selection-end-column="36" />
+        <state vertical-scroll-proportion="-3.7037036" vertical-offset="2705" max-vertical-offset="3690">
+          <caret line="205" column="35" selection-start-line="205" selection-start-column="35" selection-end-line="205" selection-end-column="35" />
           <folding />
         </state>
       </provider>
@@ -1292,10 +1260,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/tests/compile/test.html">
+    <entry file="file://$PROJECT_DIR$/src/bl/semantic/directive.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.66815144" vertical-offset="0" max-vertical-offset="898">
-          <caret line="40" column="31" selection-start-line="40" selection-start-column="31" selection-end-line="40" selection-end-column="31" />
+        <state vertical-scroll-proportion="-1.7599452" vertical-offset="2288" max-vertical-offset="3210">
+          <caret line="85" column="24" selection-start-line="85" selection-start-column="24" selection-end-line="85" selection-end-column="24" />
           <folding />
         </state>
       </provider>

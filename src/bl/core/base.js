@@ -199,6 +199,7 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
          * @param expr
          * @param listener
          * @param ctx
+         * @param internalWatchers
          */
         watch : function(expr, listener, ctx){
             if(this.$dirtyChecking){
