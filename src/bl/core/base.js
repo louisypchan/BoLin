@@ -32,29 +32,29 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
      * @param expr
      * @param listener
      * @param ctx
-     * @returns {{expr: *, $new: Function, $scope: CollectionWatcher, $old: number, listener: (*|noop|_.noop|angular.noop|publishExternalAPI.noop|lodash.noop), ctx: *}}
+     * @returns {{expr: *, $new: Function, $scope: CollectionWatcher, $old: number, listener: (*|noop|_.noop|lodash.noop), ctx: *}}
      * @constructor
      */
-    function CollectionWatcher(scope, expr, listener, ctx){
+    function CollectionWatcher(expr, listener, scope, runtime){
         this.$newValue = null;
         this.$oldValue = null;
         this.$changeDetected = 0;
         this.$scope = scope;
         this.$expr = expr;
-        this.$ctx = ctx;
+        this.$runtime = runtime || $.global;
         this.$oldLength = 0;
         this.$internalArray = [];
         this.$internalObject = {};
         this.$initRun = false;
-        this.$listener = listener;
+        this.$listener = listener || $.noop;
 
         return {
             expr : expr,
             $new : this.interceptor,
-            $scope : this,
+            $runtime : this,
             $old : 0,
-            listener : this.$listener || $.noop,
-            ctx : scope
+            $listener : this.$listener,
+            $scope : scope
         };
     }
 
@@ -63,7 +63,7 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
      * @returns {*}
      */
     CollectionWatcher.prototype.interceptor = function(){
-        this.$newValue = this.$ctx.get(this.$expr, this.$scope);
+        this.$newValue = this.$runtime.get(this.$expr, this.$scope);
         var newLength, newItem, oldItem, bothNaN, key;
         if(this.$newValue === $.noop) return void(0);
         if(!kernel.isObject(this.$newValue)){
@@ -149,12 +149,12 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
          *
          * @param expr
          * @param value
-         * @param ctx
+         * @param scope
          * @returns {*}
          * @private
          */
-        _helper : function(expr, value, ctx){
-            var parts = expr.split("."), len = parts.length, last = parts[len - 1], val = null, p, i = 0, rs = ctx, j = 0, l;
+        _helper : function(expr, value, scope){
+            var parts = expr.split("."), len = parts.length, last = parts[len - 1], val = null, p, i = 0, rs = scope, j = 0, l;
             while(rs && (p = parts[i++]) && i < len){
                 j = 0;
                 p = p.match(PROPREGEX);
@@ -178,68 +178,71 @@ $.add("bl/core/base", ["./declare", "./kernel", "bl/core/deferred"], function(de
         /**
          *
          * @param expr
-         * @param context
+         * @param scope
          * @returns {*}
          */
-        get : function(expr, context){
-            return this._helper(expr, undefined, context);
+        get : function(expr, scope){
+            return this._helper(expr, undefined, scope);
         },
         /**
          *
          * @param expr
          * @param value
-         * @param context
+         * @param scope
          */
-        set : function(expr, value, context){
-            this._helper(expr, value, context);
+        set : function(expr, value, scope){
+            this._helper(expr, value, scope);
             this.digest();
         },
         /**
          *
          * @param expr
          * @param listener
-         * @param ctx
-         * @param internalWatchers
+         * @param scope
          */
-        watch : function(expr, listener, ctx){
+        watch : function(expr, listener, scope){
+            var watcher = {
+                expr : expr,
+                $new : this.get,
+                $runtime : this,
+                $old : null,
+                $listener : listener || $.noop,
+                $scope : scope
+            };
             if(this.$dirtyChecking){
-                var get = this.get;
-                this.__$$__watchers__$$__.unshift({
-                    expr : expr,
-                    $new : get,
-                    $old : null,
-                    $scope : this,
-                    listener : listener || $.noop,
-                    ctx : ctx
-                });
+                this.__$$__watchers__$$__.unshift(watcher);
             }
+            return watcher;
         },
-        watchCollection : function(expr, listener, ctx){
+        watchCollection : function(expr, listener, scope){
+            var watcher = new CollectionWatcher(expr, listener, scope, this);
             if(this.$dirtyChecking){
-                this.__$$__watchers__$$__.unshift(new CollectionWatcher(ctx, expr, listener, this));
+                //CollectionWatcher(expr, listener, scope, runtime){
+                this.__$$__watchers__$$__.unshift(watcher);
             }
+            return watcher;
         },
         /**
          *dirty check
          */
         digest : function(){
             if(!this.$dirtyChecking) return;
-            var watch, len = this.__$$__watchers__$$__.length, ctx, newVal, dirty,j;
+            var watch, len = this.__$$__watchers__$$__.length, scope, newVal, dirty,j;
             j = len-1;
             do{
                 dirty = false;
                 for(;j>=0;j--){
                     watch = this.__$$__watchers__$$__[j];
                     if(watch){
-                        ctx = watch.ctx;
-                        if((newVal = watch.$new.call(watch.$scope, watch.expr, ctx)) != watch.$old){
+                        scope = watch.$scope;
+                        if((newVal = watch.$new.call(watch.$runtime, watch.expr, scope)) != watch.$old){
                             dirty = true;
-                            watch.listener.apply(this, [newVal, watch.$scope, j]);
+                            watch.$listener.apply(this, [newVal, watch.$runtime, j]);
                             watch.$old = newVal;
                         }else{
                             if(newVal === $.noop){
                                 //the last time to publish the listener
-                                watch.listener.apply(this, [newVal, watch.$scope, j]);
+                                watch.$listener.apply(this, [newVal, watch.$runtime, j]);
                             }
                         }
                     }

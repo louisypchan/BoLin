@@ -35,26 +35,28 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
         DIRECTIVE_FACTORY = {
             ypController : {
                 priority : 1,
-                compile : function(node, prop, context){
+                compile : function(node, attr, scope){
                     if(!node.$compiled){
-                        prop = "$" + prop;
-                        this[prop] = {};
-                        this[prop][$.PARENT] = context;
-                        node.$prop = prop;
+                        var controller = "$" + attr.val;
+                        this[controller] = {};
+                        this[controller][$.PARENT] = scope;
+                        node.$attr = attr;
+                        node.$scope = this[controller];
                         dom(node).addClass(directive.IDENTIFY.ypController);
                         node.$compiled = true;
-                        return this[prop];
+                        return this[controller];
                     }
                     return this;
                 }
             },
             ypTemplate  : {
                 priority : 3,
-                compile : function(node, template, render){
+                compile : function(node, attr, render){
                     if(!render) throw new Error(" Please make sure yp-render is defined and correct!");
                     var $def = new deferred();
-                    $.use(["template/" + template], function(tmpl){
-                        $def.resolve(tmpl[render]);
+                    $.use(["template/" + attr.val], function(tmpl){
+                        node.$tmpl = tmpl[render];
+                        $def.resolve();
                     });
                     dom(node).addClass(directive.IDENTIFY.ypTemplate);
                     return $def.promise;
@@ -62,22 +64,23 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
             },
             ypRender  : {
                 priority : 2,
-                compile : function(render){
-                    return render;
+                compile : function(attr){
+                    return attr.val;
                 }
             },
 
             ypVar : {
                 priority : 4,
-                compile : function(node, prop, scope){
+                compile : function(node, attr, scope){
                     node.$scope = {};
                     var parent = dom(node).parent();
                     while(!dom(parent).hasClass(directive.IDENTIFY.ypTemplate)){
                         parent = dom(parent).parent();
                     }
-                    node.$scope[prop] = scope[dom(parent).attr(DIRETIVES.ypModel)][node.$index];
+                    node.$scope[attr.val] = scope[dom(parent).attr(DIRETIVES.ypModel)][node.$index];
                     node.$scope.$index = node.$index;
-                    node.$scope.$$watch = [];
+                    //TODO:
+                    //node.$scope.$$watch = [];
                     dom(node).addClass(directive.IDENTIFY.ypVar);
                     return node.$scope;
                 }
@@ -85,17 +88,17 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
 
             ypModel  : {
                 priority : 5,
-                compile : function(node, prop, ctx, template){
+                compile : function(node, attr, scope){
                     if(!node.$compiled){
-                        var parts = prop.split("."), tag = node.nodeName.toLowerCase(), expr = prop;
-                        kernel.getProp(parts, true, ctx);
+                        var expr = attr.val, parts = expr.split("."), tag = node.nodeName.toLowerCase();
+                        kernel.getProp(parts, true, scope);
                         //
                         if(tag === "input" || tag === "textarea" || tag === "select"){
                             //emit event
                             if(kernel.hasEvent("input")){
                                 on(node, "input", kernel.ride(this, function(e){
                                     var value = e.target.value;
-                                    this.set(expr, value, ctx);
+                                    this.set(expr, value, scope);
                                 }));
                             }else{
                                 //<=IE11
@@ -108,7 +111,7 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                                     setTimeout(kernel.ride(this,function(){
                                         if(target.value !== origValue){
                                             origValue = target.value;
-                                            this.set(expr, origValue, ctx);
+                                            this.set(expr, origValue, scope);
                                         }
                                     }), 0);
                                 }));
@@ -116,11 +119,11 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                             // if user paste into input using mouse on older browser
                             // or form autocomplete on newer browser, we need "change" event to catch it
                             on(node, "change", kernel.ride(this, function(e){
-                                this.set(expr, e.target.value, ctx);
+                                this.set(expr, e.target.value, scope);
                             }));
                         }
-                        if(!template){
-                            this.watch(expr, function(value, $scope, idx){
+                        if(!node.$tmpl){
+                            node.$$watcher = this.watch(expr, function(value, $scope, idx){
                                 if(kernel.type(value) === "object" && kernel.isEmpty(value)) return;
                                 if(kernel.isArray(value) && value.length == 0) return;
                                 if(tag === "input" || tag === "textarea" || tag === "select"){
@@ -128,12 +131,12 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                                 }else{
                                     value !== $.noop ? dom(node).html(value) : (dom(node).remove(), this.destory(idx));
                                 }
-                            }, ctx);
+                            }, scope);
                         }else{
-                            this.watchCollection(expr, function(value, $scope){
+                            node.$$watcher = this.watchCollection(expr, function(value, $scope){
                                 if(!$scope.$initRun){
                                     $scope.$initRun = true;
-                                    dom(node).html(doT.compile(template, $scope.$newValue)($scope.$newValue));
+                                    dom(node).html(doT.compile(node.$tmpl, $scope.$newValue)($scope.$newValue));
                                 }else{
                                     var _childNodes = node.childNodes, _node;
                                     if(_childNodes){
@@ -151,25 +154,25 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                                             }
                                             if(nl > l){
                                                 var newAdded = $scope.$newValue.slice(i, nl);
-                                                dom(node).append(doT.compile(template,newAdded)(newAdded));
+                                                dom(node).append(doT.compile(node.$tmpl,newAdded)(newAdded));
                                             }
                                         }else{
 
                                         }
                                     }else{
-                                        dom(node).html(doT.compile(template, $scope.$newValue)($scope.$newValue));
+                                        dom(node).html(doT.compile(node.$tmpl, $scope.$newValue)($scope.$newValue));
                                     }
                                 }
-                            }, ctx);
+                            }, scope);
                         }
                         node.$compiled = true;
-                        node.$scope = ctx;
+                        node.$scope = scope;
                     }
                 }
             }
         };
     var directive = {
-
+        DIRETIVES : DIRETIVES,
         IDENTIFY : {
             ypController : 'C',
             ypTemplate   : 'T',
@@ -197,7 +200,7 @@ $.add("bl/semantic/directive", ["bl/core/kernel", "bl/dom/dom", "bl/event/on", "
                             val = kernel.trim(attr.value);
                             name = name.replace(DIRECTIVE_SEPARATE, function(_, separator, letter, offset){ return offset ? letter.toUpperCase() : letter; });
                             results.push({
-                                prop : val,
+                                attr : {name : name, val : val},
                                 identify : directive.IDENTIFY[name],
                                 priority : DIRECTIVE_FACTORY[name] ? DIRECTIVE_FACTORY[name].priority : 100,
                                 compile : DIRECTIVE_FACTORY[name] ? DIRECTIVE_FACTORY[name].compile : $.noop

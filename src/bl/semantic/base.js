@@ -39,7 +39,7 @@ $.add("bl/semantic/base",["bl/core/kernel", "bl/core/declare", "bl/core/base", "
             var self = this,
                 collect = function(){
                     var node = this.elems[0];
-                    self._compile(node.childNodes, [], node.$scope||self);
+                    self._compile(node.childNodes, [], node.$scope||self.$getController(node));
                 };
             aspect.after(dom.$DOM.prototype, "html", collect);
             aspect.after(dom.$DOM.prototype, "append", collect);
@@ -47,8 +47,8 @@ $.add("bl/semantic/base",["bl/core/kernel", "bl/core/declare", "bl/core/base", "
             //aspect.after(dom.$DOM.prototype, "before", collect);
             //aspect.after(dom.$DOM.prototype, "after", collect);
             aspect.after(dom.$DOM.prototype, "replace", collect);
-            aspect.after(dom.$DOM.prototype, "empty", collect);
-            aspect.after(dom.$DOM.prototype, "remove", collect);
+            aspect.after(dom.$DOM.prototype, "empty", function(){this.each(function(node){self.$remove(node, false)})});
+            aspect.after(dom.$DOM.prototype, "remove", function(){this.each(function(node){self.$remove(node, true)})});
             aspect.after(this, "postCreate", this.digest);
             this.bootStrap();
         },
@@ -88,28 +88,66 @@ $.add("bl/semantic/base",["bl/core/kernel", "bl/core/declare", "bl/core/base", "
             directives.forEach(kernel.ride(this,function(it){
                 switch (it.identify){
                     case directive.IDENTIFY.ypController :
-                        scope = kernel.isFunction(it.compile) && it.compile.apply(this, [node, it.prop, scope]);
+                        scope = kernel.isFunction(it.compile) && it.compile.apply(this, [node, it.attr, scope]);
                         break;
                     case directive.IDENTIFY.ypModel :
                         if(kernel.isFunction(it.compile)){
-                            deferredList.push(when(renderTemplate).then(kernel.ride(this, function(results){
-                                it.compile.apply(this, [node, it.prop, scope, results[0]]);
+                            deferredList.push(when(renderTemplate).then(kernel.ride(this, function(){
+                                it.compile.apply(this, [node, it.attr, scope]);
                             })));
                         }
                         break;
                     case directive.IDENTIFY.ypTemplate :
-                        kernel.isFunction(it.compile) && (renderTemplate = it.compile.apply(this, [node, it.prop, renderId]));
+                        kernel.isFunction(it.compile) && (renderTemplate = it.compile.apply(this, [node, it.attr, renderId]));
                         break;
                     case directive.IDENTIFY.ypRender :
-                        kernel.isFunction(it.compile) && (renderId = it.compile(it.prop));
+                        kernel.isFunction(it.compile) && (renderId = it.compile(it.attr));
                         break;
                     case directive.IDENTIFY.ypVar :
-                        scope = kernel.isFunction(it.compile) && (renderTemplate = it.compile.apply(this, [node, it.prop, scope]));
+                        kernel.isFunction(it.compile) && (scope = it.compile.apply(this, [node, it.attr, scope]));
                         break;
                 }
 
             }));
             return scope;
+        },
+        /**
+         *
+         * @param node
+         * @returns {*}
+         */
+        $getController : function(node){
+            var parent = dom(node).parent();
+            while(dom(parent).exist() && !dom(parent).hasClass(directive.IDENTIFY.ypController)){
+                parent =  dom(parent).parent();
+            }
+            var c = dom(parent).attr(directive.DIRETIVES.ypController);
+            return c ? this["$" + c] : this;
+        },
+        /**
+         *
+         * @param node
+         * @param removeItself
+         */
+        $remove : function(node, removeItself){
+            if(removeItself){
+                if(node.$$watcher){
+                    var index = this.__$$__watchers__$$__.indexOf(node.$$watcher);
+                    if(index > -1){
+                        try{
+                            this.__$$__watchers__$$__.splice(index, 1);
+                        }catch (e){}
+                    }
+                }
+            }
+            var childNodes = node.childNodes;
+            if(childNodes){
+                var i = 0, l = childNodes.length,elem;
+                for(i = l -1; i >=0; i--){
+                    elem = childNodes[i];
+                    this.$remove(elem, true);
+                }
+            }
         },
         postCreate : $.noop,
         beforeBootStrap : $.noop,
