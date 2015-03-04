@@ -43,6 +43,13 @@
         debug : false //by default, turn off the debug mode
     };
 
+    bl.comboConfig = {
+        comboPrefix : "??",
+        comboSep : ",",
+        maxFileNum : 40,
+        maxUrlLength : 2000 // < 2038
+    };
+
     bl.PARENT = "_$_$_parent_$_$_";
 
     bl.global = win;
@@ -272,6 +279,21 @@
     bl.monitor = domOn;
     //+++++++++++++++++++++++++define a minimal library to help build the loader+++++++++++++++++++++++++++
     (function(v){
+
+        function merge(a, b){
+            var len = +b.length, j = 0, i = a.length;
+            while(j < len){
+                a[i++] = b[j++];
+            }
+            if(len !== len){
+                while ( b[j] !== undefined ) {
+                    a[ i++ ] = b[ j++ ];
+                }
+            }
+            a.length = i;
+            return a;
+        }
+
         //internal, can be reused in kernel.js
         v.__lang = {
 
@@ -446,6 +468,24 @@
                     rs = (p in rs ? rs[p] : (create ? rs[p] = {} : undefined));
                 }
                 return rs;
+            },
+            /**
+             * results is for internal usage only
+             * @param arr
+             * @param results
+             */
+            makeArray : function(arr, results){
+                var ret = results || [];
+                if ( arr != null ) {
+                    if (this.isArrayLike( Object(arr) ) ) {
+                        merge(ret, typeof arr === "string" ? [arr] : arr);
+                    }else if(this.isArray(arr)){
+                        ret = arr;
+                    }else{
+                        ret.push(arr);
+                    }
+                }
+                return ret;
             }
         };
     })(bl);
@@ -610,6 +650,147 @@
         }
     })(bl);
     //+++++++++++++++++++++++++something about JSON end+++++++++++++++++++++++++++
+
+    (function(b){
+        var filter = Array.prototype.filter;
+        if(!filter){
+            filter = function(arr, fn){
+                var i = 0, l = arr.length, out = [], value;
+                for(; i < l; ++i){
+                    value = this[i];
+                    if(fn(value, i, this)){
+                        out.push(value);
+                    }
+                }
+                return out;
+            }
+        }
+        var miniFilter = function(src){
+            return filter(src.split(Path.SEP), function(p){
+                return !!p;
+            })
+        };
+        /**
+         * Path utils
+         * Refer to https://github.com/joyent/node/blob/master/lib/path.js
+         */
+        var Path = {
+
+            SEP : '/',
+            // [root, dir, basename, ext]
+            PRegex : /^(\/?)([\s\S]+\/(?!$)|\/)?((?:\.{1,2}$|[\s\S]+?)?(\.[^.\/]*)?)$/,
+            /**
+             * Normalize a string path, taking care of '..' and '.' parts.
+             * @param p
+             */
+            normalize : function(p){
+                if(!p) return "";
+                //reform the string
+                p = p.replace(/\\/g, '/').replace(/[^\/]+(?=\/)\//g, function($0){
+                    return $0 == "./" ? "" : $0;
+                });
+                var cRegx = /[^\/]+\/\.\.\//g,
+                    startWithRelative = (p.indexOf("../") === 0), prefix = "";
+                if(startWithRelative){
+                    prefix = "../";
+                    p = p.substr(prefix.length);
+                }
+                while(/\.\.\//.test(p) && p.indexOf("../") != 0){
+                    p = p.replace(cRegx, function(){ return "" });
+                }
+                return prefix + p;
+            },
+            /**
+             * Join all arguments together and normalize the resulting path.
+             * @returns {*}
+             */
+            join : function(){
+                var args = b.__lang.makeArray(arguments);
+                return this.normalize(args.join(Path.SEP));
+            },
+            /**
+             * resolve([from ...], to)
+             * Resolves to to an absolute path.
+             * TODO:
+             */
+            resolve : function(){
+
+            },
+            /**
+             * Solve the relative path from from to to.
+             *  examples:
+             *      relative('x/','x/y/z') => 'y/z'
+             *      relative('x/t/z','x/') => '../../'
+             * @param from
+             * @param to
+             */
+            relative : function(from, to){
+                from = Path.normalize(from);
+                to = Path.normalize(to);
+                var fromParts = miniFilter(from), path = [], i, j, toParts = miniFilter(to), commonLength = Math.min(fromParts.length, toParts.length);
+                for (i = 0; i < commonLength; i++) {
+                    if (fromParts[i] != toParts[i]) {
+                        break;
+                    }
+                }
+                j = i;
+                while (i < fromParts.length) {
+                    path.push('..');
+                    i++;
+                }
+                path = path.concat(toParts.slice(j));
+                return path.join(Path.SEP);
+            },
+            /**
+             * Return the last portion of a path
+             * @param p
+             * @param ext
+             * @returns {string}
+             */
+            basename : function(p, ext){
+                var result = p.match(Path.PRegex) || [],
+                    basename;
+                basename = result[3] || '';
+                if (ext && basename && basename.slice(-1 * ext.length) == ext) {
+                    basename = basename.slice(0, -1 * ext.length);
+                }
+                return basename;
+            },
+            /**
+             * Return the directory name of a path
+             * @param p
+             * @returns {string}
+             */
+            dirname : function(p){
+                var result = p.match(Path.PRegex) || [],
+                    root = result[1] || '',
+                    dir = result[2] || '';
+
+                if (!root && !dir) {
+                    // No dirname
+                    return '.';
+                }
+
+                if (dir) {
+                    // It has a dirname, strip trailing slash
+                    dir = dir.substring(0, dir.length - 1);
+                }
+
+                return root + dir;
+            },
+            /**
+             * Return the extension of the path, from the last '.' to end of string in the last portion of the path.
+             * @param p
+             * @returns {string}
+             */
+            extname : function(p){
+                return (p.match(Path.PRegex) || [])[4] || '';
+            }
+        };
+        //
+        b.path = Path;
+    })(bl);
+
     //+++++++++++++++++++++++++something about AMD start+++++++++++++++++++++++++++
     (function(v){
         /**
@@ -678,7 +859,7 @@
             }else{
                 //relative to reference module
                 //get rid of any dots
-                name = v.__AMD.pkg.redress(isRelative ? (refMod.mid + "/../" + name) : name);
+                name = v.path.normalize(isRelative ? (refMod.mid + "/../" + name) : name);
                 //make sure is that a relatvei path
                 if(/^\./.test(name)){
                     throw new Error("irrationalPath", name);
@@ -694,7 +875,6 @@
                     pid = "";
                 }
                 //search aliases
-                //TODO:
                 var hit = false;
                 v.__lang.forEach(v.__AMD.aliases, function(aliasMap){
                     match = name.match(aliasMap[0]);
@@ -707,6 +887,7 @@
                     return getModInfo(hit, 0, packs, mods, aliases);
                 }
                 rs = v.__AMD.mods[name];
+
                 if(rs){
                     return v.__AMD.mods[name];
                 }
@@ -729,7 +910,7 @@
                 pid : pid,
                 mid : name,
                 pack : pack,
-                url : v.__AMD.pkg.redress(url)
+                url : v.path.normalize(url)
             });
         }
         /**
@@ -791,7 +972,7 @@
 
             defaultCfg : {
 
-                cache : false, //dev mode : false
+                cache : false, //dev mode : false //TODO:
 
                 pkgs : [],
                 async : true,  //do we need it????
@@ -869,31 +1050,6 @@
 
             pkg : {
                 /**
-                 * redress the path
-                 * @param path
-                 * @returns {string}
-                 */
-                redress : function(path){
-                    //console.log(path);
-                    if(!path) return "";
-                    //reform the string
-                    path = path.replace(/\\/g, '/').replace(/[^\/]+(?=\/)\//g, function($0){
-                        return $0 == "./" ? "" : $0;
-                    });
-                    var cRegx = /[^\/]+\/\.\.\//g,
-                        startWithRelative = (path.indexOf("../") === 0), prefix = "";
-                    if(startWithRelative){
-                        prefix = "../";
-                        path = path.substr(prefix.length);
-                    }
-                    while(/\.\.\//.test(path) && path.indexOf("../") != 0){
-                        path = path.replace(cRegx, function(){ return "" });
-                    }
-                    return prefix + path;
-                },
-
-
-                /**
                  *
                  * @param name
                  * @param refMod
@@ -937,7 +1093,7 @@
                  *
                  * Spring 1: we won't handle any cache mechanism here
                  * Spring 2: Add a configure attribute to handle a set of resources which forced to refresh by version
-                 * Spring 3: TODO:
+                 * Spring 3: Add combo supportive
                  * @param cfg
                  * @param boot
                  * @param refMod
@@ -964,6 +1120,55 @@
 					if(cfg['debug']){
 						v.__lang.getProp(["__debug"], true, v).state = cfg['debug'];
 					}
+                    if(cfg['combo']){
+                        //check if turn on the combo feature
+                        v.__AMD.combo = cfg['combo'] || false;
+                    }
+                    //pre defined the modules which generated by BoLin Compiler
+                    if(cfg.mod){
+                        for(var m in cfg.mod){
+                            v.__AMD.pkg.getModule(m).dependencies =cfg.mod[m].dependencies;
+                        }
+                    }
+                },
+                /**
+                 * Get combo Url
+                 * @param mods
+                 */
+                getComboUrls : function(mods){
+                    console.log('getComboUrls');
+                    var comboMods = this.getComboMods(mods), comboRes = {},
+                        prefix = "http://localhost/gateway/combo/" + v.comboConfig.comboPrefix;
+                    for(var pid in comboMods){
+                        mods = comboMods[pid];
+                        comboRes[pid] = [];
+                        var currentComboUrls = [];
+                        for(var i = 0, l = mods.length; i < l; i++){
+                            var mod = mods[i];
+                            currentComboUrls.push(mod.url.replace(v.__AMD.baseUrl, ""));
+                        }
+                        comboRes[pid].push({
+                            combine : true,
+                            url : prefix + currentComboUrls.join(v.comboConfig.comboSep)
+                        });
+                    }
+                    return comboRes;
+                },
+                /**
+                 * Group by package id
+                 * @param mods
+                 */
+                getComboMods : function(mods){
+                    var i = 0, l = mods.length, mod, comboMods = {}, pid, cMods;
+                    for(; i < l; i++){
+                        mod = mods[i];
+                        pid = mod.pid;
+                        if(!comboMods[pid]){
+                            cMods = comboMods[pid] = [];
+                        }
+                        cMods.push(mod);
+                    }
+                    return comboMods;
                 },
 
                 context : {
@@ -976,6 +1181,16 @@
                                 mid = name[i++];
                                 deps.push(v.__AMD.pkg.getModule(mid, refMod));
                             }
+//                            if(v.__AMD.combo){
+//                                var comboUrl = v.__AMD.pkg.getComboUrls(deps);
+//                                for(var c in comboUrl){
+//                                    v.__lang.forEach(comboUrl[c], function(it){
+//                                        v.__AMD.pkg.inject(it.url, function(){
+//                                            v.__AMD.guard.monitor();
+//                                        });
+//                                    });
+//                                }
+//                            }
                             //construct a synthetic module to control execution of the request list
                             mod = v.__lang.mix(new Module({pid:"", mid:syntheticMid, pack:0, url:""}), {
                                 attached : v.__AMD.state.ARRIVED,
@@ -988,7 +1203,7 @@
                             //
                             var strict = v.__AMD.checkCompleteGuard;
                             v.__AMD.guard.checkComplete(function(){
-                               mod.execute(strict);
+                                mod.execute(strict);
                             });
                             if(!mod.executed){
                                 // some deps weren't on board or circular dependency detected and strict; therefore, push into the execQ
@@ -1009,7 +1224,7 @@
                  * @param module
                  */
                 inject : function(url, cb, module){
-                    var node = module.script = doc.createElement("script");
+                    var node = doc.createElement("script");
                     var loadHandler = domOn(node, "load", "onreadystatechange", function(e){
                         injectOnLoad(e, loadHandler, errorHandler, cb);
                     });
@@ -1115,9 +1330,8 @@
              *Attach the dependencies of the module
              */
             attachDeps : function(){
-                var that = this;
                 this.context.guard.checkComplete(v.__lang.ride(this, function(){
-                    v.__lang.forEach(that.deps, function(dep){
+                    v.__lang.forEach(this.deps, function(dep){
                         dep.attach();
                     });
                 }));
@@ -1141,7 +1355,6 @@
                     context.pkg.runDefQ(this);
                     if(this.attached !== context.state.ARRIVED){
                         this.arrived();
-
                         //TODO:is it necessary ????
                         v.__lang.mix(this, {
                             attached : context.state.ARRIVED,
@@ -1274,7 +1487,7 @@
                 }
                 var targetModule = args[0] && v.__AMD.pkg.getModule(args[0]), mod;
                 if(targetModule && !v.__AMD.hangQ[targetModule.mid]){
-                   mod = v.__AMD.pkg.defineModule(targetModule, args[1], args[2]);
+                    mod = v.__AMD.pkg.defineModule(targetModule, args[1], args[2]);
                     mod.attachDeps();
                 }else if(!ie_event_behavior){
                     v.__AMD.defQ.push(args);
@@ -1303,6 +1516,8 @@
         //only for easy use
         bl.use = bl.__AMD.BoLin.use;
         bl.add = bl.__AMD.BoLin.add;
+        bl.config = bl.__AMD.pkg.configure;
+        bl.AMD = bl.__AMD;
     })(bl);
     //+++++++++++++++++++++++++something about AMD end+++++++++++++++++++++++++++
 
@@ -1380,3 +1595,19 @@
     win.$ = win.veeb = bl.__lang.safeMix(win.$||{}, bl);
 
 })(window);
+/* Generate by BoLin Compiler */
+$.config({"mod":{"bl/core/aspect":{"dependencies":["public"]}}});
+/* Generate by BoLin Compiler */
+$.config({"mod":{"bl/core/base":{"dependencies":["./declare","./kernel","bl/core/deferred"]}}});
+/* Generate by BoLin Compiler */
+$.config({"mod":{"bl/core/declare":{"dependencies":["./kernel","bl/extensions/object","bl/extensions/array"]}}});
+/* Generate by BoLin Compiler */
+$.config({"mod":{"bl/core/base_stateful":{"dependencies":["./declare","./kernel"]}}});
+/* Generate by BoLin Compiler */
+$.config({"mod":{"bl/core/color":{"dependencies":[]}}});
+/* Generate by BoLin Compiler */
+$.config({"mod":{"bl/core/deferred":{"dependencies":["bl/core/declare","bl/core/kernel"]}}});
+/* Generate by BoLin Compiler */
+$.config({"mod":{"bl/core/kernel":{"dependencies":["lang","bl/extensions/string","bl/extensions/array"]}}});
+/* Generate by BoLin Compiler */
+$.config({"mod":{"bl/core/when":{"dependencies":["bl/core/kernel","bl/core/deferred","bl/extensions/array"]}}});

@@ -20,3 +20,6 @@
 /**
  * Created by Louis Y P Chen on 2014/10/31.
  */
+$.add("bl/core/color", [], function(){
+
+});

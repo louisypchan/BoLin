@@ -41,7 +41,7 @@
  * aspect — an entity that encapsulates related pointcuts, and advices together, and can add some attributes to advised classes.
  * refer to http://www.lazutkin.com/blog/2008/05/17/aop-aspect-javascript-dojo/
  */
-$.add(["public"], function(expose){
+$.add("bl/core/aspect", ["public"], function(expose){
     "use strict";
 
     function advise(inst, method){

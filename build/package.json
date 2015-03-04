@@ -1,0 +1,22 @@
+{
+    "name" : "bl",
+    "version" : "0.0.1",
+    "author" : "Louis y p chen",
+    "private": true,
+
+    "scripts": {
+        "start": "gulp"
+    },
+
+    "dependencies": {
+        "gulp": "3.8.11",
+        "gulp-replace" : "0.5.3",
+        "gulp-util" : "^3.0.4",
+        "swig" : "1.4.2"
+
+    },
+
+    "devDependencies": {
+        "gulp": "^3.8.11"
+    }
+}

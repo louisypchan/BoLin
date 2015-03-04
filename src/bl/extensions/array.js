@@ -138,7 +138,7 @@ $.add("bl/extensions/array", ["lang"], function(lang){
             if (this === void 0 || this === null) { throw TypeError(); }
             var t = Object(this);
             var len = t.length >>> 0;
-            if (!kernel.isFunction(fun)) { throw TypeError(); }
+            if (!lang.isFunction(fun)) { throw TypeError(); }
             var thisp = arguments[1], i;
             for (i = 0; i < len; i++) {
                 if (i in t && !fun.call(thisp, t[i], i, t)) {
@@ -157,7 +157,7 @@ $.add("bl/extensions/array", ["lang"], function(lang){
             if (this === void 0 || this === null) { throw TypeError(); }
             var t = Object(this);
             var len = t.length >>> 0;
-            if (!kernel.isFunction(fun)) { throw TypeError(); }
+            if (!lang.isFunction(fun)) { throw TypeError(); }
             var thisp = arguments[1], i;
             for (i = 0; i < len; i++) {
                 if (i in t && fun.call(thisp, t[i], i, t)) {
@@ -174,7 +174,7 @@ $.add("bl/extensions/array", ["lang"], function(lang){
             if (this === void 0 || this === null) { throw TypeError(); }
             var t = Object(this);
             var len = t.length >>> 0;
-            if (!kernel.isFunction(fun)) { throw TypeError(); }
+            if (!lang.isFunction(fun)) { throw TypeError(); }
             // no value to return if no initial value and an empty array
             if (len === 0 && arguments.length === 1) { throw TypeError(); }
             var k = 0;
@@ -206,7 +206,7 @@ $.add("bl/extensions/array", ["lang"], function(lang){
             if (this === void 0 || this === null) { throw TypeError(); }
             var t = Object(this);
             var len = t.length >>> 0;
-            if (!kernel.isFunction(callbackfn)) { throw TypeError(); }
+            if (!lang.isFunction(callbackfn)) { throw TypeError(); }
             // no value to return if no initial value, empty array
             if (len === 0 && arguments.length === 1) { throw TypeError(); }
             var k = len - 1;

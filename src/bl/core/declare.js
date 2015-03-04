@@ -20,7 +20,7 @@
 /**
  * Created by Louis Y P Chen on 2014/10/31.
  */
-$.add(["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kernel){
+$.add("bl/core/declare", ["./kernel", "bl/extensions/object", "bl/extensions/array"], function(kernel){
     /**
      * http://www.python.org/download/releases/2.3/mro/
      * class A(O)

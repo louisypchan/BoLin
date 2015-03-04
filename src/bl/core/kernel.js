@@ -19,7 +19,7 @@
 /**
  * Created by Louis Y P Chen on 2014/10/23.
  */
-$.add(["lang", "bl/extensions/string", "bl/extensions/array"], function(lang){
+$.add("bl/core/kernel", ["lang", "bl/extensions/string", "bl/extensions/array"], function(lang){
     var result = {};
     result = lang.mixin(result, lang);
     var op = Object.prototype;
@@ -43,20 +43,6 @@ $.add(["lang", "bl/extensions/string", "bl/extensions/array"], function(lang){
         num = num.split(decimalSeparator);
         void 0 == num[1] && precision > 0 && (num[1] == "0");
         return num[1].length < precision ? (num[1] += "0", addZeros(num[0] + decimalSeparator + num[1], decimalSeparator, precision)) : void 0 != num[1] ? num[0] + decimalSeparator + num[1] : num[0];
-    }
-
-    function merge(a, b){
-        var len = +b.length, j = 0, i = a.length;
-        while(j < len){
-            a[i++] = b[j++];
-        }
-        if(len !== len){
-            while ( b[j] !== undefined ) {
-                a[ i++ ] = b[ j++ ];
-            }
-        }
-        a.length = i;
-        return a;
     }
 
     lang.mixin(result, {
@@ -224,24 +210,6 @@ $.add(["lang", "bl/extensions/string", "bl/extensions/array"], function(lang){
         },
         trim : function(it){
             return it == null ? "" : (it + "").trim();
-        },
-        /**
-         * results is for internal usage only
-         * @param arr
-         * @param results
-         */
-        makeArray : function(arr, results){
-            var ret = results || [];
-            if ( arr != null ) {
-                if (this.isArrayLike( Object(arr) ) ) {
-                    merge(ret, typeof arr === "string" ? [arr] : arr);
-                }else if(this.isArray(arr)){
-                    ret = arr;
-                }else{
-                    ret.push(arr);
-                }
-            }
-            return ret;
         },
 
         contains : $.doc.compareDocumentPosition ? function (container, contained) {

@@ -20,7 +20,7 @@
 /**
  * Created by Louis Y P Chen on 2014/10/23.
  */
-$.add(["bl/core/kernel"], function(kernel){
+$.add("bl/extensions/fn",["bl/core/kernel"], function(kernel){
 
     var fn = Function.prototype,
         slice = Array.prototype.slice;

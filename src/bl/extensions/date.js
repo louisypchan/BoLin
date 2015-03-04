@@ -20,7 +20,7 @@
 /**
  * Created by Louis Y P Chen on 2014/10/23.
  */
-$.add(["bl/core/kernel"], function(kernel){
+$.add("bl/extensions/date", ["bl/core/kernel"], function(kernel){
     var dp = Date.prototype,
         days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
