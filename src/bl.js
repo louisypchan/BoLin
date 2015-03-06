@@ -1067,6 +1067,7 @@
                             combine : true,
                             url : prefix + currentComboUrls.join(v.comboConfig.comboSep)
                         };
+                        comboRes[pid].mods = mods;
                     }
                     return comboRes;
                 },
@@ -1097,7 +1098,15 @@
                         if(mod.status  === v.__AMD.state.EXECUTED){
                             continue;
                         }
-                        result.push(mod);
+                        if(mod.status != v.__AMD.state.ARRIVED){
+                            if(!v.__AMD.defQ[mod.mid]){
+                                if(mod.status != v.__AMD.state.REQUESTED){
+                                    mod.status = v.__AMD.state.REQUESTED;
+                                }
+                                result.push(mod);
+                                v.__AMD.defQ.push(mod.mid);
+                            }
+                        }
                         this.getDependencies(mod.dependencies, mod, caches, result);
                     }
 
@@ -1247,7 +1256,7 @@
                                 var comboUrls = v.__AMD.COMBO.getComboUrls(allMods);
                                 for(var p in comboUrls){
                                     v.__AMD.COMBO.load(comboUrls[p].url, function(){
-
+                                        v.__AMD.pkg.runDefQ();
                                     });
                                 }
                             }
