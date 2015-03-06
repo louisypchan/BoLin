@@ -816,7 +816,7 @@
          *      mid     : the fully-resolved (i.e., mappings have been applied) module identifier without the package identifier (eg:bl/dom/selector)
          *      url     : the URL from which the module was retrieved
          *      pack    : the package object of the package to which the module belongs
-         *      executed: the state of the package object has been executed
+         *      status  : the state of the package object, refer to the v.__ADM.state
          *      deps    : the dependency vector for this module (vector of modules objects)
          *      factory : the factory for this module
          *      result  : the result of the running the factory for this module
@@ -829,11 +829,10 @@
             this.mid = "";
             this.url = "";
             this.pack = null;
-            this.executed =  this.context.state.INIT;
+            this.status = this.context.state.INIT;
             this.deps = {}; //
             this.factory = noop;
             this.result = null;
-            this.attached =  this.context.state.INIT;
             this.plugin = null;
             bl.__lang.mix(this, cfg);
         };
@@ -992,9 +991,9 @@
              *The module-object can refer to Module class
              */
             mods : {
-                "lang" : new Module({mid:"lang", executed : 4}),
-                "public" : new Module({mid:"public", executed : 4}),
-                "module"  :  new Module({mid:"module", executed : 4})
+                "lang" : new Module({mid:"lang", status : v.__AMD.state.EXECUTED}),
+                "public" : new Module({mid:"public", status : v.__AMD.state.EXECUTED}),
+                "module"  :  new Module({mid:"module", status : v.__AMD.state.EXECUTED})
             },
             /**
              * Stores the modules which will be initialized at the end of laoder initialization
@@ -1045,6 +1044,89 @@
                 clear : function(){
                     this.tId && win.clearTimeout(this.tId);
                     this.tId = 0;
+                }
+            },
+
+            COMBO : {
+                /**
+                 * Get combo Url
+                 * @param mods
+                 */
+                getComboUrls : function(mods){
+                    //TODO: test only
+                    var comboMods = this.getComboMods(mods), comboRes = {},
+                        prefix = "http://localhost/gateway/combo/" + v.comboConfig.comboPrefix;
+                    for(var pid in comboMods){
+                        mods = comboMods[pid];
+                        var currentComboUrls = [];
+                        for(var i = 0, l = mods.length; i < l; i++){
+                            var mod = mods[i];
+                            currentComboUrls.push(mod.url.replace(v.__AMD.baseUrl, ""));
+                        }
+                        comboRes[pid] = {
+                            combine : true,
+                            url : prefix + currentComboUrls.join(v.comboConfig.comboSep)
+                        };
+                    }
+                    return comboRes;
+                },
+                /**
+                 * get the related dependencies
+                 * @param mods
+                 * @param refMod
+                 * @param caches
+                 * @param result
+                 * @returns {*|Array}
+                 */
+                getDependencies : function(mods, refMod,  caches, result){
+                    mods = mods || [];
+                    result = result || [];
+                    var i = 0, mod, l = mods.length, mid;
+                    caches = caches || {};
+                    for(; i < l; i++){
+                        mod = mods[i];
+                        if(!mod.mid){
+                            mod = v.__AMD.pkg.getModule(mod, refMod);
+                        }
+                        mid = mod.mid;
+                        if(mid  === "lang" || mid === "public" || mid === "module") continue;
+                        if(caches[mid]){
+                            continue;
+                        }
+                        caches[mid] = 1;
+                        if(mod.status  === v.__AMD.state.EXECUTED){
+                            continue;
+                        }
+                        result.push(mod);
+                        this.getDependencies(mod.dependencies, mod, caches, result);
+                    }
+
+                    return result;
+                },
+                /**
+                 * Group by package id
+                 * @param mods
+                 */
+                getComboMods : function(mods){
+                    var i = 0, l = mods.length, mod, comboMods = {}, pid;
+                    for(; i < l; i++){
+                        mod = mods[i];
+                        pid = mod.pid;
+                        if(!comboMods[pid]){
+                            comboMods[pid] = [];
+                        }
+                        comboMods[pid].push(mod);
+                    }
+                    return comboMods;
+                },
+
+                load : function(url, cb){
+                    if(!url)  return;
+                    v.__AMD.pkg.inject(url, function(){
+                        if(v.__lang.isFunction(cb)){
+                            cb();
+                        }
+                    });
                 }
             },
 
@@ -1131,85 +1213,44 @@
                         }
                     }
                 },
-                /**
-                 * Get combo Url
-                 * @param mods
-                 */
-                getComboUrls : function(mods){
-                    console.log('getComboUrls');
-                    var comboMods = this.getComboMods(mods), comboRes = {},
-                        prefix = "http://localhost/gateway/combo/" + v.comboConfig.comboPrefix;
-                    for(var pid in comboMods){
-                        mods = comboMods[pid];
-                        comboRes[pid] = [];
-                        var currentComboUrls = [];
-                        for(var i = 0, l = mods.length; i < l; i++){
-                            var mod = mods[i];
-                            currentComboUrls.push(mod.url.replace(v.__AMD.baseUrl, ""));
-                        }
-                        comboRes[pid].push({
-                            combine : true,
-                            url : prefix + currentComboUrls.join(v.comboConfig.comboSep)
-                        });
-                    }
-                    return comboRes;
-                },
-                /**
-                 * Group by package id
-                 * @param mods
-                 */
-                getComboMods : function(mods){
-                    var i = 0, l = mods.length, mod, comboMods = {}, pid, cMods;
-                    for(; i < l; i++){
-                        mod = mods[i];
-                        pid = mod.pid;
-                        if(!comboMods[pid]){
-                            cMods = comboMods[pid] = [];
-                        }
-                        cMods.push(mod);
-                    }
-                    return comboMods;
-                },
 
                 context : {
                     init : function(name, dependencies, factory, refMod){
                         var mod, syntheticMid;
                         if(v.__lang.isArray(name)){
-                            syntheticMid = "use*" + bl.uid();
-                            //resolve the request list with respect to the reference module
                             for(var mid, deps = [], i = 0, l = name.length; i <l;){
                                 mid = name[i++];
                                 deps.push(v.__AMD.pkg.getModule(mid, refMod));
                             }
-//                            if(v.__AMD.combo){
-//                                var comboUrl = v.__AMD.pkg.getComboUrls(deps);
-//                                for(var c in comboUrl){
-//                                    v.__lang.forEach(comboUrl[c], function(it){
-//                                        v.__AMD.pkg.inject(it.url, function(){
-//                                            v.__AMD.guard.monitor();
-//                                        });
-//                                    });
-//                                }
-//                            }
-                            //construct a synthetic module to control execution of the request list
-                            mod = v.__lang.mix(new Module({pid:"", mid:syntheticMid, pack:0, url:""}), {
-                                attached : v.__AMD.state.ARRIVED,
-                                deps : deps,
-                                factory : factory||dependencies||noop
-                            });
-                            v.__AMD.mods[mod.mid] = mod;
-                            //attach the module
-                            mod.attachDeps();
-                            //
-                            var strict = v.__AMD.checkCompleteGuard;
-                            v.__AMD.guard.checkComplete(function(){
-                                mod.execute(strict);
-                            });
-                            if(!mod.executed){
-                                // some deps weren't on board or circular dependency detected and strict; therefore, push into the execQ
-                                v.__AMD.execQ.push(mod);
+                            if(!v.__AMD.combo){
+                                syntheticMid = "use*" + bl.uid();
+                                //construct a synthetic module to control execution of the request list
+                                mod = v.__lang.mix(new Module({pid:"", mid:syntheticMid, pack:0, url:""}), {
+                                    status : v.__AMD.state.INIT,
+                                    deps : deps,
+                                    factory : factory||dependencies||noop
+                                });
+                                v.__AMD.mods[mod.mid] = mod;
+                                mod.attach();
+                                //
+                                var strict = v.__AMD.checkCompleteGuard;
+                                v.__AMD.guard.checkComplete(function(){
+                                    mod.execute(strict);
+                                });
+                                if(mod.status !== v.__AMD.state.EXECUTED){
+                                    // some deps weren't on board or circular dependency detected and strict; therefore, push into the execQ
+                                    v.__AMD.execQ.push(mod);
+                                }
+                                v.__AMD.guard.monitor();
+                            }else{
+                                var allMods = v.__AMD.COMBO.getDependencies(deps);
+                                var comboUrls = v.__AMD.COMBO.getComboUrls(allMods);
+                                for(var p in comboUrls){
+                                    v.__AMD.COMBO.load(comboUrls[p].url, function(){
+
+                                    });
+                                }
                             }
-                            v.__AMD.guard.monitor();
                         }
                     },
                     exposeLang : function(){
@@ -1264,8 +1305,7 @@
                  * @param factory
                  */
                 defineModule : function(module, deps, factory){
-                    if(module.attached == v.__AMD.state.ARRIVED){
-                        //TODO:
+                    if(module.status == v.__AMD.state.ARRIVED){
                         throw new Error("module multiple define");
                         return module;
                     }
@@ -1289,6 +1329,7 @@
                         deps[i] = this.getModule(deps[i], module);
                     }
                     module.arrived();
+
                     if(!v.__lang.isFunction(factory) && !deps.length){
                         module.result = factory;
                         module.done();
@@ -1306,7 +1347,7 @@
              * when appending a script element inito the document
              */
             requested : function(){
-                this.attached = this.context.state.REQUESTED;
+                this.status = this.context.state.REQUESTED;
                 this.context.hangQ[this.mid] = 1;
                 if(this.url){
                     this.context.hangQ[this.url] = this.pack||1;
@@ -1317,7 +1358,7 @@
              * the script that contatined the module arrived
              */
             arrived : function(){
-                this.attached = this.context.state.ARRIVED;
+                this.status = this.context.state.ARRIVED;
                 delete this.context.hangQ[this.mid];
                 if(this.url){
                     delete this.context.hangQ[this.url];
@@ -1341,47 +1382,47 @@
              */
             attach : function(){
                 var mid = this.mid, url = this.url;
-                if(this.executed || this.attached || this.context.hangQ[mid]||
+                if(this.status || this.context.hangQ[mid]||
                     (this.url && (this.pack && this.context.hangQ[this.url] === this.pack) ||
                         this.context.hangQ[this.url] == 1)){
                     return;
                 }
-                this.requested();
-                //all we done is only to support AMD mode
-                //so in this mode, the module will be attached by script injection
-                this.context.injectingMod = this;
-                this.context.pkg.inject(url, v.__lang.ride(this, function(){
-                    var context = this.context;
-                    context.pkg.runDefQ(this);
-                    if(this.attached !== context.state.ARRIVED){
-                        this.arrived();
-                        //TODO:is it necessary ????
-                        v.__lang.mix(this, {
-                            attached : context.state.ARRIVED,
-                            executed : context.state.EXECUTED
-                        });
-                    }
-                    context.guard.monitor();
-                }), this);
-                this.context.injectingMod = 0;
+                if(!v.__AMD.combo){
+                    this.requested();
+                    //all we done is only to support AMD mode
+                    //so in this mode, the module will be attached by script injection
+                    this.context.injectingMod = this;
+                    this.context.pkg.inject(url, v.__lang.ride(this, function(){
+                        var context = this.context;
+                        context.pkg.runDefQ(this);
+                        if(this.status !== context.state.ARRIVED){
+                            this.arrived();
+                            v.__lang.mix(this, {
+                                status : context.state.ARRIVED
+                            });
+                        }
+                        context.guard.monitor();
+                    }), this);
+                    this.context.injectingMod = 0;
+                }
             },
             /**
              * Attach the module
              * @param strict : execute in strict mode or not
              */
             execute : function(strict){
-                if(this.executed === this.context.state.EXECUTING){
+                if(this.status === this.context.state.EXECUTING){
                     // run the dependency vector, then run the factory for module
                     // TODO:
                     return this.context.abortExec;
                 }
-                if(!this.executed){
+                if(this.status !== this.context.state.EXECUTED){
                     if(this.factory === noop){
                         return this.context.abortExec;
                     }
                     var deps = this.deps||[],
                         arg, argRS, args = [], i = 0;
-                    this.executed = this.context.state.EXECUTING;
+                    this.status = this.context.state.EXECUTING;
                     while((arg = deps[i++])){
                         // for circular dependencies, assume the first module encountered was executed OK
                         // modules that circularly depend on a module that has not run its factory will get
@@ -1395,7 +1436,7 @@
 
                         //
                         if(argRS === this.context.abortExec){
-                            this.executed = this.context.state.INIT;
+                            this.status = this.context.state.INIT;
                             return this.context.abortExec;
                         }
                         args.push(argRS);
@@ -1416,7 +1457,7 @@
             },
 
             done : function(){
-                this.executed = this.context.state.EXECUTED;
+                this.status = this.context.state.EXECUTED;
                 this.defOrder = this.context.defOrder++;
                 //TODO: plugin
                 //remove all occurrences of this module from the execQ
