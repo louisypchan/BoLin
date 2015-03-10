@@ -61,7 +61,7 @@ function listDir(dir){
                             deps = (name ? match[3] : match[2]).replace(/[\[\]"']|\s*/g, '');
                             !name && (name = p.replace('../src/', ""));
                             var mod = { mod : {} };
-                            mod.mod[name] = {dependencies : deps ? deps.split(",") : []};
+                            mod.mod[name] = {deps : deps ? deps.split(",") : []};
                             mods.push(mod);
                             //console.log(mods);
                             fs.appendFile('../src/bl.js',swig.render(moduleTemplate, {locals : {module : mod}}));
